@@ -146,6 +146,16 @@ String StringBuilder::build()
     return s;
 }
 
+StringBuilder& StringBuilder::operator=(const StringBuilder& builder)
+{
+    if (m_chars) delete[] m_chars;
+    m_chars = new char[builder.m_size + 1];
+    std::strcpy(m_chars, builder.m_chars);
+    m_size = builder.m_size;
+    m_built = builder.m_built;
+    return *this;
+}
+
 /*
 StringBuilder& StringBuilder::operator+=(const char* cs)
 {
@@ -158,13 +168,6 @@ StringBuilder& StringBuilder::operator+=(const String& s)
     append(s.c_str());
     return *this;
 }
-
-StringBuilder& StringBuilder::operator=(const StringBuilder& builder)
-{
-    if (m_chars) delete[] m_chars;
-    m_chars = new char[builder.m_size + 1];
-    std::strcpy(m_chars, builder.m_chars);
-    m_size = builder.m_size;
-    return *this;
-}
 */
+
+

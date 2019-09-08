@@ -41,8 +41,9 @@ public:
     /// Builds the String and returns it.
     String build();
     
-    /*
     StringBuilder& operator=(const StringBuilder&);
+    
+    /*
     StringBuilder& operator+=(const char*);
     StringBuilder& operator+=(const String&);
     StringBuilder& operator+=(const class StringConverter&);
