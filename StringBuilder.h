@@ -27,9 +27,9 @@ public:
     /// Prepends a String (Inserts in the beginning).
     void prepend(const String&);
     
-    /// Appends formatted string. Max size after formatting is 127. Inserts at the beginning.
+    /// Appends formatted string (Inserts at the end).
     void appendf(const char* fmt, ...);
-    /// Prepends formatted string. Max size after formatting is 127. Inserts at the end.
+    /// Prepends formatted string (Inserts at the beginning).
     void prependf(const char* fmt, ...);
     
     /// Appends a char (Inserts at the end).

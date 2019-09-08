@@ -111,10 +111,14 @@ void StringBuilder::appendf(const char* fmt, ...)
     // FIXME: Unhandled possible failures (might return 0, etc).
     va_list args;
     va_start(args, fmt);
-    char buf[128];
-    std::vsnprintf (buf, 127, fmt, args);
+    unsigned size = std::vsnprintf (NULL, 0, fmt, args);
+    va_end (args); 
+    va_start(args, fmt);
+    char* buf = new char[size + 1];
+    std::vsnprintf (buf, size + 1, fmt, args);
     va_end (args);
     append (buf);
+    delete[] buf;
 }
 
 void StringBuilder::prependf(const char* fmt, ...)
@@ -122,10 +126,14 @@ void StringBuilder::prependf(const char* fmt, ...)
     // FIXME: Unhandled possible failures (might return 0, etc).
     va_list args;
     va_start(args, fmt);
-    char buf[128];
-    std::vsnprintf (buf, 127, fmt, args);
+    unsigned size = std::vsnprintf (NULL, 0, fmt, args);
+    va_end (args); 
+    va_start(args, fmt);
+    char* buf = new char[size + 1];
+    std::vsnprintf (buf, size + 1, fmt, args);
     va_end (args);
     prepend (buf);
+    delete[] buf;
 }
 
 String StringBuilder::build()
