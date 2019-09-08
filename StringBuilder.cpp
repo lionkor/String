@@ -2,49 +2,45 @@
 #include "Exceptions.h"
 
 StringBuilder::StringBuilder()
+    : m_size(0), 
+      m_chars(std::make_unique<char[]>(m_size+1)) // FIXME: Do we need to initialize it here?
 {
-    m_chars = new char[1];
-    std::strcpy(m_chars, "");
-    m_size = 0;
 }
 
 StringBuilder::StringBuilder(const StringBuilder& builder)
+    : m_size(builder.m_size), m_chars(std::make_unique<char[]>(m_size+1))
 {
-    m_chars = new char[builder.m_size + 1];
-    std::strcpy(m_chars, builder.m_chars);
-    m_size = builder.m_size;
+    std::strcpy(m_chars.get(), builder.m_chars.get());
 }
 
 StringBuilder::~StringBuilder()
 {
-    if (m_chars) delete[] m_chars;
 }
 
 void StringBuilder::append(const char* cstr)
 {
     if (m_built) throw InvalidAppendAfterBuild();
-    char* new_chars = new char[m_size + std::strlen(cstr) + 1];
+    std::unique_ptr<char[]> new_chars = std::make_unique<char[]>(m_size + std::strlen(cstr) + 1);
     if (m_size != 0)
     {
-        std::strcpy(new_chars, m_chars);
-        std::strcat(new_chars, cstr);
+        std::strcpy(new_chars.get(), m_chars.get());
+        std::strcat(new_chars.get(), cstr);
     }
     else
     {
-        std::strcpy(new_chars, cstr);
+        std::strcpy(new_chars.get(), cstr);
     }
-    if (m_chars) delete[] m_chars;
-    m_chars = new_chars;
-    m_size = std::strlen(m_chars);
+    m_chars = std::move(new_chars);
+    m_size = std::strlen(m_chars.get());
 }
 
 void StringBuilder::append(char c)
 {
     if (m_built) throw InvalidAppendAfterBuild();
-    char* new_chars = new char[m_size + 1 + 1];
+    auto new_chars = std::make_unique<char[]>(m_size + 1 + 1);
     if (m_size != 0)
     {
-        std::strcpy(new_chars, m_chars);
+        std::strcpy(new_chars.get(), m_chars.get());
         new_chars[m_size] = c;
         new_chars[m_size + 1] = '\0';
     }
@@ -53,8 +49,7 @@ void StringBuilder::append(char c)
         new_chars[0] = c;
         new_chars[1] = '\0';
     }
-    if (m_chars) delete[] m_chars;
-    m_chars = new_chars;
+    m_chars = std::move(new_chars);
     m_size += 1;
 }
 
@@ -66,38 +61,36 @@ void StringBuilder::append(const String& str)
 void StringBuilder::prepend(const char * cstr)
 {
     if (m_built) throw InvalidAppendAfterBuild();
-    char* new_chars = new char[m_size + std::strlen(cstr) + 1];
+    auto new_chars = std::make_unique<char[]>(m_size + std::strlen(cstr) + 1);
     if (m_size != 0)
     {
-        std::strcpy(new_chars, cstr);
-        std::strcat(new_chars, m_chars);
+        std::strcpy(new_chars.get(), cstr);
+        std::strcat(new_chars.get(), m_chars.get());
     }
     else
     {
-        std::strcpy(new_chars, cstr);
+        std::strcpy(new_chars.get(), cstr);
     }
-    if (m_chars) delete[] m_chars;
-    m_chars = new_chars;
-    m_size = std::strlen(m_chars);
+    m_chars = std::move(new_chars);
+    m_size = std::strlen(m_chars.get());
 }
 
 void StringBuilder::prepend(char c)
 {
     if (m_built) throw InvalidAppendAfterBuild();
-    char* new_chars = new char[m_size + 1 + 1];
+    auto new_chars = std::make_unique<char[]>(m_size + 1 + 1);
     if (m_size != 0)
     {
         new_chars[0] = c;
         new_chars[1] = '\0';
-        std::strcat(new_chars, m_chars);
+        std::strcat(new_chars.get(), m_chars.get());
     }
     else
     {
         new_chars[0] = c;
         new_chars[1] = '\0';
     }
-    if (m_chars) delete[] m_chars;
-    m_chars = new_chars;
+    m_chars = std::move(new_chars);
     m_size += 1;
 }
 
@@ -114,11 +107,10 @@ void StringBuilder::appendf(const char* fmt, ...)
     unsigned size = std::vsnprintf (NULL, 0, fmt, args);
     va_end (args); 
     va_start(args, fmt);
-    char* buf = new char[size + 1];
-    std::vsnprintf (buf, size + 1, fmt, args);
+    auto buf = std::make_unique<char[]>(size + 1);
+    std::vsnprintf (buf.get(), size + 1, fmt, args);
     va_end (args);
-    append (buf);
-    delete[] buf;
+    append (buf.get());
 }
 
 void StringBuilder::prependf(const char* fmt, ...)
@@ -129,45 +121,26 @@ void StringBuilder::prependf(const char* fmt, ...)
     unsigned size = std::vsnprintf (NULL, 0, fmt, args);
     va_end (args); 
     va_start(args, fmt);
-    char* buf = new char[size + 1];
-    std::vsnprintf (buf, size + 1, fmt, args);
+    auto buf = std::make_unique<char[]>(size + 1);
+    std::vsnprintf (buf.get(), size + 1, fmt, args);
     va_end (args);
-    prepend (buf);
-    delete[] buf;
+    prepend (buf.get());
 }
 
 String StringBuilder::build()
 {
     String s {};
     s.m_size = m_size;
-    s.m_chars = m_chars;
-    m_chars = nullptr;
+    s.m_chars = std::move(m_chars);
     m_built = true;
     return s;
 }
 
 StringBuilder& StringBuilder::operator=(const StringBuilder& builder)
 {
-    if (m_chars) delete[] m_chars;
-    m_chars = new char[builder.m_size + 1];
-    std::strcpy(m_chars, builder.m_chars);
+    m_chars = std::make_unique<char[]>(builder.m_size + 1);
+    std::strcpy(m_chars.get(), builder.m_chars.get());
     m_size = builder.m_size;
     m_built = builder.m_built;
     return *this;
 }
-
-/*
-StringBuilder& StringBuilder::operator+=(const char* cs)
-{
-    append(cs);
-    return *this;
-}
-
-StringBuilder& StringBuilder::operator+=(const String& s)
-{
-    append(s.c_str());
-    return *this;
-}
-*/
-
-

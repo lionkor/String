@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <cstdarg>
+#include <memory>
 
 #include "Core.h"
 #include "String.h"
@@ -43,18 +44,12 @@ public:
     
     StringBuilder& operator=(const StringBuilder&);
     
-    /*
-    StringBuilder& operator+=(const char*);
-    StringBuilder& operator+=(const String&);
-    StringBuilder& operator+=(const class StringConverter&);
-    */
-    
     /// Returns the current contents of the char* data.
-    const char* c_str() const { return m_chars; }
+    const char* c_str() const { return m_chars.get(); }
 private:
-    char* m_chars;
-    bool m_built { false };
     std::size_t m_size;
+    std::unique_ptr<char[]> m_chars;
+    bool m_built { false };
 };
 
 #endif // STRINGBUILDER_H

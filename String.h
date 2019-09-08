@@ -4,6 +4,7 @@
 #include <cstring>
 #include <iostream>
 #include <cstdarg>
+#include <memory>
 
 #include "Core.h"
 
@@ -22,17 +23,17 @@ public:
     std::size_t size() const { return m_size; }
     bool empty() const { return m_size == 0; }
     
-    const char* c_str() const { return m_chars; }
+    const char* c_str() const { return m_chars.get(); } // FIXME: Do we need this?
     
     static String format(const char* fmt, ...);
     
     friend std::ostream& operator<<(std::ostream& os, const String& str)
     {
-        return os << str.m_chars;
+        return os << str.m_chars.get(); // FIXME: This is a bit hacky.
     }
 private:
-    char* m_chars;
     std::size_t m_size;
+    std::unique_ptr<char[]> m_chars;
     String () {}
 };
 
