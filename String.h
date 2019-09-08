@@ -17,6 +17,7 @@ public:
     virtual ~String();
     
     String& operator=(const String&);
+    String& operator=(const char*);
     
     std::size_t size() const { return m_size; }
     bool empty() const { return m_size == 0; }

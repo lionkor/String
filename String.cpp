@@ -28,6 +28,15 @@ String& String::operator=(const String& str)
     return *this;
 }
 
+String& String::operator=(const char* cs)
+{
+    if (m_chars) delete[] m_chars;
+    m_size = std::strlen(cs);
+    m_chars = new char[m_size + 1];
+    std::strcpy(m_chars, cs);
+    return *this;
+}
+
 String String::format(const char* fmt, ...)
 {
     String s {};
