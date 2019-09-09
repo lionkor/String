@@ -1,6 +1,13 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
 
+# manually added
+
+*.pro
+main.cpp
+
+# automatically added
+
 *~
 *.autosave
 *.a
