@@ -23,13 +23,13 @@ public:
     std::size_t size() const { return m_size; }
     bool empty() const { return m_size == 0; }
     
-    const char* c_str() const { return m_chars.get(); } // FIXME: Do we need this?
-    
+    /// Construct a String instance from a format string.
     static String format(const char* fmt, ...);
     
+    const char* c_str() const { return m_chars.get(); }
     friend std::ostream& operator<<(std::ostream& os, const String& str)
     {
-        return os << str.m_chars.get(); // FIXME: This is a bit hacky.
+        return os << str.m_chars.get();
     }
 private:
     std::size_t m_size;
