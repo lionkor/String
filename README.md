@@ -1,10 +1,28 @@
 # String
-A simple modern String class.
+A simple modern String class. `String` is not a clone of `std::string`. The idea is that it has a more practical and straightforward interface and enforces some stricter rules.
+
+For example, a `String` cannot be changed once created. Construction happens either through a straighforward constructor or through the helper class `StringBuilder`. This follows the idea of `String` being immutable after creation.
+
+### Roadmap
+
+The following will **definitely** need to be done:
+
+- [x] Use `std::unique_ptr` for `char[]`.
+- [ ] Replace varargs with variadic templates.
+- [ ] Implement `String::split`.
+- [ ] Implement `String::trim`.
+- [ ] Implement small-string-optimization.
+- [ ] Optimize `StringBuilder::build`.
+- [ ] Optimize `StringBuilder::append` and `StringBuilder::prepend` (and respective `*f` equivalents).
+- [ ] Document the public interface (*Doxygen?*).
+
+The following I'm **not so sure** about:
+
+- [ ] `StringBuilder` operators `+=`, `+`, etc.
+- [ ] Conversion between `String` and `std::string`.
+- [ ] Make `String` use more move semantics in some situations (?).
 
 ### How to use
-
-`String` is not resizable or editable like `std::string` is. Copying will copy memory and size information.
-It's basically a fancy wrapper around a heap-allocated `char*`.
 
 A `String` can be constructed with:
 
@@ -32,9 +50,8 @@ This supports all of printf's formatting features. Resulting formatted strings c
 
 ### Notes
 
-The project doesn't use any smart pointers, so exceptions will cause memory leaks. Any proposals for how to fix this without using std shared pointers is welcome!
-However, each feature has been tested and `valgrind` does not complain.
+~~The project doesn't use any smart pointers, so exceptions will cause memory leaks. Any proposals for how to fix this without using std shared pointers is welcome!~~ *This was not very smart. Both `String` and `StringBuilder` now use `std::unique_ptr`s.* 
 
 ### Why?
 
-I needed my own String class so I could add more functionality.
+For learning purposes and as part of my own personal library of code that I use in my projects. This is not supposed to be faster or better in an objective sense than `std::string`. The idea is to develop a String class with an interface that fits my personal coding style. This is not to say that it won't be fast; I just know that it's pretty difficult to ever reach the speed of, say, `std::string`.
