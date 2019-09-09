@@ -54,4 +54,4 @@ This supports all of printf's formatting features. Resulting formatted strings c
 
 ### Why?
 
-For learning purposes and as part of my own personal library of code that I use in my projects. This is not supposed to be faster or better in an objective sense than `std::string`. The idea is to develop a String class with an interface that fits my personal coding style. This is not to say that it won't be fast; I just know that it's pretty difficult to ever reach the speed of, say, `std::string`.
+For learning purposes and as part of my own personal library of code that I use in my projects. This is not supposed to be faster or better in an objective sense than `std::string`. The idea is to develop a String class with an interface that fits my personal coding style. This is not to say that it won't be fast; I just know that it's pretty difficult to ever reach the speed of, say, `std::string`, and it's not the scope of this project to make a String class that will fit every possible use case.
