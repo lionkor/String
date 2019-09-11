@@ -1,6 +1,7 @@
 #include "String.h"
 #include "Exceptions.h"
 #include "StringBuilder.h"// FIXME: Remove.
+#include <cassert>
 
 
 String::String(const char* cs)
@@ -8,6 +9,14 @@ String::String(const char* cs)
       m_chars(std::make_unique<char[]>(m_size+1))
 {
     std::strcpy(m_chars.get(), cs);
+}
+
+String::String(String::ConstIterator start, String::ConstIterator end)
+    : m_size(end-start),
+      m_chars(std::make_unique<char[]>(m_size+1))
+{
+    // FIXME: Doesn't work if start>end.
+    std::strncpy(m_chars.get(), start, m_size);
 }
 
 String::String(const String& str)
@@ -89,6 +98,26 @@ std::vector<String> String::split(char delim) const
     return splits;
 }
 
+String::Iterator String::begin()
+{
+    return m_chars.get();
+}
+
+String::ConstIterator String::begin() const
+{
+    return m_chars.get();
+}
+
+String::Iterator String::end()
+{
+    return &m_chars[m_size];
+}
+
+String::ConstIterator String::end() const
+{
+    return &m_chars[m_size];
+}
+
 String String::substr(std::size_t pos, std::size_t n) const
 {
     String s;
@@ -99,7 +128,7 @@ String String::substr(std::size_t pos, std::size_t n) const
     return s;
 }
 
-String String::substr(const char* begin, const char* end) const
+String String::substr(ConstIterator begin, ConstIterator end) const
 {
     String s;
     s.m_size = end-begin;
@@ -111,8 +140,8 @@ String String::substr(const char* begin, const char* end) const
 
 String String::trim(char trim) const
 {
-    const char* begin = m_chars.get();
-    const char* end = m_chars.get() + m_size;
+    Iterator begin = m_chars.get();
+    Iterator end = m_chars.get() + m_size;
     while(*begin == trim) ++begin;
     while(*(end-1) == trim && end > begin) --end;
     return substr(begin, end);
