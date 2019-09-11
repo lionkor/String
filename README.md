@@ -7,14 +7,15 @@ For example, a `String` cannot be changed once created. Construction happens eit
 
 The following will **definitely** need to be done:
 
-- [x] Use `std::unique_ptr` for `char[]`.
+- [x] Use `std::unique_ptr` for `char[]`. Completed in commit 6b0c3699ebde85e12f93328cb6c40ef92d523f25
 - [ ] Replace varargs with variadic templates.
-- [ ] Implement `String::split`.
-- [ ] Implement `String::trim`.
+- [x] Implement `String::split`. Completed in commit 29795acd8a50c3cbe394923a3490412f8a48fd88
+- [x] Implement `String::trim`. Completed in commit e7f4af1dfa2f1a84cfcd629646f033bc53c06bd6
 - [ ] Implement small-string-optimization.
 - [ ] Optimize `StringBuilder::build`.
 - [ ] Optimize `StringBuilder::append` and `StringBuilder::prepend` (and respective `*f` equivalents).
 - [ ] Document the public interface (*Doxygen?*).
+- [ ] Add Iterator(s), `begin`, `end`.
 
 The following I'm **not so sure** about:
 
