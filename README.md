@@ -10,6 +10,7 @@ The following will **definitely** need to be done:
 - [x] Use `std::unique_ptr` for `char[]`.
 - [ ] Replace varargs with variadic templates.
 - [x] Implement `String::split`.
+  - [x] Implement `String::substr`.
 - [x] Implement `String::trim`.
 - [ ] Implement small-string-optimization.
 - [ ] Optimize `StringBuilder::build`.
