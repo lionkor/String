@@ -2,6 +2,7 @@
 #include "Exceptions.h"
 #include "StringBuilder.h"// FIXME: Remove.
 
+
 String::String(const char* cs)
     : m_size(std::strlen(cs)), 
       m_chars(std::make_unique<char[]>(m_size+1))
@@ -92,21 +93,28 @@ String String::substr(std::size_t pos, std::size_t n) const
 {
     String s;
     s.m_chars = std::make_unique<char[]>(n+1);
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        s.m_chars[i] = m_chars[pos+i];
-    }
+    std::strncpy(s.m_chars.get(), m_chars.get()+pos, n);
     s.m_chars[n] = '\0';
     s.m_size = n;
+    return s;
+}
+
+String String::substr(const char* begin, const char* end) const
+{
+    String s;
+    s.m_size = end-begin;
+    s.m_chars = std::make_unique<char[]>(s.m_size+1);
+    std::strncpy(s.m_chars.get(), begin, s.m_size);
+    s.m_chars[s.m_size] = '\0';
     return s;
 }
 
 String String::trim(char trim) const
 {
     const char* begin = m_chars.get();
-    const char* end = m_chars.get() + m_size - 1;
+    const char* end = m_chars.get() + m_size;
     while(*begin == trim) ++begin;
-    while(*end == trim) --end;
-    return substr(begin-m_chars.get(), end+1-begin);
+    while(*(end-1) == trim && end > begin) --end;
+    return substr(begin, end);
 }
 
