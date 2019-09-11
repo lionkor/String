@@ -16,7 +16,7 @@ The following will **definitely** need to be done:
 - [ ] Optimize `StringBuilder::build`.
 - [ ] Optimize `StringBuilder::append` and `StringBuilder::prepend` (and respective `*f` equivalents).
 - [ ] Document the public interface (*Doxygen?*).
-- [ ] Add Iterator(s), `begin`, `end`.
+- [x] Add Iterator(s), `begin`, `end`.
 
 The following I'm **not so sure** about:
 
