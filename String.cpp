@@ -1,5 +1,7 @@
 #include "String.h"
 #include "Exceptions.h"
+#include "StringBuilder.h"// FIXME: Remove.
+
 
 String::String(const char* cs)
     : m_size(std::strlen(cs)), 
@@ -68,5 +70,51 @@ String String::format(const char* fmt, ...)
     va_end (args);
     s.m_size = size;
     return s;
+}
+
+std::vector<String> String::split(char delim) const
+{
+    // TODO/FIXME: if (str.find(delim) == std::string::npos) return std::vector<std::string>();
+    std::vector<String> splits {};
+    std::size_t pos { 0 };
+    for (const char* c = m_chars.get(); true; ++c)
+    {
+        if (*c == delim || *c == '\0') 
+        {
+            splits.push_back(substr(pos, (c - m_chars.get()) - pos));
+            if (*c == '\0') break;
+            pos = ++c - m_chars.get();
+        }
+    }
+    return splits;
+}
+
+String String::substr(std::size_t pos, std::size_t n) const
+{
+    String s;
+    s.m_chars = std::make_unique<char[]>(n+1);
+    std::strncpy(s.m_chars.get(), m_chars.get()+pos, n);
+    s.m_chars[n] = '\0';
+    s.m_size = n;
+    return s;
+}
+
+String String::substr(const char* begin, const char* end) const
+{
+    String s;
+    s.m_size = end-begin;
+    s.m_chars = std::make_unique<char[]>(s.m_size+1);
+    std::strncpy(s.m_chars.get(), begin, s.m_size);
+    s.m_chars[s.m_size] = '\0';
+    return s;
+}
+
+String String::trim(char trim) const
+{
+    const char* begin = m_chars.get();
+    const char* end = m_chars.get() + m_size;
+    while(*begin == trim) ++begin;
+    while(*(end-1) == trim && end > begin) --end;
+    return substr(begin, end);
 }
 
