@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdarg>
 #include <memory>
+#include <vector>
 
 #include "Core.h"
 
@@ -25,6 +26,9 @@ public:
     
     /// Construct a String instance from a format string.
     static String format(const char* fmt, ...);
+    
+    std::vector<String> split(char delim) const;
+    String substr(std::size_t pos, std::size_t n) const;
     
     const char* c_str() const { return m_chars.get(); }
     friend std::ostream& operator<<(std::ostream& os, const String& str)
