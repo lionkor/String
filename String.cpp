@@ -101,3 +101,12 @@ String String::substr(std::size_t pos, std::size_t n) const
     return s;
 }
 
+String String::trim(char trim) const
+{
+    const char* begin = m_chars.get();
+    const char* end = m_chars.get() + m_size - 1;
+    while(*begin == trim) ++begin;
+    while(*end == trim) --end;
+    return substr(begin-m_chars.get(), end+1-begin);
+}
+

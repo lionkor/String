@@ -28,7 +28,8 @@ public:
     static String format(const char* fmt, ...);
     
     std::vector<String> split(char delim) const;
-    String substr(std::size_t pos, std::size_t n) const;
+    String              substr(std::size_t pos, std::size_t n) const;
+    String              trim(char trim = ' ') const;
     
     const char* c_str() const { return m_chars.get(); }
     friend std::ostream& operator<<(std::ostream& os, const String& str)
