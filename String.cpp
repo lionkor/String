@@ -25,8 +25,7 @@ String::String(const String::Iterator start, const String::Iterator end)
 
 String::String(const String& str)
     : m_size(str.m_size), m_chars(std::make_unique<char[]>(m_size + 1))
-{
-    std::strcpy(m_chars.get(), str.m_chars.get());
+{    std::strcpy(m_chars.get(), str.m_chars.get());
 }
 
 String::~String() {}
@@ -65,11 +64,12 @@ String String::format(const char* fmt, ...)
     // vsnprintf returns <0 if encoding error occured.
     if (size < 0)
         throw FormatEncodingError();
-
+    s.m_size = unsigned(size);
+    
     va_end(args);
-    s.m_chars = std::make_unique<char[]>(size + 1);
+    s.m_chars = std::make_unique<char[]>(s.m_size + 1);
     va_start(args, fmt);
-    int rc = std::vsnprintf(s.m_chars.get(), size + 1, fmt, args);
+    int rc = std::vsnprintf(s.m_chars.get(), s.m_size + 1, fmt, args);
 
     // vsnprintf returns <0 if encoding error occured.
     if (rc < 0)
@@ -77,11 +77,11 @@ String String::format(const char* fmt, ...)
 
     // vsnprintf returns >0 and <n on success.
     // This is sadly a super generic error.
-    if (rc >= size + 1)
+    if (rc >= s.m_size + 1)
         throw FormatWriteFault();
 
     va_end(args);
-    s.m_size = size;
+    
     return s;
 }
 
@@ -95,7 +95,7 @@ std::vector<String> String::split(char delim) const
     {
         if (*c == delim || *c == '\0')
         {
-            splits.push_back(substr(pos, (c - m_chars.get()) - pos));
+            splits.push_back(substring(pos, (c - m_chars.get()) - pos));
             if (*c == '\0')
                 break;
             pos = ++c - m_chars.get();
@@ -144,5 +144,5 @@ String String::trim(char trim) const
         ++begin;
     while (*(end - 1) == trim && end > begin)
         --end;
-    return substr(begin, end);
+    return substring(begin, end);
 }
