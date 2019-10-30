@@ -5,7 +5,8 @@
 StringView::StringView(const String& str)
     : m_chars(str.c_str()),
       m_size(str.size())
-{}
+{
+}
 
 StringView::StringView(const StringView& other)
     : m_chars(other.m_chars), 
@@ -16,4 +17,5 @@ StringView::StringView(const StringView& other)
 StringView::StringView(const char* cstr) 
     : m_chars(cstr),
       m_size(strlen(cstr))
-{}
+{
+}
