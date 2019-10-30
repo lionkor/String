@@ -16,7 +16,7 @@ static constexpr std::size_t abs_size_t(_T i)
     return std::size_t(i < 0 ? i * -1 : i);
 }
 
-String::String(String::ConstIterator start, String::ConstIterator end)
+String::String(const String::Iterator start, const String::Iterator end)
     : m_size(abs_size_t(end - start)), m_chars(std::make_unique<char[]>(m_size + 1))
 {
     // FIXME: Doesn't work if start>end.
@@ -61,11 +61,11 @@ String String::format(const char* fmt, ...)
     va_list args;
     va_start(args, fmt);
     int size = std::vsnprintf(nullptr, 0, fmt, args);
-    
+
     // vsnprintf returns <0 if encoding error occured.
     if (size < 0)
         throw FormatEncodingError();
-    
+
     va_end(args);
     s.m_chars = std::make_unique<char[]>(size + 1);
     va_start(args, fmt);
@@ -104,13 +104,9 @@ std::vector<String> String::split(char delim) const
     return splits;
 }
 
-String::Iterator String::begin() { return m_chars.get(); }
+String::Iterator String::begin() const { return m_chars.get(); }
 
-String::ConstIterator String::begin() const { return m_chars.get(); }
-
-String::Iterator String::end() { return &m_chars[m_size]; }
-
-String::ConstIterator String::end() const { return &m_chars[m_size]; }
+String::Iterator String::end() const { return &m_chars[m_size]; }
 
 
 String String::substring(std::size_t pos, std::size_t n) const
@@ -124,7 +120,7 @@ String String::substring(std::size_t pos, std::size_t n) const
 }
 
 
-String String::substring(ConstIterator begin, ConstIterator end) const
+String String::substring(const Iterator begin, const Iterator end) const
 {
     String s;
     s.m_size = end - begin;
@@ -135,7 +131,7 @@ String String::substring(ConstIterator begin, ConstIterator end) const
 }
 
 String String::substr(std::size_t pos, std::size_t n) const { return substring(pos, n); }
-String String::substr(ConstIterator begin, ConstIterator end) const
+String String::substr(const Iterator begin, const Iterator end) const
 {
     return substring(begin, end);
 }
