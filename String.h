@@ -16,6 +16,7 @@ public:
     friend class StringBuilder;
     using Iterator = char*;
 
+    String();
     String(const char*);
     String(const Iterator start, const Iterator end);
     String(const String&);
@@ -25,6 +26,12 @@ public:
 
     String& operator=(const String&);
     String& operator=(const char*);
+
+    bool operator==(const String&) const;
+    bool operator==(const char*) const;
+
+    inline bool operator!=(const String& other) const { return !(*this == other); }
+    inline bool operator!=(const char* other) const { return !(*this == other); }
 
     inline std::size_t size() const { return m_size; }
     inline bool empty() const { return m_size == 0; }
@@ -37,11 +44,11 @@ public:
     String substring(std::size_t position, std::size_t n) const;
     String substring(const Iterator begin, const Iterator end) const;
 
-    [[deprecated("use substring instead")]] 
-    String substr(std::size_t pos, std::size_t n) const;
-    
-    [[deprecated("use substring instead")]] 
-    String substr(const Iterator begin, const Iterator end) const;
+    [[deprecated("use substring instead")]] String substr(std::size_t pos,
+                                                          std::size_t n) const;
+
+    [[deprecated("use substring instead")]] String substr(const Iterator begin,
+                                                          const Iterator end) const;
 
     String trim(char trim = ' ') const;
     inline StringView as_string_view() const { return StringView(*this); }
@@ -55,7 +62,6 @@ public:
 private:
     std::size_t m_size;
     std::unique_ptr<char[]> m_chars;
-    String() {}
 };
 
 #endif // STRING_H

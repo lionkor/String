@@ -4,6 +4,10 @@
 #include <cassert>
 #include <cmath>
 
+// "the empty string"
+String::String() : m_size(0), m_chars(std::make_unique<char[]>(1)) { m_chars[0] = '\0'; }
+
+
 String::String(const char* cs)
     : m_size(std::strlen(cs)), m_chars(std::make_unique<char[]>(m_size + 1))
 {
@@ -25,7 +29,8 @@ String::String(const String::Iterator start, const String::Iterator end)
 
 String::String(const String& str)
     : m_size(str.m_size), m_chars(std::make_unique<char[]>(m_size + 1))
-{    std::strcpy(m_chars.get(), str.m_chars.get());
+{
+    std::strcpy(m_chars.get(), str.m_chars.get());
 }
 
 String::~String() {}
@@ -44,6 +49,16 @@ String& String::operator=(const char* cs)
     m_chars = std::make_unique<char[]>(m_size + 1);
     std::strcpy(m_chars.get(), cs);
     return *this;
+}
+
+bool String::operator==(const String& other) const
+{
+    return std::strcmp(m_chars.get(), other.m_chars.get()) == 0;
+}
+
+bool String::operator==(const char* other) const
+{
+    return std::strcmp(m_chars.get(), other) == 0;
 }
 
 String String::format(const char* fmt, ...)
@@ -65,7 +80,7 @@ String String::format(const char* fmt, ...)
     if (size < 0)
         throw FormatEncodingError();
     s.m_size = unsigned(size);
-    
+
     va_end(args);
     s.m_chars = std::make_unique<char[]>(s.m_size + 1);
     va_start(args, fmt);
@@ -81,7 +96,7 @@ String String::format(const char* fmt, ...)
         throw FormatWriteFault();
 
     va_end(args);
-    
+
     return s;
 }
 

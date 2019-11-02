@@ -2,12 +2,15 @@
 #define STRINGVIEW_H
 
 #include <ostream>
+#include <cstring>
+
 using size_t = unsigned long;
 
 /// View to a null-terminated string.
 class StringView
 {
 public:
+    StringView();
     StringView(const char*);
     StringView(const class String&);
     StringView(const StringView&);
@@ -18,9 +21,18 @@ public:
     inline constexpr const char* chars() const { return m_chars; }
     inline constexpr const char* c_str() const { return m_chars; }
 
+    bool operator==(const char* other) const;
+    bool operator==(const StringView& other) const;
+    
+    bool operator!=(const char* other) const;
+    bool operator!=(const StringView& other) const;
+    
     friend std::ostream& operator<<(std::ostream& os, const StringView& view)
     {
-        return os << view.m_chars;
+        if (view.m_chars)       
+            return os << view.m_chars;
+        else
+            return os << "";
     }
 
 private:
