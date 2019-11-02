@@ -16,6 +16,7 @@ public:
     inline constexpr bool is_empty() const { return m_size == 0 || m_chars[0] == 0; }
     inline constexpr size_t size() const { return m_size; }
     inline constexpr const char* chars() const { return m_chars; }
+    inline constexpr const char* c_str() const { return m_chars; }
 
     friend std::ostream& operator<<(std::ostream& os, const StringView& view)
     {
