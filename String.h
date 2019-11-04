@@ -78,6 +78,19 @@ private:
     {
         return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data;
     }
+
+    inline char*& chars()
+    {
+        if (m_chars.all.dynamic)
+        {
+            return m_chars.heap.data;
+        }
+        else
+        {
+            m_chars.heap.data = m_chars.stack.data;
+            return m_chars.heap.data;
+        }
+    }
     
     union MainDataUnion {
         MainDataUnion() {}

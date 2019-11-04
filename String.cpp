@@ -1,32 +1,33 @@
 #include "String.h"
 #include "Exceptions.h"
-//#include "StringBuilder.h" // FIXME: Remove.
+#include "StringBuilder.h" // FIXME: Remove.
 #include <cassert>
 #include <cmath>
 
 // "the empty string"
 String::String()
 {
-    set_size(0);
     m_chars.all.dynamic = false;
-    m_chars.stack.data[0] = '\0';
+    set_size(0);
+    chars()[0] = '\0';
 }
 
 
 String::String(const char* cs) 
 {
-    set_size(std::strlen(cs));
-    if (size() > MAX_ALLOC)
+    const auto tmp_size = std::strlen(cs);
+    if (tmp_size > MAX_ALLOC)
     {
         m_chars.all.dynamic = true;
-        m_chars.heap.data = new char[size() + 1];
-        std::strcpy(m_chars.heap.data, cs);
+        set_size(tmp_size);
+        chars() = new char[size() + 1];
     }
     else
     {
         m_chars.all.dynamic = false;
-        std::strcpy(m_chars.stack.data, cs);
+        set_size(tmp_size);
     }
+    std::strcpy(chars(), cs);
 }
 
 template<typename _T>
@@ -37,73 +38,77 @@ static constexpr std::size_t abs_size_t(_T i)
 
 String::String(const String::Iterator start, const String::Iterator end)
 {
-    set_size(abs_size_t(end - start));
-    if (size() > MAX_ALLOC)
+    const auto tmp_size = abs_size_t(end - start);
+    if (tmp_size > MAX_ALLOC)
     {
         m_chars.all.dynamic = true;
-        m_chars.heap.data = new char[size() + 1];
-        std::strncpy(m_chars.heap.data, start, size());
+        set_size(tmp_size);
+        chars() = new char[size() + 1];
     }
     else
     {
         m_chars.all.dynamic = false;
-        std::strncpy(m_chars.stack.data, start, size());
+        set_size(tmp_size);
     }
+    std::strncpy(chars(), start, size());
     // FIXME: Doesn't work if start>end.
 }
 
 String::String(const String& str)
 {
-    set_size(str.size());
     if (str.m_chars.all.dynamic)
     {
         m_chars.all.dynamic = true;
-        m_chars.heap.data = new char[size() + 1];
+        m_chars.heap.size = str.m_chars.heap.size;
+        chars() = new char[m_chars.heap.size + 1];
     }
     else
     {
         m_chars.all.dynamic = false;
-        std::strcpy(m_chars.stack.data, str.chars());
     }
+    std::strcpy(chars(), str.chars());
 }
 
 String::~String()
 {
     if (m_chars.all.dynamic)
-        delete[] m_chars.heap.data;
+        delete[] chars();
 }
 
 String& String::operator=(const String& str)
 {
-    set_size(str.size());
+    const auto tmp_size = str.size();
     if (str.m_chars.all.dynamic)
     {
         m_chars.all.dynamic = true;
-        m_chars.heap.data = new char[size() + 1];
-        std::strcpy(m_chars.heap.data, str.chars());
+        set_size(tmp_size);
+        chars() = new char[size() + 1];
+        set_size(str.size());
     }
     else
     {
         m_chars.all.dynamic = false;
-        std::strcpy(m_chars.stack.data, str.chars());
+        set_size(str.size());
     }
+    std::strcpy(chars(), str.chars());
     return *this;
 }
 
 String& String::operator=(const char* cs)
 {
-    set_size(std::strlen(cs));
+    const auto tmp_size = std::strlen(cs);
     if (size() > MAX_ALLOC)
     {
         m_chars.all.dynamic = true;
-        m_chars.heap.data = new char[size() + 1];
-        std::strcpy(m_chars.heap.data, cs);
+        set_size(tmp_size);
+        chars() = new char[size() + 1];
     }
     else
     {
         m_chars.all.dynamic = false;
-        std::strcpy(m_chars.stack.data, cs);
+        set_size(tmp_size);
     }
+    std::strcpy(chars(), cs);
     return *this;
 }
 
@@ -135,21 +140,22 @@ String String::format(const char* fmt, ...)
     // vsnprintf returns <0 if encoding error occured.
     if (size < 0)
         throw FormatEncodingError();
-    s.set_size(unsigned(size));
 
     va_end(args);
     int rc;
-    if (s.size() > MAX_ALLOC)
+    if (size > MAX_ALLOC)
     {
         s.m_chars.all.dynamic = true;
-        s.m_chars.heap.data = new char[s.size() + 1];
-        rc = std::vsnprintf(s.m_chars.heap.data, s.size() + 1, fmt, args);
+        s.set_size(unsigned(size));
+        s.chars() = new char[s.size() + 1];
     }
     else
     {
         s.m_chars.all.dynamic = false;
-        rc = std::vsnprintf(s.m_chars.stack.data, s.size() + 1, fmt, args);
+        s.set_size(unsigned(size));
     }
+
+    rc = std::vsnprintf(s.chars(), s.size() + 1, fmt, args);
     va_start(args, fmt);
 
     // vsnprintf returns <0 if encoding error occured.
@@ -196,17 +202,16 @@ String String::substring(std::size_t pos, std::size_t n) const
     if (n > MAX_ALLOC)
     {
         s.m_chars.all.dynamic = true;
-        s.m_chars.heap.data = new char[n + 1];
-        std::strncpy(s.m_chars.heap.data, chars() + pos, n);
-        s.m_chars.heap.data[n] = '\0';
+        s.chars() = new char[n + 1];
+        s.chars()[n] = '\0';
     }
     else
     {
         s.m_chars.all.dynamic = false;
-        std::strncpy(s.m_chars.stack.data, chars() + pos, n);
-        s.m_chars.stack.data[n] = '\0';
+        s.chars()[n] = '\0';
     }
     s.set_size(n);
+    std::strncpy(s.chars(), chars() + pos, n);
     return s;
 }
 
@@ -214,20 +219,21 @@ String String::substring(std::size_t pos, std::size_t n) const
 String String::substring(const Iterator begin, const Iterator end) const
 {
     String s;
-    s.set_size(end - begin);
-    if (s.size() > MAX_ALLOC)
+    const auto tmp_size = end - begin;
+    if (tmp_size > MAX_ALLOC)
     {
         s.m_chars.all.dynamic = true;
-        s.m_chars.heap.data = new char[s.size() + 1];
-        std::strncpy(s.m_chars.heap.data, begin, s.size());
-        s.m_chars.heap.data[s.size()] = '\0';
+        s.set_size(tmp_size);
+        s.chars() = new char[s.size() + 1];
+        s.chars()[s.size()] = '\0';
     }
     else
     {
         s.m_chars.all.dynamic = false;
-        std::strncpy(s.m_chars.stack.data, begin, s.size());
-        s.m_chars.stack.data[s.size()] = '\0';
+        s.set_size(tmp_size);
+        s.chars()[s.size()] = '\0';
     }
+    std::strncpy(s.chars(), begin, s.size());
     return s;
 }
 
