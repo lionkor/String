@@ -7,12 +7,15 @@ For example, a `String` cannot be changed once created. Construction happens eit
 
 The following will **definitely** need to be done:
 
+*NOTE* Since SSO was implemented, StringBuilder and possibly StringView are broken. Will fix ASAP.
+
+
 - [x] Use `std::unique_ptr` for `char[]`.
 - [ ] Replace varargs with variadic templates.
 - [x] Implement `String::split`.
   - [x] Implement `String::substr`.
 - [x] Implement `String::trim`.
-- [ ] Implement small-string-optimization.
+- [x] Implement small-string-optimization.
 - [ ] Optimize `StringBuilder::build`.
 - [ ] Optimize `StringBuilder::append` and `StringBuilder::prepend` (and respective `*f` equivalents).
 - [ ] Document the public interface (*Doxygen?*).
