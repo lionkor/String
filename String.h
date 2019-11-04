@@ -34,6 +34,8 @@ public:
 
     inline bool operator!=(const String& other) const { return !(*this == other); }
     inline bool operator!=(const char* other) const { return !(*this == other); }
+    
+    inline char operator[](const std::size_t index) const { return chars()[index]; }
 
     inline bool empty() const { return size() == 0; }
 
