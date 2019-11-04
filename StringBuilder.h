@@ -13,7 +13,7 @@ class StringBuilder
 public:
     /// Ctor.
     StringBuilder();
-    /// Copy ctor.
+    /// Copy ctor. // FIXME: Delete?
     StringBuilder(const StringBuilder&);
     /// Dtor.
     virtual ~StringBuilder();
@@ -40,7 +40,7 @@ public:
     
     
     /// Builds the String and returns it.
-    String build();
+    [[nodiscard]] String build();
     
     StringBuilder& operator=(const StringBuilder&);
     
