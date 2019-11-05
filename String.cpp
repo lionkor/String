@@ -15,19 +15,7 @@ String::String()
 
 String::String(const char* cs) 
 {
-    const auto tmp_size = std::strlen(cs);
-    if (tmp_size > MAX_ALLOC)
-    {
-        m_chars.all.dynamic = true;
-        set_size(tmp_size);
-        chars() = new char[size() + 1];
-    }
-    else
-    {
-        m_chars.all.dynamic = false;
-        set_size(tmp_size);
-    }
-    std::strcpy(chars(), cs);
+    store(cs);
 }
 
 template<typename _T>
@@ -38,41 +26,17 @@ static constexpr std::size_t abs_size_t(_T i)
 
 String::String(const String::Iterator start, const String::Iterator end)
 {
-    const auto tmp_size = abs_size_t(end - start);
-    if (tmp_size > MAX_ALLOC)
-    {
-        m_chars.all.dynamic = true;
-        set_size(tmp_size);
-        chars() = new char[size() + 1];
-    }
-    else
-    {
-        m_chars.all.dynamic = false;
-        set_size(tmp_size);
-    }
-    std::strncpy(chars(), start, size());
+    store(start, abs_size_t(end - start));
     // FIXME: Doesn't work if start>end.
 }
 
 String::String(const String& str)
 {
-    if (str.m_chars.all.dynamic)
-    {
-        m_chars.all.dynamic = true;
-        m_chars.heap.size = str.m_chars.heap.size;
-        chars() = new char[m_chars.heap.size + 1];
-    }
-    else
-    {
-        m_chars.all.dynamic = false;
-    }
-    std::strcpy(chars(), str.chars());
+    store(str.chars(), str.size());
 }
 
 String::~String()
 {
-    if (m_chars.all.dynamic)
-        delete[] chars();
 }
 
 String& String::operator=(const String& str)

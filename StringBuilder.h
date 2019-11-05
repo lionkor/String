@@ -45,10 +45,30 @@ public:
     StringBuilder& operator=(const StringBuilder&);
     
     /// Returns the current contents of the char* data.
-    const char* c_str() const { return m_chars.get(); }
+    const char* c_str() const { return m_chars; }
 private:
+    inline void store(const char* cstr)
+    {
+        if (cstr == m_chars) return;
+        if (std::strcmp(cstr, m_chars) == 0) return;
+        
+        std::size_t new_size = std::strlen(cstr);
+        if (new_size > m_capacity)
+        {
+            // resize
+        }
+        
+        
+    }
+    
+    /*
+     * [Hello\0______________________]
+     *  size | | capacity - size - 1
+     */
+    
     std::size_t m_size;
-    std::unique_ptr<char[]> m_chars;
+    std::size_t m_capacity;
+    char* m_chars;
     bool m_built { false };
 };
 

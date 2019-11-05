@@ -9,12 +9,11 @@
 
 #include "Core.h"
 #include "StringView.h"
+#include "DynamicString.h"
 
-class String
+class String : public DynamicString
 {
 public:
-    static constexpr unsigned short MAX_ALLOC = 23;
-
     friend class StringBuilder;
     using Iterator = const char*;
 
@@ -56,11 +55,6 @@ public:
     String trim(char trim = ' ') const;
     inline StringView as_string_view() const { return StringView(*this); }
 
-    inline std::size_t size() const
-    {
-        return m_chars.all.dynamic ? m_chars.heap.size : m_chars.stack.size;
-    }
-
     inline const char* c_str() const { return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data; }
     friend std::ostream& operator<<(std::ostream& os, const String& str)
     {
@@ -68,52 +62,6 @@ public:
     }
     
 private:
-    inline void set_size(std::size_t size)
-    {
-        if (m_chars.all.dynamic)
-            m_chars.heap.size = size;
-        else
-            m_chars.stack.size = size;
-    }
-
-    inline const char* chars() const 
-    {
-        return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data;
-    }
-
-    inline char*& chars()
-    {
-        if (m_chars.all.dynamic)
-        {
-            return m_chars.heap.data;
-        }
-        else
-        {
-            m_chars.heap.data = m_chars.stack.data;
-            return m_chars.heap.data;
-        }
-    }
-    
-    union MainDataUnion {
-        MainDataUnion() {}
-        struct
-        {
-            unsigned char dynamic : 1;
-        } all;
-        struct
-        {
-            unsigned char dynamic : 1 = 1;
-            std::size_t size : std::numeric_limits<std::size_t>::digits - 1;
-            // FIXME: Implement capacity
-            char* data;
-        } heap;
-        struct
-        {
-            unsigned char dynamic : 1 = 0;
-            unsigned char size : std::numeric_limits<unsigned char>::digits - 1;
-            char data[MAX_ALLOC];
-        } stack;
-    } m_chars;
 };
 
 #endif // STRING_H

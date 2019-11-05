@@ -1,0 +1,11 @@
+CMakeLists.txt
+Core.h
+DynamicString.h
+Exceptions.h
+String.cpp
+String.h
+StringBuilder.cpp
+StringBuilder.h
+StringView.cpp
+StringView.h
+main.cpp
