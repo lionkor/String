@@ -11,13 +11,13 @@ The following will **definitely** need to be done:
 
 
 - [x] Use `std::unique_ptr` for `char[]`.
-- [ ] Replace varargs with variadic templates.
+- [x] Replace varargs with variadic templates.
 - [x] Implement `String::split`.
   - [x] Implement `String::substr`.
 - [x] Implement `String::trim`.
 - [x] Implement small-string-optimization.
-- [ ] Optimize `StringBuilder::build`.
-- [ ] Optimize `StringBuilder::append` and `StringBuilder::prepend` (and respective `*f` equivalents).
+- [x] Optimize `StringBuilder::build`.
+- [x] Optimize `StringBuilder::append` and `StringBuilder::prepend` (and respective `*f` equivalents).
 - [ ] Document the public interface (*Doxygen?*).
 - [x] Add Iterator(s), `begin`, `end`.
 
