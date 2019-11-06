@@ -13,7 +13,11 @@ String::String()
 }
 
 
-String::String(const char* cs) { store(cs); }
+String::String(const char* cs) 
+{ 
+    _print_memory(cs, strlen(cs), "String::String");
+    store(cs); 
+}
 
 template<typename _T>
 static constexpr std::size_t abs_size_t(_T i)
@@ -30,9 +34,6 @@ String::String(const String::Iterator start, const String::Iterator end)
 String::String(const String& str) { store(str.chars(), str.size()); }
 
 String::String(const StringView& sv) { store(sv.chars(), sv.size()); }
-
-
-String::~String() {}
 
 String& String::operator=(const String& str)
 {
@@ -81,14 +82,10 @@ bool String::operator==(const char* other) const
     return std::strcmp(chars(), other) == 0;
 }
 
+/*
 String String::format(const char* fmt, ...)
 {
-    /* NOTE:
-     * This sucks. It should not use varargs.
-     * Format Strings are a bad idea.
-     * I know this, and I am working on a better way to do this.
-     * See FIXME below.
-     */
+
     
     
     // FIXME: Rewrite this to use variadic templates.
@@ -132,6 +129,7 @@ String String::format(const char* fmt, ...)
 
     return s;
 }
+*/
 
 std::vector<String> String::split(char delim) const
 {

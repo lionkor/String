@@ -10,6 +10,7 @@
 #include "Core.h"
 #include "DynamicString.h"
 #include "StringView.h"
+#include "StringBuilder.h"
 
 class String : public DynamicString
 {
@@ -22,9 +23,8 @@ public:
     String(const Iterator start, const Iterator end);
     String(const String&);
     String(const StringView&);
-    static String format(const char* fmt, ...);
 
-    virtual ~String();
+    virtual ~String() {}
 
     String& operator=(const String&);
     String& operator=(const char*);
@@ -64,8 +64,35 @@ public:
     {
         return os << str.chars();
     }
-
-private:
+    
+    template<typename... _Args>
+    [[nodiscard]] static String format(StringBuilder& sb)
+    {
+        return sb.build();
+    }
+    
+    template<typename _T, typename... _Args>
+    static String format(StringBuilder&& sb, _T&& t)
+    {
+        sb.append(t);
+        return String::format(sb);
+    }
+    
+    template<typename _T, typename... _Args>
+    static String format(StringBuilder&& sb, _T&& t, _Args&&... args)
+    {
+        sb.append(t);
+        return String::format(std::move(sb), args...);
+    }
+    
+    template<typename... _Args>
+    static String format(_Args&&... args)
+    {
+        StringBuilder sb;
+        return format(std::move(sb), args...);
+    }
 };
+
+#include "StringFormatting.h"
 
 #endif // STRING_H

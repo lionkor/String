@@ -1,72 +1,132 @@
 #ifndef STRINGBUILDER_H
 #define STRINGBUILDER_H
 
-#include <cstring>
 #include <cstdarg>
+#include <cstring>
 #include <memory>
 
 #include "Core.h"
-#include "String.h"
 
 class StringBuilder
 {
 public:
     /// Ctor.
     StringBuilder();
-    /// Copy ctor. // FIXME: Delete?
-    StringBuilder(const StringBuilder&);
+    /// Move ctor.
+    StringBuilder(StringBuilder&&);
     /// Dtor.
     virtual ~StringBuilder();
-    
+
+    StringBuilder(const StringBuilder&) = delete;
+
     /// Appends a c-string (Inserts at the end).
     void append(const char*);
     /// Appends a String (Inserts at the end).
-    void append(const String&);
-    
+    void append(const class String&);
+
     /// Prepends a c-string (Inserts in the beginning).
     void prepend(const char*);
     /// Prepends a String (Inserts in the beginning).
-    void prepend(const String&);
-    
-    /// Appends formatted string (Inserts at the end).
-    void appendf(const char* fmt, ...);
-    /// Prepends formatted string (Inserts at the beginning).
-    void prependf(const char* fmt, ...);
-    
+    void prepend(const class String&);
+
     /// Appends a char (Inserts at the end).
     void append(char);
     /// Prepends a char (Inserts in the beginning).
     void prepend(char);
-    
-    
+
+    void append(int);
+    void append(short);
+    void append(unsigned short);
+    void append(long);
+    void append(unsigned);
+    void append(unsigned long);
+    void append(unsigned long long);
+    void append(unsigned char);
+    void append(float);
+    void append(double);
+    void append(long double);
+
     /// Builds the String and returns it.
-    [[nodiscard]] String build();
-    
-    StringBuilder& operator=(const StringBuilder&);
-    
+    [[nodiscard]] class String build();
+
+    StringBuilder& operator=(StringBuilder&&);
+
     /// Returns the current contents of the char* data.
     const char* c_str() const { return m_chars; }
+
 private:
     inline void store(const char* cstr)
     {
-        if (cstr == m_chars) return;
-        if (std::strcmp(cstr, m_chars) == 0) return;
-        
+        ASSERT(cstr);
+        ASSERT(m_chars);
+
+        if (cstr == m_chars)
+            return;
+        if (std::strcmp(cstr, m_chars) == 0)
+            return;
+
         std::size_t new_size = std::strlen(cstr);
         if (new_size > m_capacity)
         {
-            // resize
+            m_capacity = new_size;
+            char* new_chars = new char[m_capacity + 1];
+            std::strcpy(new_chars, cstr);
+            delete[] m_chars;
+            std::swap(m_chars, new_chars);
         }
+        else
+        {
+            std::strcpy(m_chars, cstr);
+        }
+        m_size = new_size;
     }
-    
-    /*
-     * [Hello\0______________________]
-     *  size | | capacity - size - 1
-     */
-    
+
+    inline void concat(const char* first, const char* second)
+    {
+        std::size_t first_size = std::strlen(first);
+        std::size_t second_size = std::strlen(second);
+        std::size_t new_size = first_size + second_size;
+
+        _print_memory(m_chars, m_capacity, "m_chars @ start of concat");
+        _print_memory(first, first_size, "concat first argument");
+        _print_memory(second, second_size, "concat second argument");
+
+        if (new_size > m_capacity)
+        {
+            // make sure we allocate multiple of 8 for sanity
+            m_capacity = new_size % 8 == 0 ? new_size : (new_size / 8) * 8 + 8;
+            char* new_chars = new char[m_capacity] { 0 };
+            std::memset(new_chars, 0, sizeof(char) * m_capacity);
+            _print_memory(m_chars, m_capacity, "new_chars");
+            std::strcpy(new_chars, first);
+            _print_memory(m_chars, m_capacity, "new_chars after strcpy");
+            std::strcat(new_chars, second);
+            _print_memory(m_chars, m_capacity, "new_chars after strcat");
+            delete[] m_chars;
+            std::swap(m_chars, new_chars);
+            _print_memory(m_chars, m_capacity, "m_chars after concat");
+        }
+        else
+        {
+            if (first == m_chars)
+            {
+                std::strcat(m_chars, second);
+            }
+            else
+            {
+                _print_memory(m_chars, m_capacity, "m_chars before memcpy 1");
+                std::memcpy(m_chars + first_size, second, second_size);
+                _print_memory(m_chars, m_capacity, "m_chars before memcpy 2");
+                std::memcpy(m_chars, first, first_size);
+                _print_memory(m_chars, m_capacity, "m_chars after memcpy 1,2");
+            }
+        }
+        m_size = new_size;
+    }
+
     std::size_t m_size;
     std::size_t m_capacity;
-    char* m_chars;
+    char* m_chars { nullptr };
     bool m_built { false };
 };
 
