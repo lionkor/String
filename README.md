@@ -1,25 +1,24 @@
 # String
-A simple modern String class. `String` is not a clone of `std::string`. The idea is that it has a more practical and straightforward interface and enforces some stricter rules.
+A simple modern String class. `String`, which is **only 24 bytes**, has **small string optimization (SSO)**, uses **variadic templates** for formatting (`String::format`), includes a very lightweight **StringView** friend class, and has some methods `std::string` is desperately missing!
 
-For example, a `String` cannot be changed once created. Construction happens either through a straighforward constructor or through the helper class `StringBuilder`. This follows the idea of `String` being immutable after creation.
+`String` is immutable, but it offers plenty of ways to be constructed, so don't worry!
+
+The idea is that it has a more practical and straightforward interface and enforces some stricter rules, while at the same time giving more method-functionality (as opposed to external functionality enabled through `<algorithm>`). I personally like interfaces that are easy to read while offering high complexity, and that's ultimately the goal. `String` does, of course, include (constant) iterators for all your non-mutating `<algorithm>` needs, as well as a fitting constructor!
 
 ### Roadmap
 
 The following will **definitely** need to be done:
 
-*NOTE* Since SSO was implemented, StringBuilder and possibly StringView are broken. Will fix ASAP.
-
-
-- [x] Use `std::unique_ptr` for `char[]`.
 - [x] Replace varargs with variadic templates.
 - [x] Implement `String::split`.
-  - [x] Implement `String::substr`.
+  - [x] Implement `String::substr` (use `String::substring`).
 - [x] Implement `String::trim`.
 - [x] Implement small-string-optimization.
 - [x] Optimize `StringBuilder::build`.
-- [x] Optimize `StringBuilder::append` and `StringBuilder::prepend` (and respective `*f` equivalents).
+- [x] Optimize `StringBuilder::append` and `StringBuilder::prepend`.
 - [ ] Document the public interface (*Doxygen?*).
 - [x] Add Iterator(s), `begin`, `end`.
+- [x] ~~Use `std::unique_ptr` for `char[]`.~~ (replaced by SSO)
 
 The following I'm **not so sure** about:
 
@@ -31,32 +30,43 @@ The following I'm **not so sure** about:
 
 A `String` can be constructed with:
 
-#### `String::String`
+#### `String::String(const char*)`
 ```
 String s("My String!");
 ```
 This method is the easiest for simple strings. For formatting support one of the next options is needed.
 
+#### `String::String(iter, iter)`
+```
+String s(my_begin_iterator, my_end_iterator);
+```
+This is useful for creating Strings from pieces of other Strings (this is as close to mutability as it gets in here).
+
 #### `String::format`
 ```
-String s = String::format("Hello, %s!", name);
+String s = String::format("Hello, ", name, '!');
 ```
-This supports all of printf's formatting features. Resulting formatted strings can be any length.
+This currently only supports primitive types. (More will be added soon!)
 
 #### `StringBuilder`
 ```
 StringBuilder builder;
 builder.append("Version v");
-builder.appendf("%u.%u.%u", MAJOR, MINOR, BUILD);
-String s = builder.build();
+builder.append(MAJOR);
+builder.append('.');
+builder.append(MINOR);
+builder.append('.');
+builder.append(PATCH);
+String s(std::move(builder.build()));
 ```
-This could of course all be done in one call to `appendf`, but this is for demo only.
-This supports all of printf's formatting features. Resulting formatted strings can be any length.
+This could of course all be done in one call to `String::format`, but the point is that it allows an iterative approach.
 
 ### Notes
 
-~~The project doesn't use any smart pointers, so exceptions will cause memory leaks. Any proposals for how to fix this without using std shared pointers is welcome!~~ *This was not very smart. Both `String` and `StringBuilder` now use `std::unique_ptr`s.* 
+`StringBuilder::appendf` and `StringBuilder::prependf` were removed for now.
+`StringBuilder::prepend` is incomplete.
 
 ### Why?
 
-For learning purposes and as part of my own personal library of code that I use in my projects. This is not supposed to be faster or better in an objective sense than `std::string`. The idea is to develop a String class with an interface that fits my personal coding style. This is not to say that it won't be fast; I just know that it's pretty difficult to ever reach the speed of, say, `std::string`, and it's not the scope of this project to make a String class that will fit every possible use case.
+For learning purposes and as part of my own personal library of code that I use in my projects. This is not supposed to be faster or better in an objective sense than `std::string`. The idea is to develop a String class with an interface that fits my personal coding style. This is not to say that it won't be fast; I just know that it's pretty difficult to ever reach the speed of, say, `std::string`.
+Do, however, feel free to suggest any optimizations :)
