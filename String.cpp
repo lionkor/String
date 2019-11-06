@@ -13,10 +13,7 @@ String::String()
 }
 
 
-String::String(const char* cs) 
-{
-    store(cs);
-}
+String::String(const char* cs) { store(cs); }
 
 template<typename _T>
 static constexpr std::size_t abs_size_t(_T i)
@@ -30,14 +27,12 @@ String::String(const String::Iterator start, const String::Iterator end)
     // FIXME: Doesn't work if start>end.
 }
 
-String::String(const String& str)
-{
-    store(str.chars(), str.size());
-}
+String::String(const String& str) { store(str.chars(), str.size()); }
 
-String::~String()
-{
-}
+String::String(const StringView& sv) { store(sv.chars(), sv.size()); }
+
+
+String::~String() {}
 
 String& String::operator=(const String& str)
 {
@@ -46,7 +41,7 @@ String& String::operator=(const String& str)
     {
         m_chars.all.dynamic = true;
         set_size(tmp_size);
-        chars() = new char[size() + 1];
+        m_chars.heap.data = new char[size() + 1];
         set_size(str.size());
     }
     else
@@ -65,7 +60,7 @@ String& String::operator=(const char* cs)
     {
         m_chars.all.dynamic = true;
         set_size(tmp_size);
-        chars() = new char[size() + 1];
+        m_chars.heap.data = new char[size() + 1];
     }
     else
     {
@@ -94,11 +89,13 @@ String String::format(const char* fmt, ...)
      * I know this, and I am working on a better way to do this.
      * See FIXME below.
      */
-
+    
+    
     // FIXME: Rewrite this to use variadic templates.
     String s {};
     va_list args;
     va_start(args, fmt);
+    std::fprintf(stdout, fmt, args);
     int size = std::vsnprintf(nullptr, 0, fmt, args);
 
     // vsnprintf returns <0 if encoding error occured.
@@ -111,7 +108,7 @@ String String::format(const char* fmt, ...)
     {
         s.m_chars.all.dynamic = true;
         s.set_size(unsigned(size));
-        s.chars() = new char[s.size() + 1];
+        s.m_chars.heap.data = new char[s.size() + 1];
     }
     else
     {
@@ -119,7 +116,7 @@ String String::format(const char* fmt, ...)
         s.set_size(unsigned(size));
     }
 
-    rc = std::vsnprintf(s.chars(), s.size() + 1, fmt, args);
+    rc = vsnprintf(s.chars(), s.size() + 1, fmt, args);
     va_start(args, fmt);
 
     // vsnprintf returns <0 if encoding error occured.
@@ -128,7 +125,7 @@ String String::format(const char* fmt, ...)
 
     // vsnprintf returns >0 and <n on success.
     // This is sadly a super generic error.
-    if (rc >= s.size() + 1)
+    if (false && rc >= size + 1)
         throw FormatWriteFault();
 
     va_end(args);
@@ -166,7 +163,7 @@ String String::substring(std::size_t pos, std::size_t n) const
     if (n > MAX_ALLOC)
     {
         s.m_chars.all.dynamic = true;
-        s.chars() = new char[n + 1];
+        s.m_chars.heap.data = new char[n + 1];
         s.chars()[n] = '\0';
     }
     else
@@ -188,7 +185,7 @@ String String::substring(const Iterator begin, const Iterator end) const
     {
         s.m_chars.all.dynamic = true;
         s.set_size(tmp_size);
-        s.chars() = new char[s.size() + 1];
+        s.m_chars.heap.data = new char[s.size() + 1];
         s.chars()[s.size()] = '\0';
     }
     else

@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "Core.h"
-#include "StringView.h"
 #include "DynamicString.h"
+#include "StringView.h"
 
 class String : public DynamicString
 {
@@ -21,6 +21,7 @@ public:
     String(const char*);
     String(const Iterator start, const Iterator end);
     String(const String&);
+    String(const StringView&);
     static String format(const char* fmt, ...);
 
     virtual ~String();
@@ -33,7 +34,7 @@ public:
 
     inline bool operator!=(const String& other) const { return !(*this == other); }
     inline bool operator!=(const char* other) const { return !(*this == other); }
-    
+
     inline char operator[](const std::size_t index) const { return chars()[index]; }
 
     inline bool empty() const { return size() == 0; }
@@ -55,12 +56,15 @@ public:
     String trim(char trim = ' ') const;
     inline StringView as_string_view() const { return StringView(*this); }
 
-    inline const char* c_str() const { return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data; }
+    inline const char* c_str() const
+    {
+        return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data;
+    }
     friend std::ostream& operator<<(std::ostream& os, const String& str)
     {
         return os << str.chars();
     }
-    
+
 private:
 };
 

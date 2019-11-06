@@ -57,8 +57,6 @@ private:
         {
             // resize
         }
-        
-        
     }
     
     /*
