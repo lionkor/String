@@ -32,6 +32,8 @@ The following I'm **not so sure** about:
 
 A `String` can be constructed with:
 
+**There are more ctors, but these are the important ones!**
+
 #### `String::String(const char*)`
 ```
 String s("My String!");
