@@ -82,55 +82,6 @@ bool String::operator==(const char* other) const
     return std::strcmp(chars(), other) == 0;
 }
 
-/*
-String String::format(const char* fmt, ...)
-{
-
-    
-    
-    // FIXME: Rewrite this to use variadic templates.
-    String s {};
-    va_list args;
-    va_start(args, fmt);
-    std::fprintf(stdout, fmt, args);
-    int size = std::vsnprintf(nullptr, 0, fmt, args);
-
-    // vsnprintf returns <0 if encoding error occured.
-    if (size < 0)
-        throw FormatEncodingError();
-
-    va_end(args);
-    int rc;
-    if (size > MAX_ALLOC)
-    {
-        s.m_chars.all.dynamic = true;
-        s.set_size(unsigned(size));
-        s.m_chars.heap.data = new char[s.size() + 1];
-    }
-    else
-    {
-        s.m_chars.all.dynamic = false;
-        s.set_size(unsigned(size));
-    }
-
-    rc = vsnprintf(s.chars(), s.size() + 1, fmt, args);
-    va_start(args, fmt);
-
-    // vsnprintf returns <0 if encoding error occured.
-    if (rc < 0)
-        throw FormatEncodingError();
-
-    // vsnprintf returns >0 and <n on success.
-    // This is sadly a super generic error.
-    if (false && rc >= size + 1)
-        throw FormatWriteFault();
-
-    va_end(args);
-
-    return s;
-}
-*/
-
 std::vector<String> String::split(char delim) const
 {
     // TODO/FIXME: if (str.find(delim) == std::string::npos) return
@@ -211,4 +162,10 @@ String String::trim(char trim) const
     while (*(end - 1) == trim && end > begin)
         --end;
     return substring(begin, end);
+}
+
+String::~String()
+{
+    if (m_chars.all.dynamic)
+        delete[] chars();
 }
