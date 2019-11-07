@@ -35,25 +35,25 @@ A `String` can be constructed with:
 **There are more ctors, but these are the important ones!**
 
 #### `String::String(const char*)`
-```
+```cpp
 String s("My String!");
 ```
 This method is the easiest for simple strings. For formatting support one of the next options is needed.
 
 #### `String::String(iter, iter)`
-```
+```cpp
 String s(my_begin_iterator, my_end_iterator);
 ```
 This is useful for creating Strings from pieces of other Strings (this is as close to mutability as it gets in here).
 
 #### `String::format`
-```
+```cpp
 String s = String::format("Hello, ", name, '!');
 ```
 This currently only supports primitive types. (More will be added soon!)
 
 #### `StringBuilder`
-```
+```cpp
 StringBuilder builder;
 builder.append("Version v");
 builder.append(MAJOR);
@@ -66,8 +66,8 @@ String s(std::move(builder.build()));
 This could of course all be done in one call to `String::format`, but the point is that it allows an iterative approach.
 
 It's also possible to chain together `append` (and `prepend`):
-```
-StringBuilder()
+```cpp
+StringBuilder sb()
   .append("Hello,")
   .append(' ')
   .append("World!")
