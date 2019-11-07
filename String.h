@@ -38,15 +38,20 @@ public:
 
     inline char operator[](const std::size_t index) const { return chars()[index]; }
 
-    inline bool empty() const { return size() == 0; }
-
-    std::vector<String> split(char delim) const;
-
     Iterator begin() const;
     Iterator end() const;
 
     String substring(std::size_t position, std::size_t n) const;
     String substring(const Iterator begin, const Iterator end) const;
+    String trim(char trim = ' ') const;
+    String as_hexified_string() const;
+    
+    std::vector<String> split(char delim) const;
+    
+    inline StringView as_string_view() const { return StringView(*this); }
+    inline bool empty() const { return size() == 0; }
+    
+    const char* c_str() const;
 
     [[deprecated("use substring instead")]] String substr(std::size_t pos,
                                                           std::size_t n) const;
@@ -54,13 +59,6 @@ public:
     [[deprecated("use substring instead")]] String substr(const Iterator begin,
                                                           const Iterator end) const;
 
-    String trim(char trim = ' ') const;
-    inline StringView as_string_view() const { return StringView(*this); }
-
-    inline const char* c_str() const
-    {
-        return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data;
-    }
     friend std::ostream& operator<<(std::ostream& os, const String& str)
     {
         return os << str.chars();
@@ -99,7 +97,6 @@ public:
     }
 
 protected:
-
     inline void set_size(std::size_t size)
     {
         if (m_chars.all.dynamic)
@@ -179,7 +176,6 @@ protected:
         } stack;
     } m_chars;
 };
-
 
 
 #include "StringFormatting.h"

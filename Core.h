@@ -1,6 +1,16 @@
 #ifndef CORE_H
 #define CORE_H
 
+template<typename _T>
+struct HexFormat
+{
+    template<typename _ArgT>
+    constexpr explicit HexFormat(const _ArgT& t) : data(t) {}
+    const _T data;
+};
+
+
+
 #define DEBUGMODE 0
 #if DEBUGMODE
 #define ASSERT(cond) _assert((cond), __FILE__, __PRETTY_FUNCTION__, __LINE__, #cond)

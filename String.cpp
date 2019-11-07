@@ -13,10 +13,7 @@ String::String()
 }
 
 
-String::String(const char* cs) 
-{ 
-    store(cs); 
-}
+String::String(const char* cs) { store(cs); }
 
 template<typename _T>
 static constexpr std::size_t abs_size_t(_T i)
@@ -79,6 +76,12 @@ bool String::operator==(const String& other) const
 bool String::operator==(const char* other) const
 {
     return std::strcmp(chars(), other) == 0;
+}
+
+String::~String()
+{
+    if (m_chars.all.dynamic)
+        delete[] chars();
 }
 
 std::vector<String> String::split(char delim) const
@@ -163,8 +166,17 @@ String String::trim(char trim) const
     return substring(begin, end);
 }
 
-String::~String()
+String String::as_hexified_string() const 
 {
-    if (m_chars.all.dynamic)
-        delete[] chars();
+    StringBuilder sb;
+    for (const char& c : *this)
+    {
+        sb.append(HexFormat<unsigned>(c));
+    }
+    return sb.build();
+}
+
+const char* String::c_str() const
+{
+    return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data;
 }

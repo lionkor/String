@@ -57,6 +57,23 @@ public:
     StringBuilder& prepend(float);
     StringBuilder& prepend(double);
     StringBuilder& prepend(long double);
+    
+    template<typename _T>
+    StringBuilder& append(HexFormat<_T>&& arg)
+    {
+        // FIXME: Check for is_built
+        char tmp[16] { 0 };
+        sprintf(tmp, "%x", arg.data);
+        return append(tmp);
+    }
+    template<typename _T>
+    StringBuilder& prepend(HexFormat<_T>&& arg)
+    {
+        // FIXME: Check for is_built
+        char tmp[16] { 0 };
+        sprintf(tmp, "%x", arg.data);
+        return prepend(tmp);
+    }
 
     /// Builds the String and returns it.
     [[nodiscard]] class String build();
