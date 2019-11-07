@@ -20,31 +20,43 @@ public:
     StringBuilder(const StringBuilder&) = delete;
 
     /// Appends a c-string (Inserts at the end).
-    void append(const char*);
+    StringBuilder& append(const char*);
     /// Appends a String (Inserts at the end).
-    void append(const class String&);
+    StringBuilder& append(const class String&);
 
     /// Prepends a c-string (Inserts in the beginning).
-    void prepend(const char*);
+    StringBuilder& prepend(const char*);
     /// Prepends a String (Inserts in the beginning).
-    void prepend(const class String&);
+    StringBuilder& prepend(const class String&);
 
     /// Appends a char (Inserts at the end).
-    void append(char);
+    StringBuilder& append(char);
     /// Prepends a char (Inserts in the beginning).
-    void prepend(char);
+    StringBuilder& prepend(char);
 
-    void append(int);
-    void append(short);
-    void append(unsigned short);
-    void append(long);
-    void append(unsigned);
-    void append(unsigned long);
-    void append(unsigned long long);
-    void append(unsigned char);
-    void append(float);
-    void append(double);
-    void append(long double);
+    StringBuilder& append(int);
+    StringBuilder& append(short);
+    StringBuilder& append(unsigned short);
+    StringBuilder& append(long);
+    StringBuilder& append(unsigned);
+    StringBuilder& append(unsigned long);
+    StringBuilder& append(unsigned long long);
+    StringBuilder& append(unsigned char);
+    StringBuilder& append(float);
+    StringBuilder& append(double);
+    StringBuilder& append(long double);
+    
+    StringBuilder& prepend(int);
+    StringBuilder& prepend(short);
+    StringBuilder& prepend(unsigned short);
+    StringBuilder& prepend(long);
+    StringBuilder& prepend(unsigned);
+    StringBuilder& prepend(unsigned long);
+    StringBuilder& prepend(unsigned long long);
+    StringBuilder& prepend(unsigned char);
+    StringBuilder& prepend(float);
+    StringBuilder& prepend(double);
+    StringBuilder& prepend(long double);
 
     /// Builds the String and returns it.
     [[nodiscard]] class String build();
