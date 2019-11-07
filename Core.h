@@ -1,7 +1,7 @@
 #ifndef CORE_H
 #define CORE_H
 
-#define DEBUGMODE 1
+#define DEBUGMODE 0
 #if DEBUGMODE
 #define ASSERT(cond) _assert((cond), __FILE__, __PRETTY_FUNCTION__, __LINE__, #cond)
 
