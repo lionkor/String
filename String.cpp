@@ -166,7 +166,7 @@ String String::trim(char trim) const
     return substring(begin, end);
 }
 
-String String::as_hexified_string() const 
+String String::hexified() const 
 {
     StringBuilder sb;
     for (const char& c : *this)

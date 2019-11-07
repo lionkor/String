@@ -44,7 +44,7 @@ public:
     String substring(std::size_t position, std::size_t n) const;
     String substring(const Iterator begin, const Iterator end) const;
     String trim(char trim = ' ') const;
-    String as_hexified_string() const;
+    String hexified() const;
     
     std::vector<String> split(char delim) const;
     
