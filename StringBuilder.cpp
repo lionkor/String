@@ -35,8 +35,6 @@ StringBuilder& StringBuilder::append(const char* cstr)
     if (m_built)
         throw StringBuilder_InvalidAppendAfterBuild();
 
-    _print_memory(cstr, strlen(cstr), "StringBuilder::append arg");
-
     concat(m_chars, cstr);
     return *this;
 }
@@ -169,8 +167,6 @@ StringBuilder& StringBuilder::prepend(const char* cstr)
     log_strbuild(__PRETTY_FUNCTION__ << " with cstr = _" << cstr << "_");
     if (m_built)
         throw StringBuilder_InvalidAppendAfterBuild();
-
-    _print_memory(cstr, strlen(cstr), "StringBuilder::prepend arg");
 
     concat(m_chars, cstr);
     return *this;

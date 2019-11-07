@@ -15,7 +15,6 @@ String::String()
 
 String::String(const char* cs) 
 { 
-    _print_memory(cs, strlen(cs), "String::String");
     store(cs); 
 }
 
