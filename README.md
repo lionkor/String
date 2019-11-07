@@ -78,7 +78,6 @@ StringBuilder sb()
 ### Notes
 
 `StringBuilder::appendf` and `StringBuilder::prependf` were removed for now.
-`StringBuilder::prepend` is incomplete.
 
 ### Why?
 
