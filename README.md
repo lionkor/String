@@ -65,6 +65,16 @@ String s(std::move(builder.build()));
 ```
 This could of course all be done in one call to `String::format`, but the point is that it allows an iterative approach.
 
+It's also possible to chain together `append` (and `prepend`):
+```
+StringBuilder()
+  .append("Hello,")
+  .append(' ')
+  .append("World!")
+  .append(1.0 / 3.0)
+.build();
+```
+
 ### Notes
 
 `StringBuilder::appendf` and `StringBuilder::prependf` were removed for now.
