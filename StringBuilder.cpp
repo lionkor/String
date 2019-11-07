@@ -27,7 +27,11 @@ StringBuilder::StringBuilder(StringBuilder&& sb)
     m_size = std::move(sb.m_size);
 }
 
-StringBuilder::~StringBuilder() { delete[] m_chars; }
+StringBuilder::~StringBuilder()
+{
+    FATAL_ERROR_IF(!m_built, "StringBuilder was destructed without being built!");
+    delete[] m_chars;
+}
 
 StringBuilder& StringBuilder::append(const char* cstr)
 {

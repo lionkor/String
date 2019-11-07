@@ -38,19 +38,34 @@ public:
 
     inline char operator[](const std::size_t index) const { return chars()[index]; }
 
-    Iterator begin() const;
-    Iterator end() const;
+    constexpr Iterator begin() const
+    {
+        return m_chars.all.dynamic ? &m_chars.heap.data[0] : &m_chars.stack.data[0];
+    }
+    
+    constexpr Iterator end() const
+    {
+        return m_chars.all.dynamic ? &m_chars.heap.data[m_chars.heap.size]
+                                   : &m_chars.stack.data[m_chars.stack.size];
+    }
 
     String substring(std::size_t position, std::size_t n) const;
     String substring(const Iterator begin, const Iterator end) const;
-    String trim(char trim = ' ') const;
+    String trimmed(char trimmed = ' ') const;
     String hexified() const;
+    String capitalized() const;
+    String to_upper() const;
+    String to_lower() const;
+    String to_printable_only() const;
     
+    Iterator find(const char c) const;
+
     std::vector<String> split(char delim) const;
-    
+
     inline StringView as_string_view() const { return StringView(*this); }
     inline bool empty() const { return size() == 0; }
-    
+    bool endswith(const StringView& str);
+
     const char* c_str() const;
 
     [[deprecated("use substring instead")]] String substr(std::size_t pos,

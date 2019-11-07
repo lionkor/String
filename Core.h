@@ -5,24 +5,35 @@ template<typename _T>
 struct HexFormat
 {
     template<typename _ArgT>
-    constexpr explicit HexFormat(const _ArgT& t) : data(t) {}
+    constexpr explicit HexFormat(const _ArgT& t) : data(t)
+    {
+    }
     const _T data;
 };
 
+#include <cstdio>
+#include <cstdlib>
+#define FATAL_ERROR_IF(x, msg)                                                           \
+    if (x)                                                                               \
+    {                                                                                    \
+        fprintf(stderr, "FATAL ERROR: %s: %s\n", __PRETTY_FUNCTION__, msg);              \
+        abort();                                                                         \
+    }
 
-
-#define DEBUGMODE 0
+#define DEBUGMODE 1
 #if DEBUGMODE
 #define ASSERT(cond) _assert((cond), __FILE__, __PRETTY_FUNCTION__, __LINE__, #cond)
 
-#include <cstdio>
 inline void _assert(bool result, const char* file, const char* function, unsigned line,
                     const char* condition_str)
 {
     if (!result)
+    {
         fprintf(stderr,
                 "(( ASSERTION FAILED at %s:%u in `%s`. Failed condition: `%s`. ))\n",
                 file, line, function, condition_str);
+        abort();
+    }
 }
 
 #include <cctype>
@@ -90,7 +101,8 @@ inline void _print_memory(const char* from, const char* to, const char* what = "
     printf("\n\n");
 }
 
-inline void _print_memory(const char* from, std::size_t size, const char* what = "???", std::size_t additional_bytes = 2)
+inline void _print_memory(const char* from, std::size_t size, const char* what = "???",
+                          std::size_t additional_bytes = 2)
 {
     _print_memory(from, from + size, what, additional_bytes);
 }

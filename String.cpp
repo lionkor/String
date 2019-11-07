@@ -103,9 +103,15 @@ std::vector<String> String::split(char delim) const
     return splits;
 }
 
-String::Iterator String::begin() const { return &chars()[0]; }
-
-String::Iterator String::end() const { return &chars()[size()]; }
+bool String::endswith(const StringView& str)
+{
+    for (std::size_t i = 0; i < str.size(); ++i)
+    {
+        if (chars()[size() - 1 - i] != str[str.size() - 1 - i])
+            return false;
+    }
+    return true;
+}
 
 
 String String::substring(std::size_t pos, std::size_t n) const
@@ -155,7 +161,7 @@ String String::substr(const Iterator begin, const Iterator end) const
     return substring(begin, end);
 }
 
-String String::trim(char trim) const
+String String::trimmed(char trim) const
 {
     Iterator begin = chars();
     Iterator end = chars() + size();
@@ -166,7 +172,7 @@ String String::trim(char trim) const
     return substring(begin, end);
 }
 
-String String::hexified() const 
+String String::hexified() const
 {
     StringBuilder sb;
     for (const char& c : *this)
@@ -174,6 +180,52 @@ String String::hexified() const
         sb.append(HexFormat<unsigned>(c));
     }
     return sb.build();
+}
+
+String String::capitalized() const
+{
+    return String::format(char(toupper(chars()[0])), substring(begin() + 1, end()));
+}
+
+String String::to_upper() const
+{
+    StringBuilder sb;
+    for (const char& c : *this)
+    {
+        sb.append(char(toupper(c)));
+    }
+    return sb.build();
+}
+
+String String::to_lower() const
+{
+    StringBuilder sb;
+    for (const char& c : *this)
+    {
+        sb.append(char(tolower(c)));
+    }
+    return sb.build();
+}
+
+String String::to_printable_only() const
+{
+    StringBuilder sb;
+    for (const char& c : *this)
+    {
+        if (isprint(c))
+        {
+            sb.append(c);
+        }
+    }
+    return sb.build();
+}
+
+String::Iterator String::find(const char c) const
+{
+    Iterator current = begin();
+    for (; *current != c && current != end(); ++current)
+        ;
+    return current;
 }
 
 const char* String::c_str() const

@@ -38,6 +38,11 @@ public:
     inline constexpr const char* chars() const { return m_chars; }
     inline constexpr const char* c_str() const { return m_chars; }
 
+    constexpr const char& operator[](std::size_t i) const
+    {
+        return m_chars[i];
+    }
+    
     constexpr bool operator==(const char* other) const
     {
         if ((m_chars == nullptr && other != nullptr) ||
