@@ -17,7 +17,7 @@ StringBuilder::StringBuilder()
 {
     m_chars = new char[16] { 0 };
     m_size = 0;
-    m_capacity = 16;
+    m_capacity = 15;
 }
 
 StringBuilder::StringBuilder(StringBuilder&& sb)

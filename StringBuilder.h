@@ -116,11 +116,11 @@ private:
         std::size_t second_size = std::strlen(second);
         std::size_t new_size = first_size + second_size;
 
-        if (new_size > m_capacity)
+        if (new_size >= m_capacity)
         {
             // make sure we allocate multiple of 8 for sanity
-            m_capacity = new_size % 8 == 0 ? new_size : (new_size / 8) * 8 + 8;
-            char* new_chars = new char[m_capacity] { 0 };
+            m_capacity = new_size % 8 == 0 ? new_size : (new_size / 8) * 8 + 7;
+            char* new_chars = new char[m_capacity + 1] { 0 };
             std::memset(new_chars, 0, sizeof(char) * m_capacity);
             std::strcpy(new_chars, first);
             std::strcat(new_chars, second);
