@@ -28,6 +28,27 @@ The following I'm **not so sure** about:
 - [ ] Conversion between `String` and `std::string`.
 - [ ] Make `String` use more move semantics in some situations (?).
 
+### Features
+
+* `substring`: Returns a sub-string of the current String. 
+* `split`: Splits the string at delimiters and returns a vector of Strings.
+* `trimmed`: Returns a copy with all occurances of a char at the start and end of the String removed.
+* `startswith`: Returns whether the String starts with a given String.
+* `endswith`: Returns whether the String ends with a given String.
+* `find`: Returns an iterator to the first occurance of a given character.
+* `hexified`: Returns a copy of the string in hex. Example: `abc` gives `616263`.
+* `capitalized`: Returns a copy of the String with the first letter capitalized.
+* `replaced`: Finds a given substring and returns the String with thta substring replaced with another given substring.
+* `to_upper`: Returns a copy of the String in ALL UPPERCASE.
+* `to_lower`: Returns a copy of the String in all lowercase.
+* `to_printable_only`: Returns a copy of the String which only has the printable characters of the original String.
+* `substring_view`: Like `substring`, but is `constexpr` and returns a `StringView`.
+* `empty`: Returns whether the String is empty (`""`).
+* `equals`: The same as `==`.
+* `equals_case_insensitive`: Returns whether the two Strings are equal, while ignoring case sensitiviy.
+* `size`: Returns the size of the String.
+* *`static`* `format`: Creates a String from an amount of arguments of different types.
+
 ### How to use
 
 A `String` can be constructed with:
@@ -49,6 +70,7 @@ This is useful for creating Strings from pieces of other Strings (this is as clo
 #### `String::format`
 ```cpp
 String s = String::format("Hello, ", name, '!');
+String s2 = String::format("Hex of 14: ", HexFormat<int>(14));
 ```
 This currently only supports primitive types. (More will be added soon!)
 
