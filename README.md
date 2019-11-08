@@ -7,27 +7,6 @@ The idea is that it has a more practical and straightforward interface and enfor
 
 By the way, *small string optimization kicks in for strings >23 bytes*!
 
-### Roadmap
-
-The following will **definitely** need to be done:
-
-- [x] Replace varargs with variadic templates.
-- [x] Implement `String::split`.
-  - [x] Implement `String::substr` (use `String::substring`).
-- [x] Implement `String::trim`.
-- [x] Implement small-string-optimization.
-- [x] Optimize `StringBuilder::build`.
-- [x] Optimize `StringBuilder::append` and `StringBuilder::prepend`.
-- [ ] Document the public interface (*Doxygen?*).
-- [x] Add Iterator(s), `begin`, `end`.
-- [x] ~~Use `std::unique_ptr` for `char[]`.~~ (replaced by SSO)
-
-The following I'm **not so sure** about:
-
-- [ ] `StringBuilder` operators `+=`, `+`, etc.
-- [ ] Conversion between `String` and `std::string`.
-- [ ] Make `String` use more move semantics in some situations (?).
-
 ### Features
 
 * `substring`: Returns a sub-string of the current String. 
@@ -48,6 +27,28 @@ The following I'm **not so sure** about:
 * `equals_case_insensitive`: Returns whether the two Strings are equal, while ignoring case sensitiviy.
 * `size`: Returns the size of the String.
 * *`static`* `format`: Creates a String from an amount of arguments of different types.
+
+
+### Roadmap
+
+The following will **definitely** need to be done:
+
+- [x] Replace varargs with variadic templates.
+- [x] Implement `String::split`.
+  - [x] Implement `String::substr` (use `String::substring`).
+- [x] Implement `String::trim`.
+- [x] Implement small-string-optimization.
+- [x] Optimize `StringBuilder::build`.
+- [x] Optimize `StringBuilder::append` and `StringBuilder::prepend`.
+- [ ] Document the public interface (*Doxygen?*).
+- [x] Add Iterator(s), `begin`, `end`.
+- [x] ~~Use `std::unique_ptr` for `char[]`.~~ (replaced by SSO)
+
+The following I'm **not so sure** about:
+
+- [ ] `StringBuilder` operators `+=`, `+`, etc.
+- [ ] Conversion between `String` and `std::string`.
+- [ ] Make `String` use more move semantics in some situations (?).
 
 ### How to use
 
