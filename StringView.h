@@ -19,6 +19,12 @@ static inline constexpr std::size_t string_length(const char* cstr)
     return length;
 }
 
+template<typename _T>
+static inline constexpr _T min(_T&& left, _T&& right)
+{
+    return left < right ? left : right;
+}
+
 /// View to a null-terminated string.
 class StringView
 {
@@ -30,6 +36,7 @@ public:
         : m_chars(other.m_chars), m_size(other.m_size)
     {
     }
+    constexpr StringView(const char* begin, const char* end);
     StringView(const class String&);
 
     inline constexpr bool is_valid() const { return m_chars != nullptr; }
@@ -43,6 +50,16 @@ public:
         return m_chars[i];
     }
     
+    static constexpr bool equals_partially(const char* lhs, const char* rhs)
+    {
+        const std::size_t _size =  min(string_length(lhs), string_length(rhs));
+        for (std::size_t i = 0; i < _size; ++i)
+        {
+            if (lhs[i] != rhs[i]) return false;
+        }
+        return true;
+    }
+    
     constexpr bool operator==(const char* other) const
     {
         if ((m_chars == nullptr && other != nullptr) ||
@@ -50,7 +67,7 @@ public:
             return false;
         if (m_chars == nullptr && other == nullptr)
             return true;
-        return m_chars == other || !std::strcmp(m_chars, other);
+        return m_chars == other || equals_partially(m_chars, other);
     }
 
     constexpr bool operator==(const StringView& other) const
@@ -61,7 +78,19 @@ public:
         if (m_chars == nullptr && other.m_chars == nullptr)
             return true;
         return (m_chars == other.m_chars && m_size == other.m_size) ||
-               !std::strcmp(m_chars, other.m_chars);
+               equals_partially(m_chars, other.m_chars);
+    }
+    
+    template<typename _StringType>
+    constexpr bool operator==(const _StringType& other) const
+    {
+        if ((m_chars == nullptr && other.c_str() != nullptr) ||
+            (m_chars != nullptr && other.c_str() == nullptr))
+            return false;
+        if (m_chars == nullptr && other.c_str() == nullptr)
+            return true;
+        return (m_chars == other.c_str() && m_size == other.size()) ||
+               equals_partially(m_chars, other.c_str());
     }
 
     constexpr bool operator!=(const char* other) const { return !(m_chars == other); }
@@ -80,6 +109,11 @@ private:
     const char* m_chars;
     const size_t m_size;
 };
+
+constexpr StringView::StringView(const char *begin, const char *end)
+    : m_chars(begin), m_size(end-begin)
+{
+}
 
 constexpr StringView operator""_sv(const char* cstr, unsigned long size)
 {

@@ -2,5 +2,4 @@
 #include "String.h"
 #include <cstring>
 
-// "the empty string view"
 StringView::StringView(const String& str) : m_chars(str.c_str()), m_size(str.size()) {}

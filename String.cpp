@@ -103,16 +103,6 @@ std::vector<String> String::split(char delim) const
     return splits;
 }
 
-bool String::endswith(const StringView& str)
-{
-    for (std::size_t i = 0; i < str.size(); ++i)
-    {
-        if (chars()[size() - 1 - i] != str[str.size() - 1 - i])
-            return false;
-    }
-    return true;
-}
-
 
 String String::substring(std::size_t pos, std::size_t n) const
 {
@@ -155,6 +145,7 @@ String String::substring(const Iterator begin, const Iterator end) const
     return s;
 }
 
+
 String String::substr(std::size_t pos, std::size_t n) const { return substring(pos, n); }
 String String::substr(const Iterator begin, const Iterator end) const
 {
@@ -185,6 +176,43 @@ String String::hexified() const
 String String::capitalized() const
 {
     return String::format(char(toupper(chars()[0])), substring(begin() + 1, end()));
+}
+
+String String::replaced(const StringView &to_replace, const StringView &replace_with) const
+{
+    if (to_replace == replace_with) return String(*this);
+    StringBuilder sb;
+    for (std::size_t i = 0; i < size(); ++i)
+    {
+        if (chars()[i] == to_replace[0])
+        {
+            if (substring(i, to_replace.size()) == to_replace)
+            {
+                sb.append(replace_with);
+                i += to_replace.size() - 1;
+                continue;
+            }
+        }
+        else
+        {
+            sb.append(chars()[i]);
+        }
+    }
+    return sb.build();
+}
+
+String String::replaced(char to_replace, char replace_with) const
+{
+    if (to_replace == replace_with) return String(*this);
+    StringBuilder sb;
+    for (const char& c : *this)
+    {
+        if (c == to_replace)
+            sb.append(replace_with);
+        else
+            sb.append(c);
+    }
+    return sb.build();
 }
 
 String String::to_upper() const
