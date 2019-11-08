@@ -20,6 +20,16 @@ struct HexFormat
         abort();                                                                         \
     }
 
+#define LOG(x) _log(__FILE__, __LINE__, __PRETTY_FUNCTION__, x, #x)
+
+#include <iostream>
+template<typename _T>
+inline void _log(const char* file, unsigned long line, const char* function, const _T& arg, const char* arg_name)
+{
+    fprintf(stdout, "LOG: %s:%lu (%s): %s = ", file, line, function, arg_name);
+    std::cout << arg << std::endl;
+}
+
 #define DEBUGMODE 1
 #if DEBUGMODE
 #define ASSERT(cond) _assert((cond), __FILE__, __PRETTY_FUNCTION__, __LINE__, #cond)
@@ -39,72 +49,72 @@ inline void _assert(bool result, const char* file, const char* function, unsigne
 #include <cctype>
 #include <cstring>
 
-inline void _print_memory(const char* from, const char* to, const char* what = "???",
-                          std::size_t additional_bytes = 2)
+template<typename _Ptr>
+inline void _print_memory(_Ptr from_arg, _Ptr to_arg, const char* what = "no info", std::size_t block_size = 16)
 {
-    char* current = const_cast<char*>(from) - additional_bytes;
-    char* internal_to = const_cast<char*>(to) + additional_bytes;
+    char* from = static_cast<char*>((void*)from_arg);
+    char* to = static_cast<char*>((void*)to_arg);
 
-    printf("\nMEMORY DUMP FROM %p TO %p [SIZE=0x%x] (%s)\n", static_cast<void*>(current),
-           static_cast<void*>(internal_to), unsigned(to - from), what);
+    printf("\nMEMORY DUMP FROM %p TO %p [SIZE=0x%x] (%s)\n", static_cast<void*>(from),
+           static_cast<void*>(to), unsigned(to - from), what);
 
-    printf("POS  ");
-
-    for (int i = -int(additional_bytes); i < to - from + int(additional_bytes); ++i)
+    for (int i = -int(block_size); i < (to + block_size) - from; i += block_size)
     {
-        printf("%3x ", i < 0 ? -i : i);
-    }
-
-    printf("\nHEX  ");
-
-    for (; current < internal_to; ++current)
-    {
-        printf("%3x ", *current);
-    }
-
-    printf("\nCHR  ");
-
-    // reset current ptr
-    current = const_cast<char*>(from) - additional_bytes;
-    for (; current < internal_to; ++current)
-    {
-        if (isprint(*current))
-            printf("'%c' ", *current);
-        else if (*current == 0)
-            printf("NUL ");
-        else
-            printf("??? ");
-    }
-
-    printf("\nDAT  ");
-
-
-    if (from == to)
-    {
-        for (std::size_t i = additional_bytes; i > 0; --i)
+        printf("OFF  ");
+        for (auto iter = from+i; iter != from+i + block_size; ++iter)
         {
-            printf("    ");
-        }
-        printf("  ^ [S=0]");
-    }
-    else
-    {
-        for (int i = -int(additional_bytes); &from[i] < to; ++i)
-        {
-            if (i < 0)
-                printf("%3c ", ' ');
+            if (iter - from < 0)
+                printf("-%0.3lx ", -(iter - from));
             else
-                printf("%3c ", '^');
+                printf("%0.4lx ", iter - from);
         }
+        printf("\n");
+        
+        printf("POS  ");
+        for (auto iter = from+i; iter != from+i + block_size; ++iter)
+        {
+            printf("%0.4lx ", reinterpret_cast<unsigned long>(iter) & 0xFFFF);
+        }
+        printf("\n");
+        
+        printf("HEX  ");
+        for (auto iter = from+i; iter != from+i + block_size; ++iter)
+        {
+            printf("%0.4x ", *(iter) & 0xFFFF);
+        }
+        printf("\n");
+        
+        printf("CHR  ");
+        for (auto iter = from+i; iter != from+i + block_size; ++iter)
+        {
+            if (isprint(*iter))
+                printf(" '%c' ", *iter);
+            else if (*iter == 0)
+                printf("NULL ");
+            else
+                printf("???? ");
+        }
+        printf("\n");
+        
+        printf("DAT  ");
+    
+        for (auto iter = from+i; iter != from+i + block_size; ++iter)
+        {
+            if (iter == from)
+                printf("[----");
+            else if (iter == to-1)
+                printf("----]");
+            else if (iter >= from && iter <= to-1)
+                printf("-----");
+            else
+                printf("     ");
+        }
+        
+        // end of block
+        printf("\n\n");
     }
-
-    printf("\n\n");
-}
-
-inline void _print_memory(const char* from, std::size_t size, const char* what = "???",
-                          std::size_t additional_bytes = 2)
-{
-    _print_memory(from, from + size, what, additional_bytes);
+    
+    return;
 }
 
 #else
