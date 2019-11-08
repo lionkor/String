@@ -93,39 +93,26 @@ public:
     {
         return os << str.chars();
     }
-
-    template<typename... _Args>
-    [[nodiscard]] static String format(StringBuilder& sb)
-    {
-        return sb.build();
-    }
-
-    template<typename _T, typename... _Args>
-    static String format(StringBuilder&& sb, _T&& t)
-    {
-        sb.append(t);
-        return String::format(sb);
-    }
-
-    template<typename _T, typename... _Args>
-    static String format(StringBuilder&& sb, _T&& t, _Args&&... args)
-    {
-        sb.append(t);
-        return String::format(std::move(sb), args...);
-    }
-
-    template<typename... _Args>
-    static String format(_Args&&... args)
-    {
-        StringBuilder sb;
-        return format(std::move(sb), args...);
-    }
-
+    
+    
     inline std::size_t size() const
     {
         return m_chars.all.dynamic ? m_chars.heap.size : m_chars.stack.size;
     }
 
+    
+    template<typename... _Args>
+    [[nodiscard]] static String format(StringBuilder& sb);
+
+    template<typename _T, typename... _Args>
+    static String format(StringBuilder&& sb, _T&& t);
+
+    template<typename _T, typename... _Args>
+    static String format(StringBuilder&& sb, _T&& t, _Args&&... args);
+
+    template<typename... _Args>
+    static String format(_Args&&... args);
+    
 protected:
     inline void set_size(std::size_t size)
     {
@@ -244,7 +231,6 @@ constexpr bool String::equals_case_insensitive(const String &str) const
     }
     return true;
 }
-
 
 #include "StringFormatting.h"
 
