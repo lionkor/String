@@ -1,171 +1,317 @@
 #include "StringBuilder.h"
 #include "Exceptions.h"
+#include "String.h"
+#include <cctype>
+#include <cstdlib>
+
+//#define DEBUG_STRING_BUILDER
+
+#ifdef DEBUG_STRING_BUILDER
+#define log_strbuild(x)                                                                  \
+    std::cout << "[DEBUG] StringBuilder:" << __LINE__ << ": " << x << std::endl
+#else
+#define log_strbuild(x)
+#endif
 
 StringBuilder::StringBuilder()
-    : m_size(0), m_chars(std::make_unique<char[]>(
-                     m_size + 1)) // FIXME: Do we need to initialize it here?
 {
+    m_chars = new char[16] { 0 };
+    m_size = 0;
+    m_capacity = 15;
 }
 
-StringBuilder::StringBuilder(const StringBuilder& builder)
-    : m_size(builder.m_size), m_chars(std::make_unique<char[]>(m_size + 1))
+StringBuilder::StringBuilder(StringBuilder&& sb)
 {
-    std::strcpy(m_chars, builder.m_chars);
+    m_chars = std::move(sb.m_chars);
+    m_built = std::move(sb.m_built);
+    m_size = std::move(sb.m_size);
 }
 
-StringBuilder::~StringBuilder() {}
+StringBuilder::~StringBuilder()
+{
+    FATAL_ERROR_IF(!m_built, "StringBuilder was destructed without being built!");
+    delete[] m_chars;
+}
 
-void StringBuilder::append(const char* cstr)
+StringBuilder& StringBuilder::append(const char* cstr)
+{
+    log_strbuild(__PRETTY_FUNCTION__ << " with cstr = _" << cstr << "_");
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    concat(m_chars, cstr);
+    return *this;
+}
+
+StringBuilder& StringBuilder::append(int i)
 {
     if (m_built)
         throw StringBuilder_InvalidAppendAfterBuild();
-    std::unique_ptr<char[]> new_chars =
-        std::make_unique<char[]>(m_size + std::strlen(cstr) + 1);
-    if (m_size != 0)
-    {
-        std::strcpy(new_chars.get(), m_chars);
-        std::strcat(new_chars.get(), cstr);
-    }
-    else
-    {
-        std::strcpy(new_chars.get(), cstr);
-    }
-    m_chars = std::move(new_chars);
-    m_size = std::strlen(m_chars);
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%i", i);
+    concat(m_chars, tmp);
+    return *this;
 }
 
-void StringBuilder::append(char c)
+StringBuilder& StringBuilder::append(short arg)
 {
     if (m_built)
         throw StringBuilder_InvalidAppendAfterBuild();
-    auto new_chars = std::make_unique<char[]>(m_size + 1 + 1);
-    if (m_size != 0)
-    {
-        std::strcpy(new_chars.get(), m_chars);
-        new_chars[m_size] = c;
-        new_chars[m_size + 1] = '\0';
-    }
-    else
-    {
-        new_chars[0] = c;
-        new_chars[1] = '\0';
-    }
-    m_chars = std::move(new_chars);
-    m_size += 1;
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%i", arg);
+    return append(tmp);
 }
 
-void StringBuilder::append(const String& str) { append(str.c_str()); }
-
-void StringBuilder::prepend(const char* cstr)
+StringBuilder& StringBuilder::append(unsigned short arg)
 {
     if (m_built)
         throw StringBuilder_InvalidAppendAfterBuild();
-    auto new_chars = std::make_unique<char[]>(m_size + std::strlen(cstr) + 1);
-    if (m_size != 0)
-    {
-        std::strcpy(new_chars.get(), cstr);
-        std::strcat(new_chars.get(), m_chars);
-    }
-    else
-    {
-        std::strcpy(new_chars.get(), cstr);
-    }
-    m_chars = std::move(new_chars);
-    m_size = std::strlen(m_chars);
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%u", arg);
+    return append(tmp);
 }
 
-void StringBuilder::prepend(char c)
+StringBuilder& StringBuilder::append(long arg)
 {
     if (m_built)
         throw StringBuilder_InvalidAppendAfterBuild();
-    auto new_chars = std::make_unique<char[]>(m_size + 1 + 1);
-    if (m_size != 0)
-    {
-        new_chars[0] = c;
-        new_chars[1] = '\0';
-        std::strcat(new_chars.get(), m_chars);
-    }
-    else
-    {
-        new_chars[0] = c;
-        new_chars[1] = '\0';
-    }
-    m_chars = std::move(new_chars);
-    m_size += 1;
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%li", arg);
+    return append(tmp);
 }
 
-void StringBuilder::prepend(const String& str) { prepend(str.c_str()); }
-
-void StringBuilder::appendf(const char* fmt, ...)
+StringBuilder& StringBuilder::append(unsigned arg)
 {
-    /* NOTE:
-     * This sucks. It should not use varargs.
-     * Format Strings are a bad idea.
-     * I know this, and I am working on a better way to do this.
-     * See FIXME below.
-     */
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
 
-    // FIXME: Rewrite this to use variadic templates.
-
-
-    va_list args;
-    va_start(args, fmt);
-    int size = std::vsnprintf(NULL, 0, fmt, args);
-
-    // vsnprintf returns <0 if encoding error occured.
-    if (size < 0)
-        throw FormatEncodingError();
-
-    va_end(args);
-    va_start(args, fmt);
-    auto buf = std::make_unique<char[]>(size + 1);
-    int rc = std::vsnprintf(buf.get(), size + 1, fmt, args);
-
-    // vsnprintf returns <0 if encoding error occured.
-    if (rc < 0)
-        throw FormatEncodingError();
-
-    // vsnprintf returns >0 and <n on success.
-    // This is sadly a super generic error.
-    if (rc >= size + 1)
-        throw FormatWriteFault();
-
-    va_end(args);
-    append(buf.get());
+    char tmp[16] { 0 };
+    sprintf(tmp, "%u", arg);
+    return append(tmp);
 }
 
-void StringBuilder::prependf(const char* fmt, ...)
+StringBuilder& StringBuilder::append(unsigned long arg)
 {
-    // FIXME: Unhandled possible failures (might return 0, etc).
-    va_list args;
-    va_start(args, fmt);
-    unsigned size = std::vsnprintf(NULL, 0, fmt, args);
-    va_end(args);
-    va_start(args, fmt);
-    auto buf = std::make_unique<char[]>(size + 1);
-    std::vsnprintf(buf.get(), size + 1, fmt, args);
-    va_end(args);
-    prepend(buf.get());
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%lu", arg);
+    return append(tmp);
 }
+
+StringBuilder& StringBuilder::append(unsigned long long arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%llu", arg);
+    return append(tmp);
+}
+
+StringBuilder& StringBuilder::append(unsigned char arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%u", arg);
+    return append(tmp);
+}
+
+StringBuilder& StringBuilder::append(float arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%f", double(arg)); // FIXME: double!?
+    return append(tmp);
+}
+
+StringBuilder& StringBuilder::append(double arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%f", arg);
+    return append(tmp);
+}
+
+StringBuilder& StringBuilder::append(long double arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%LG", arg);
+    return append(tmp);
+}
+
+StringBuilder& StringBuilder::append(char c)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[1] { c };
+    concat(m_chars, tmp);
+    return *this;
+}
+
+StringBuilder& StringBuilder::append(const String& str) { return append(str.chars()); }
+
+StringBuilder& StringBuilder::prepend(const char* cstr)
+{
+    log_strbuild(__PRETTY_FUNCTION__ << " with cstr = _" << cstr << "_");
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    concat(m_chars, cstr);
+    return *this;
+}
+
+StringBuilder& StringBuilder::prepend(int i)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%i", i);
+    concat(m_chars, tmp);
+    return *this;
+}
+
+StringBuilder& StringBuilder::prepend(short arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%i", arg);
+    return prepend(tmp);
+}
+
+StringBuilder& StringBuilder::prepend(unsigned short arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%u", arg);
+    return prepend(tmp);
+}
+
+StringBuilder& StringBuilder::prepend(long arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%li", arg);
+    return prepend(tmp);
+}
+
+StringBuilder& StringBuilder::prepend(unsigned arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%u", arg);
+    return prepend(tmp);
+}
+
+StringBuilder& StringBuilder::prepend(unsigned long arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%lu", arg);
+    return prepend(tmp);
+}
+
+StringBuilder& StringBuilder::prepend(unsigned long long arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%llu", arg);
+    return prepend(tmp);
+}
+
+StringBuilder& StringBuilder::prepend(unsigned char arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%u", arg);
+    return prepend(tmp);
+}
+
+StringBuilder& StringBuilder::prepend(float arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%f", double(arg)); // FIXME: double!?
+    return prepend(tmp);
+}
+
+StringBuilder& StringBuilder::prepend(double arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%f", arg);
+    return prepend(tmp);
+}
+
+StringBuilder& StringBuilder::prepend(long double arg)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[16] { 0 };
+    sprintf(tmp, "%LG", arg);
+    return prepend(tmp);
+}
+
+StringBuilder& StringBuilder::prepend(char c)
+{
+    if (m_built)
+        throw StringBuilder_InvalidAppendAfterBuild();
+
+    char tmp[1] { c };
+    concat(m_chars, tmp);
+    return *this;
+}
+
+StringBuilder& StringBuilder::prepend(const String& str) { return prepend(str.chars()); }
 
 String StringBuilder::build()
 {
     if (m_built)
         throw StringBuilder_DoubleBuildNotAllowed();
-    String s {};
-    s.m_size = m_size;
-    // Transfer ownership.
-    //  This is why we cannot build more than once.
-    s.chars() = std::move(m_chars);
+    String s(std::move(m_chars));
     m_built = true;
     return s;
 }
 
-StringBuilder& StringBuilder::operator=(const StringBuilder& builder)
+StringBuilder& StringBuilder::operator=(StringBuilder&& sb)
 {
-    m_chars = std::make_unique<char[]>(builder.m_size + 1);
-    std::strcpy(m_chars, builder.m_chars);
-    m_size = builder.m_size;
-    m_built = builder.m_built;
+    m_chars = std::move(sb.m_chars);
+    m_built = std::move(sb.m_built);
+    m_size = std::move(sb.m_size);
     return *this;
 }

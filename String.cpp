@@ -1,33 +1,19 @@
 #include "String.h"
 #include "Exceptions.h"
-//#include "StringBuilder.h" // FIXME: Remove.
+#include "StringBuilder.h" // FIXME: Remove.
 #include <cassert>
 #include <cmath>
 
 // "the empty string"
 String::String()
 {
-    set_size(0);
     m_chars.all.dynamic = false;
-    m_chars.stack.data[0] = '\0';
+    set_size(0);
+    chars()[0] = '\0';
 }
 
 
-String::String(const char* cs) 
-{
-    set_size(std::strlen(cs));
-    if (size() > MAX_ALLOC)
-    {
-        m_chars.all.dynamic = true;
-        m_chars.heap.data = new char[size() + 1];
-        std::strcpy(m_chars.heap.data, cs);
-    }
-    else
-    {
-        m_chars.all.dynamic = false;
-        std::strcpy(m_chars.stack.data, cs);
-    }
-}
+String::String(const char* cs) { store(cs); }
 
 template<typename _T>
 static constexpr std::size_t abs_size_t(_T i)
@@ -37,73 +23,48 @@ static constexpr std::size_t abs_size_t(_T i)
 
 String::String(const String::Iterator start, const String::Iterator end)
 {
-    set_size(abs_size_t(end - start));
-    if (size() > MAX_ALLOC)
-    {
-        m_chars.all.dynamic = true;
-        m_chars.heap.data = new char[size() + 1];
-        std::strncpy(m_chars.heap.data, start, size());
-    }
-    else
-    {
-        m_chars.all.dynamic = false;
-        std::strncpy(m_chars.stack.data, start, size());
-    }
+    store(start, abs_size_t(end - start));
     // FIXME: Doesn't work if start>end.
 }
 
-String::String(const String& str)
-{
-    set_size(str.size());
-    if (str.m_chars.all.dynamic)
-    {
-        m_chars.all.dynamic = true;
-        m_chars.heap.data = new char[size() + 1];
-    }
-    else
-    {
-        m_chars.all.dynamic = false;
-        std::strcpy(m_chars.stack.data, str.chars());
-    }
-}
+String::String(const String& str) { store(str.chars(), str.size()); }
 
-String::~String()
-{
-    if (m_chars.all.dynamic)
-        delete[] m_chars.heap.data;
-}
+String::String(const StringView& sv) { store(sv.chars(), sv.size()); }
 
 String& String::operator=(const String& str)
 {
-    set_size(str.size());
+    const auto tmp_size = str.size();
     if (str.m_chars.all.dynamic)
     {
         m_chars.all.dynamic = true;
+        set_size(tmp_size);
         m_chars.heap.data = new char[size() + 1];
-        std::strcpy(m_chars.heap.data, str.chars());
+        set_size(str.size());
     }
     else
     {
         m_chars.all.dynamic = false;
-        std::strcpy(m_chars.stack.data, str.chars());
+        set_size(str.size());
     }
+    std::strcpy(chars(), str.chars());
     return *this;
 }
 
 String& String::operator=(const char* cs)
 {
-    set_size(std::strlen(cs));
+    const auto tmp_size = std::strlen(cs);
     if (size() > MAX_ALLOC)
     {
         m_chars.all.dynamic = true;
+        set_size(tmp_size);
         m_chars.heap.data = new char[size() + 1];
-        std::strcpy(m_chars.heap.data, cs);
     }
     else
     {
         m_chars.all.dynamic = false;
-        std::strcpy(m_chars.stack.data, cs);
+        set_size(tmp_size);
     }
+    std::strcpy(chars(), cs);
     return *this;
 }
 
@@ -117,53 +78,10 @@ bool String::operator==(const char* other) const
     return std::strcmp(chars(), other) == 0;
 }
 
-String String::format(const char* fmt, ...)
+String::~String()
 {
-    /* NOTE:
-     * This sucks. It should not use varargs.
-     * Format Strings are a bad idea.
-     * I know this, and I am working on a better way to do this.
-     * See FIXME below.
-     */
-
-    // FIXME: Rewrite this to use variadic templates.
-    String s {};
-    va_list args;
-    va_start(args, fmt);
-    int size = std::vsnprintf(nullptr, 0, fmt, args);
-
-    // vsnprintf returns <0 if encoding error occured.
-    if (size < 0)
-        throw FormatEncodingError();
-    s.set_size(unsigned(size));
-
-    va_end(args);
-    int rc;
-    if (s.size() > MAX_ALLOC)
-    {
-        s.m_chars.all.dynamic = true;
-        s.m_chars.heap.data = new char[s.size() + 1];
-        rc = std::vsnprintf(s.m_chars.heap.data, s.size() + 1, fmt, args);
-    }
-    else
-    {
-        s.m_chars.all.dynamic = false;
-        rc = std::vsnprintf(s.m_chars.stack.data, s.size() + 1, fmt, args);
-    }
-    va_start(args, fmt);
-
-    // vsnprintf returns <0 if encoding error occured.
-    if (rc < 0)
-        throw FormatEncodingError();
-
-    // vsnprintf returns >0 and <n on success.
-    // This is sadly a super generic error.
-    if (rc >= s.size() + 1)
-        throw FormatWriteFault();
-
-    va_end(args);
-
-    return s;
+    if (m_chars.all.dynamic)
+        delete[] chars();
 }
 
 std::vector<String> String::split(char delim) const
@@ -185,10 +103,6 @@ std::vector<String> String::split(char delim) const
     return splits;
 }
 
-String::Iterator String::begin() const { return &chars()[0]; }
-
-String::Iterator String::end() const { return &chars()[size()]; }
-
 
 String String::substring(std::size_t pos, std::size_t n) const
 {
@@ -197,16 +111,15 @@ String String::substring(std::size_t pos, std::size_t n) const
     {
         s.m_chars.all.dynamic = true;
         s.m_chars.heap.data = new char[n + 1];
-        std::strncpy(s.m_chars.heap.data, chars() + pos, n);
-        s.m_chars.heap.data[n] = '\0';
+        s.chars()[n] = '\0';
     }
     else
     {
         s.m_chars.all.dynamic = false;
-        std::strncpy(s.m_chars.stack.data, chars() + pos, n);
-        s.m_chars.stack.data[n] = '\0';
+        s.chars()[n] = '\0';
     }
     s.set_size(n);
+    std::strncpy(s.chars(), chars() + pos, n);
     return s;
 }
 
@@ -214,22 +127,24 @@ String String::substring(std::size_t pos, std::size_t n) const
 String String::substring(const Iterator begin, const Iterator end) const
 {
     String s;
-    s.set_size(end - begin);
-    if (s.size() > MAX_ALLOC)
+    const auto tmp_size = end - begin;
+    if (tmp_size > MAX_ALLOC)
     {
         s.m_chars.all.dynamic = true;
+        s.set_size(tmp_size);
         s.m_chars.heap.data = new char[s.size() + 1];
-        std::strncpy(s.m_chars.heap.data, begin, s.size());
-        s.m_chars.heap.data[s.size()] = '\0';
+        s.chars()[s.size()] = '\0';
     }
     else
     {
         s.m_chars.all.dynamic = false;
-        std::strncpy(s.m_chars.stack.data, begin, s.size());
-        s.m_chars.stack.data[s.size()] = '\0';
+        s.set_size(tmp_size);
+        s.chars()[s.size()] = '\0';
     }
+    std::strncpy(s.chars(), begin, s.size());
     return s;
 }
+
 
 String String::substr(std::size_t pos, std::size_t n) const { return substring(pos, n); }
 String String::substr(const Iterator begin, const Iterator end) const
@@ -237,7 +152,7 @@ String String::substr(const Iterator begin, const Iterator end) const
     return substring(begin, end);
 }
 
-String String::trim(char trim) const
+String String::trimmed(char trim) const
 {
     Iterator begin = chars();
     Iterator end = chars() + size();
@@ -246,4 +161,102 @@ String String::trim(char trim) const
     while (*(end - 1) == trim && end > begin)
         --end;
     return substring(begin, end);
+}
+
+String String::hexified() const
+{
+    StringBuilder sb;
+    for (const char& c : *this)
+    {
+        sb.append(HexFormat<unsigned>(c));
+    }
+    return sb.build();
+}
+
+String String::capitalized() const
+{
+    return String::format(char(toupper(chars()[0])), substring(begin() + 1, end()));
+}
+
+String String::replaced(const StringView &to_replace, const StringView &replace_with) const
+{
+    if (to_replace == replace_with) return String(*this);
+    StringBuilder sb;
+    for (std::size_t i = 0; i < size(); ++i)
+    {
+        if (chars()[i] == to_replace[0])
+        {
+            if (substring(i, to_replace.size()) == to_replace)
+            {
+                sb.append(replace_with);
+                i += to_replace.size() - 1;
+                continue;
+            }
+        }
+        else
+        {
+            sb.append(chars()[i]);
+        }
+    }
+    return sb.build();
+}
+
+String String::replaced(char to_replace, char replace_with) const
+{
+    if (to_replace == replace_with) return String(*this);
+    StringBuilder sb;
+    for (const char& c : *this)
+    {
+        if (c == to_replace)
+            sb.append(replace_with);
+        else
+            sb.append(c);
+    }
+    return sb.build();
+}
+
+String String::to_upper() const
+{
+    StringBuilder sb;
+    for (const char& c : *this)
+    {
+        sb.append(char(toupper(c)));
+    }
+    return sb.build();
+}
+
+String String::to_lower() const
+{
+    StringBuilder sb;
+    for (const char& c : *this)
+    {
+        sb.append(char(tolower(c)));
+    }
+    return sb.build();
+}
+
+String String::to_printable_only() const
+{
+    StringBuilder sb;
+    for (const char& c : *this)
+    {
+        if (isprint(c))
+        {
+            sb.append(c);
+        }
+    }
+    return sb.build();
+}
+
+String::Iterator String::find(const char c) const
+{
+    Iterator current = begin();
+    for (; *current != c && current != end(); ++current)
+        ;
+    return current;
+}
+
+const char* String::c_str() const
+{
+    return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data;
 }
