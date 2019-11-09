@@ -41,9 +41,11 @@ public:
 
     bool operator==(const String&) const;
     bool operator==(const char*) const;
+    friend inline bool operator==(const char* cstr, const String& str) { return str == cstr; }
 
     inline bool operator!=(const String& other) const { return !(*this == other); }
     inline bool operator!=(const char* other) const { return !(*this == other); }
+    friend inline bool operator!=(const char* cstr, const String& str) { return str != cstr; }
 
     inline char operator[](const std::size_t index) const { return chars()[index]; }
 
@@ -68,7 +70,7 @@ public:
     String to_upper() const;
     String to_lower() const;
     String to_printable_only() const;
-    constexpr StringView substring_view(const std::size_t position, const std::size_t n) const;
+    StringView substring_view(const std::size_t position, const std::size_t n) const;
     
     Iterator find(const char c) const;
     std::vector<String> split(char delim) const;
@@ -76,10 +78,10 @@ public:
     inline StringView as_string_view() const { return StringView(*this); }
     inline bool empty() const { return size() == 0; }
     
-    constexpr bool startswith(const String& str) const;
-    constexpr bool endswith(const String& str) const;
-    constexpr bool equals(const String& str) const;
-    constexpr bool equals_case_insensitive(const String& str) const;
+    bool startswith(const String& str) const;
+    bool endswith(const String& str) const;
+    bool equals(const String& str) const;
+    bool equals_case_insensitive(const String& str) const;
 
     const char* c_str() const;
 
@@ -194,43 +196,7 @@ protected:
     } m_chars;
 };
 
-constexpr StringView String::substring_view(const std::size_t position, const std::size_t n) const
-{
-    const Iterator start(m_chars.all.dynamic ? m_chars.heap.data + position 
-                                             : m_chars.stack.data + position);
-    return StringView(start, start + n);
-}
 
-constexpr bool String::startswith(const String& str) const
-{
-    return substring_view(0, str.size()) == str;
-}
-
-constexpr bool String::endswith(const String &str) const
-{
-    for (std::size_t i = 0; i < str.size(); ++i)
-    {
-        if (chars()[size() - 1 - i] != str[str.size() - 1 - i])
-            return false;
-    }
-    return true;
-}
-
-constexpr bool String::equals(const String &str) const
-{
-    return *this == str;
-}
-
-constexpr bool String::equals_case_insensitive(const String &str) const
-{
-    if (size() != str.size()) return false;
-    for (std::size_t i = 0; i < str.size(); ++i)
-    {
-        if (!char_equals_case_insensitive(chars()[i], str[i]))
-            return false;
-    }
-    return true;
-}
 
 #include "StringFormatting.h"
 

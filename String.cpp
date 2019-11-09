@@ -103,6 +103,11 @@ std::vector<String> String::split(char delim) const
     return splits;
 }
 
+bool String::equals(const String& str) const
+{
+    return *this == str;
+}
+
 
 String String::substring(std::size_t pos, std::size_t n) const
 {
@@ -259,4 +264,37 @@ String::Iterator String::find(const char c) const
 const char* String::c_str() const
 {
     return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data;
+}
+
+bool String::equals_case_insensitive(const String& str) const
+{
+    if (size() != str.size()) return false;
+    for (std::size_t i = 0; i < str.size(); ++i)
+    {
+        if (!char_equals_case_insensitive(chars()[i], str[i]))
+            return false;
+    }
+    return true;
+}
+
+bool String::endswith(const String& str) const
+{
+    for (std::size_t i = 0; i < str.size(); ++i)
+    {
+        if (chars()[size() - 1 - i] != str[str.size() - 1 - i])
+            return false;
+    }
+    return true;
+}
+
+bool String::startswith(const String& str) const
+{
+    return substring_view(0, str.size()) == str;
+}
+
+StringView String::substring_view(const std::size_t position, const std::size_t n) const
+{
+    const Iterator start(m_chars.all.dynamic ? m_chars.heap.data + position 
+                                             : m_chars.stack.data + position);
+    return StringView(start, start + n);
 }
