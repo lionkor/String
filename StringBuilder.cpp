@@ -172,7 +172,7 @@ StringBuilder& StringBuilder::prepend(const char* cstr)
     if (m_built)
         throw StringBuilder_InvalidAppendAfterBuild();
 
-    concat(m_chars, cstr);
+    concat(cstr, m_chars);
     return *this;
 }
 
@@ -183,7 +183,7 @@ StringBuilder& StringBuilder::prepend(int i)
 
     char tmp[16] { 0 };
     sprintf(tmp, "%i", i);
-    concat(m_chars, tmp);
+    concat(tmp, m_chars);
     return *this;
 }
 
@@ -293,7 +293,7 @@ StringBuilder& StringBuilder::prepend(char c)
         throw StringBuilder_InvalidAppendAfterBuild();
 
     char tmp[1] { c };
-    concat(m_chars, tmp);
+    concat(tmp, m_chars);
     return *this;
 }
 
