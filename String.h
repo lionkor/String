@@ -25,6 +25,11 @@ static constexpr bool char_equals_case_insensitive(char lhs, char rhs)
 class String
 {
 public:
+    static inline std::string to_std_string(const String& str)
+    {
+        return std::string(str.chars());
+    }
+    
     friend class StringBuilder;
     using Iterator = const char*;
 
