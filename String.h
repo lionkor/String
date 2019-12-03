@@ -11,7 +11,7 @@
 #include "StringBuilder.h"
 #include "StringView.h"
 
-static constexpr unsigned char MAX_ALLOC = 3*std::numeric_limits<std::size_t>::digits - 1;
+static constexpr unsigned char MAX_ALLOC = 3*sizeof(void*) - 1;
 
 static constexpr char to_lower_internal(const char c) {
     return (c >= 'A' && c <= 'Z') ? c + ('a' - 'A') : c;
