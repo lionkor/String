@@ -31,7 +31,6 @@ class StringView
 public:
 	constexpr StringView() : m_chars(nullptr), m_size(0) {}
 	constexpr StringView(const char* cstr) : m_chars(cstr), m_size(string_length(cstr)) {}
-	constexpr StringView(const char* cs, std::size_t sz) : m_chars(cs), m_size(sz) {}
 	constexpr StringView(const StringView& other)
 		: m_chars(other.m_chars), m_size(other.m_size)
 	{
@@ -39,6 +38,12 @@ public:
 	constexpr StringView(const char* begin, const char* end);
 	StringView(const class String&);
 
+protected:
+	/// Caution: The given const char* still has to be null-terminated exactly at the
+	/// given size, otherwise behaviour of StringView isn't defined.
+	constexpr StringView(const char* cs, std::size_t sz) : m_chars(cs), m_size(sz) {}
+
+public:
 	inline constexpr bool	is_valid() const { return m_chars != nullptr; }
 	inline constexpr bool	is_empty() const { return m_size == 0 || m_chars[0] == 0; }
 	inline constexpr size_t size() const { return m_size; }
@@ -47,54 +52,54 @@ public:
 
 	constexpr const char& operator[](std::size_t i) const { return m_chars[i]; }
 
-	static constexpr bool equals_partially(const char* lhs, const char* rhs)
+	inline constexpr bool equals(const char* str, std::size_t size) const
 	{
-		const std::size_t _size = min(string_length(lhs), string_length(rhs));
-		for (std::size_t i = 0; i < _size; ++i)
-		{
-			if (lhs[i] != rhs[i])
-				return false;
-		}
-		return true;
+		// if one is nullptr and the other isn't, they aren't equal
+		if ((m_chars == nullptr && str != nullptr) ||
+			(m_chars != nullptr && str == nullptr))
+			return false;
+		// if they are both nullptr we consider them equal
+		if (m_chars == nullptr && str == nullptr)
+			return true;
+		// if other is larger than our size we aren't equal. If we didn't have this check,
+		// strncmp would return 0 (equal) for example for:
+		//  strncmp("Hello", "Hello, World", strlen("Hello")), since "Hello" would have
+		//  size 5, and they equal that far.
+		// Similarly, if it's shorter, they aren't equal. If we're going to check length
+		// we might as well check this as well and potentially save ourselves a strncmp.
+		if (size != m_size)
+			return false;
+		// Because of earlier checks we can now assume same size and that both are not
+		// nullptr.
+		return strncmp(m_chars, str, m_size) == 0;
 	}
-
+    
 	constexpr bool operator==(const char* other) const
 	{
-		if ((m_chars == nullptr && other != nullptr) ||
-			(m_chars != nullptr && other == nullptr))
-			return false;
-		if (m_chars == nullptr && other == nullptr)
-			return true;
-		return m_chars == other || equals_partially(m_chars, other);
+		return equals(other, strlen(other));
 	}
 
 	constexpr bool operator==(const StringView& other) const
 	{
-		if ((m_chars == nullptr && other.m_chars != nullptr) ||
-			(m_chars != nullptr && other.m_chars == nullptr))
-			return false;
-		if (m_chars == nullptr && other.m_chars == nullptr)
-			return true;
-		return (m_chars == other.m_chars && m_size == other.m_size) ||
-			   equals_partially(m_chars, other.m_chars);
+		return equals(other.m_chars, other.m_size);
 	}
 
-	template<typename _StringType>
-	constexpr bool operator==(const _StringType& other) const
-	{
-		if ((m_chars == nullptr && other.c_str() != nullptr) ||
-			(m_chars != nullptr && other.c_str() == nullptr))
-			return false;
-		if (m_chars == nullptr && other.c_str() == nullptr)
-			return true;
-		return (m_chars == other.c_str() && m_size == other.size()) ||
-			   equals_partially(m_chars, other.c_str());
-	}
+    template<typename _StringType>
+    constexpr bool operator==(const _StringType& other) const
+    {
+        return equals(other.c_str(), other.size());
+    }
 
 	constexpr bool operator!=(const char* other) const { return !(m_chars == other); }
 
 	constexpr bool operator!=(const StringView& other) const { return !(*this == other); }
 
+    template<typename _StringType>
+    constexpr bool operator!=(const _StringType& other) const
+    {
+        return !(*this == other);
+    }
+    
 	friend std::ostream& operator<<(std::ostream& os, const StringView& view)
 	{
 		if (view.m_chars)
@@ -102,6 +107,8 @@ public:
 		else
 			return os << "";
 	}
+
+	friend constexpr StringView operator""_sv(const char* cstr, unsigned long size);
 
 private:
 	const char*	 m_chars;
