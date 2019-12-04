@@ -90,7 +90,7 @@ public:
         return equals(other.c_str(), other.size());
     }
 
-	constexpr bool operator!=(const char* other) const { return !(m_chars == other); }
+	constexpr bool operator!=(const char* other) const { return !(*this == other); }
 
 	constexpr bool operator!=(const StringView& other) const { return !(*this == other); }
 
