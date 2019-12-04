@@ -5,6 +5,9 @@
 
 *.pro
 main.cpp
+*.data*
+vgcore*
+test
 
 # automatically added
 
