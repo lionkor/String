@@ -58,23 +58,12 @@ public:
 	StringBuilder& prepend(double);
 	StringBuilder& prepend(long double);
 
-	template<typename _T>
-	StringBuilder& append(const HexFormat<_T>& arg)
-	{
-		// FIXME: Check for is_built
-		char tmp[16] { 0 };
-		sprintf(tmp, "%x", arg.data);
-		return append(tmp);
-	}
-	template<typename _T>
-	StringBuilder& prepend(const HexFormat<_T>& arg)
-	{
-		// FIXME: Check for is_built
-		char tmp[16] { 0 };
-		sprintf(tmp, "%x", arg.data);
-		return prepend(tmp);
-	}
-
+    template<typename _T>
+    StringBuilder& append(const HexFormat<_T>& arg);
+    
+    template<typename _T>
+    StringBuilder& prepend(const HexFormat<_T>& arg);
+    
 	/// Builds the String and returns it.
 	[[nodiscard]] class String build();
 
@@ -147,5 +136,23 @@ private:
 	char*		m_chars { nullptr };
 	bool		m_built { false };
 };
+
+template<typename _T>
+StringBuilder& StringBuilder::append(const HexFormat<_T>& arg)
+{
+    // FIXME: Check for is_built
+    char tmp[16] { 0 };
+    sprintf(tmp, "%x", arg.data);
+    return append(tmp);
+}
+
+template<typename _T>
+StringBuilder& StringBuilder::prepend(const HexFormat<_T>& arg)
+{
+    // FIXME: Check for is_built
+    char tmp[16] { 0 };
+    sprintf(tmp, "%x", arg.data);
+    return prepend(tmp);
+}
 
 #endif // STRINGBUILDER_H
