@@ -1,11 +1,11 @@
 # String
-A simple modern String class. `String`, which is **only 24 bytes**, has **small string optimization (SSO)**, uses **variadic templates** for formatting (`String::format`), includes a very lightweight **StringView** friend class, and has some methods `std::string` is desperately missing!
+A simple modern String class. `String`, which is **only 24 bytes on x64**, has **small string optimization (SSO)**, uses **variadic templates** for formatting (`String::format`), includes a very lightweight **StringView** friend class, and has some methods `std::string` is desperately missing!
 
 `String` is immutable, but it offers plenty of ways to be constructed, so don't worry!
 
 The idea is that it has a more practical and straightforward interface and enforces some stricter rules, while at the same time giving more method-functionality (as opposed to external functionality enabled through `<algorithm>`). I personally like interfaces that are easy to read while offering high complexity, and that's ultimately the goal. `String` does, of course, include (constant) iterators for all your non-mutating `<algorithm>` needs, as well as a fitting constructor!
 
-By the way, *small string optimization kicks in for strings >23 bytes*!
+By the way, *small string optimization kicks in for strings >23 bytes on 64bit (something like 12 bytes on 32bit)*!
 
 ### Features
 
@@ -114,3 +114,5 @@ StringBuilder sb()
 
 For learning purposes and as part of my own personal library of code that I use in my projects. This is not supposed to be faster or better in an objective sense than `std::string`. The idea is to develop a String class with an interface that fits my personal coding style. This is not to say that it won't be fast; I just know that it's pretty difficult to ever reach the speed of, say, `std::string`.
 Do, however, feel free to suggest any optimizations :)
+
+Thanks to @JoaoBaptMG the size of String varies depending on architecture, using less space on 32bit.
