@@ -1,6 +1,8 @@
 # String
 A simple modern String class. `String`, which is **only 24 bytes on x64**, has **small string optimization (SSO)**, uses **variadic templates** for formatting (`String::format`), includes a very lightweight **StringView** friend class, and has some methods `std::string` is desperately missing!
 
+**Visit the [Wiki](https://github.com/lionkor/String/wiki) for the full documentation.**
+
 `String` is immutable, but it offers plenty of ways to be constructed, so don't worry!
 
 The idea is that it has a more practical and straightforward interface and enforces some stricter rules, while at the same time giving more method-functionality (as opposed to external functionality enabled through `<algorithm>`). I personally like interfaces that are easy to read while offering high complexity, and that's ultimately the goal. `String` does, of course, include (constant) iterators for all your non-mutating `<algorithm>` needs, as well as a fitting constructor!
