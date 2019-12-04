@@ -5,8 +5,6 @@
 #include <cstring>
 #include <ostream>
 
-using size_t = unsigned long;
-
 static inline constexpr std::size_t string_length(const char* cstr)
 {
 	assert(cstr != nullptr);
@@ -51,7 +49,7 @@ public:
 	inline constexpr const char* c_str() const { return m_chars; }
 
 	constexpr const char& operator[](std::size_t i) const { return m_chars[i]; }
-    
+
 	constexpr bool operator==(const char* other) const
 	{
 		return equals(other, strlen(other));
@@ -62,22 +60,22 @@ public:
 		return equals(other.m_chars, other.m_size);
 	}
 
-    template<typename _StringType>
-    constexpr bool operator==(const _StringType& other) const
-    {
-        return equals(other.c_str(), other.size());
-    }
+	template<typename _StringType>
+	constexpr bool operator==(const _StringType& other) const
+	{
+		return equals(other.c_str(), other.size());
+	}
 
 	constexpr bool operator!=(const char* other) const { return !(*this == other); }
 
 	constexpr bool operator!=(const StringView& other) const { return !(*this == other); }
 
-    template<typename _StringType>
-    constexpr bool operator!=(const _StringType& other) const
-    {
-        return !(*this == other);
-    }
-    
+	template<typename _StringType>
+	constexpr bool operator!=(const _StringType& other) const
+	{
+		return !(*this == other);
+	}
+
 	friend std::ostream& operator<<(std::ostream& os, const StringView& view)
 	{
 		if (view.m_chars)
@@ -86,10 +84,10 @@ public:
 			return os << "";
 	}
 
-	friend constexpr StringView operator""_sv(const char* cstr, unsigned long size);
+	friend constexpr StringView operator""_sv(const char* cstr, std::size_t size);
 
 private:
-    inline constexpr bool equals(const char* str, std::size_t size) const
+	inline constexpr bool equals(const char* str, std::size_t size) const
 	{
 		// if one is nullptr and the other isn't, they aren't equal
 		if ((m_chars == nullptr && str != nullptr) ||
@@ -110,9 +108,9 @@ private:
 		// nullptr.
 		return strncmp(m_chars, str, m_size) == 0;
 	}
-    
-	const char*	 m_chars;
-	const size_t m_size;
+
+	const char*		  m_chars;
+	const std::size_t m_size;
 };
 
 constexpr StringView::StringView(const char* begin, const char* end)
@@ -120,7 +118,7 @@ constexpr StringView::StringView(const char* begin, const char* end)
 {
 }
 
-constexpr StringView operator""_sv(const char* cstr, unsigned long size)
+constexpr StringView operator""_sv(const char* cstr, std::size_t size)
 {
 	return StringView(cstr, size);
 }
