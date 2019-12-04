@@ -38,7 +38,7 @@ public:
 	constexpr StringView(const char* begin, const char* end);
 	StringView(const class String&);
 
-protected:
+private:
 	/// Caution: The given const char* still has to be null-terminated exactly at the
 	/// given size, otherwise behaviour of StringView isn't defined.
 	constexpr StringView(const char* cs, std::size_t sz) : m_chars(cs), m_size(sz) {}
@@ -51,28 +51,6 @@ public:
 	inline constexpr const char* c_str() const { return m_chars; }
 
 	constexpr const char& operator[](std::size_t i) const { return m_chars[i]; }
-
-	inline constexpr bool equals(const char* str, std::size_t size) const
-	{
-		// if one is nullptr and the other isn't, they aren't equal
-		if ((m_chars == nullptr && str != nullptr) ||
-			(m_chars != nullptr && str == nullptr))
-			return false;
-		// if they are both nullptr we consider them equal
-		if (m_chars == nullptr && str == nullptr)
-			return true;
-		// if other is larger than our size we aren't equal. If we didn't have this check,
-		// strncmp would return 0 (equal) for example for:
-		//  strncmp("Hello", "Hello, World", strlen("Hello")), since "Hello" would have
-		//  size 5, and they equal that far.
-		// Similarly, if it's shorter, they aren't equal. If we're going to check length
-		// we might as well check this as well and potentially save ourselves a strncmp.
-		if (size != m_size)
-			return false;
-		// Because of earlier checks we can now assume same size and that both are not
-		// nullptr.
-		return strncmp(m_chars, str, m_size) == 0;
-	}
     
 	constexpr bool operator==(const char* other) const
 	{
@@ -111,6 +89,28 @@ public:
 	friend constexpr StringView operator""_sv(const char* cstr, unsigned long size);
 
 private:
+    inline constexpr bool equals(const char* str, std::size_t size) const
+	{
+		// if one is nullptr and the other isn't, they aren't equal
+		if ((m_chars == nullptr && str != nullptr) ||
+			(m_chars != nullptr && str == nullptr))
+			return false;
+		// if they are both nullptr we consider them equal
+		if (m_chars == nullptr && str == nullptr)
+			return true;
+		// if other is larger than our size we aren't equal. If we didn't have this check,
+		// strncmp would return 0 (equal) for example for:
+		//  strncmp("Hello", "Hello, World", strlen("Hello")), since "Hello" would have
+		//  size 5, and they equal that far.
+		// Similarly, if it's shorter, they aren't equal. If we're going to check length
+		// we might as well check this as well and potentially save ourselves a strncmp.
+		if (size != m_size)
+			return false;
+		// Because of earlier checks we can now assume same size and that both are not
+		// nullptr.
+		return strncmp(m_chars, str, m_size) == 0;
+	}
+    
 	const char*	 m_chars;
 	const size_t m_size;
 };
