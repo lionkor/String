@@ -1,5 +1,4 @@
 #include "StringBuilder.h"
-#include "Exceptions.h"
 #include "String.h"
 #include <cctype>
 #include <cstdlib>
@@ -37,7 +36,7 @@ StringBuilder& StringBuilder::append(const char* cstr)
 {
 	log_strbuild(__PRETTY_FUNCTION__ << " with cstr = _" << cstr << "_");
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	concat(m_chars, cstr);
 	return *this;
@@ -46,7 +45,7 @@ StringBuilder& StringBuilder::append(const char* cstr)
 StringBuilder& StringBuilder::append(int i)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%i", i);
@@ -57,7 +56,7 @@ StringBuilder& StringBuilder::append(int i)
 StringBuilder& StringBuilder::append(short arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%i", arg);
@@ -67,7 +66,7 @@ StringBuilder& StringBuilder::append(short arg)
 StringBuilder& StringBuilder::append(unsigned short arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%u", arg);
@@ -77,7 +76,7 @@ StringBuilder& StringBuilder::append(unsigned short arg)
 StringBuilder& StringBuilder::append(long arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%li", arg);
@@ -87,7 +86,7 @@ StringBuilder& StringBuilder::append(long arg)
 StringBuilder& StringBuilder::append(unsigned arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%u", arg);
@@ -97,7 +96,7 @@ StringBuilder& StringBuilder::append(unsigned arg)
 StringBuilder& StringBuilder::append(unsigned long arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%lu", arg);
@@ -107,7 +106,7 @@ StringBuilder& StringBuilder::append(unsigned long arg)
 StringBuilder& StringBuilder::append(unsigned long long arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%llu", arg);
@@ -117,7 +116,7 @@ StringBuilder& StringBuilder::append(unsigned long long arg)
 StringBuilder& StringBuilder::append(unsigned char arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%u", arg);
@@ -127,7 +126,7 @@ StringBuilder& StringBuilder::append(unsigned char arg)
 StringBuilder& StringBuilder::append(float arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%f", double(arg)); // FIXME: double!?
@@ -137,7 +136,7 @@ StringBuilder& StringBuilder::append(float arg)
 StringBuilder& StringBuilder::append(double arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%f", arg);
@@ -147,17 +146,26 @@ StringBuilder& StringBuilder::append(double arg)
 StringBuilder& StringBuilder::append(long double arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%LG", arg);
+    return append(tmp);
+}
+
+StringBuilder& StringBuilder::append(const PointerFormat& arg)
+{
+    if (m_built)
+		throw StringBuilder_InvalidChangeAfterBuild();
+	char tmp[16] { 0 };
+	sprintf(tmp, "%p", arg.data);
 	return append(tmp);
 }
 
 StringBuilder& StringBuilder::append(char c)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[1] { c };
 	concat(m_chars, tmp);
@@ -173,7 +181,7 @@ StringBuilder& StringBuilder::prepend(const char* cstr)
 {
 	log_strbuild(__PRETTY_FUNCTION__ << " with cstr = _" << cstr << "_");
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	concat(cstr, m_chars);
 	return *this;
@@ -182,7 +190,7 @@ StringBuilder& StringBuilder::prepend(const char* cstr)
 StringBuilder& StringBuilder::prepend(int i)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%i", i);
@@ -193,7 +201,7 @@ StringBuilder& StringBuilder::prepend(int i)
 StringBuilder& StringBuilder::prepend(short arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%i", arg);
@@ -203,7 +211,7 @@ StringBuilder& StringBuilder::prepend(short arg)
 StringBuilder& StringBuilder::prepend(unsigned short arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%u", arg);
@@ -213,7 +221,7 @@ StringBuilder& StringBuilder::prepend(unsigned short arg)
 StringBuilder& StringBuilder::prepend(long arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%li", arg);
@@ -223,7 +231,7 @@ StringBuilder& StringBuilder::prepend(long arg)
 StringBuilder& StringBuilder::prepend(unsigned arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%u", arg);
@@ -233,7 +241,7 @@ StringBuilder& StringBuilder::prepend(unsigned arg)
 StringBuilder& StringBuilder::prepend(unsigned long arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%lu", arg);
@@ -243,7 +251,7 @@ StringBuilder& StringBuilder::prepend(unsigned long arg)
 StringBuilder& StringBuilder::prepend(unsigned long long arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%llu", arg);
@@ -253,7 +261,7 @@ StringBuilder& StringBuilder::prepend(unsigned long long arg)
 StringBuilder& StringBuilder::prepend(unsigned char arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%u", arg);
@@ -263,7 +271,7 @@ StringBuilder& StringBuilder::prepend(unsigned char arg)
 StringBuilder& StringBuilder::prepend(float arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%f", double(arg)); // FIXME: double!?
@@ -273,7 +281,7 @@ StringBuilder& StringBuilder::prepend(float arg)
 StringBuilder& StringBuilder::prepend(double arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%f", arg);
@@ -283,17 +291,26 @@ StringBuilder& StringBuilder::prepend(double arg)
 StringBuilder& StringBuilder::prepend(long double arg)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%LG", arg);
+    return prepend(tmp);
+}
+
+StringBuilder& StringBuilder::prepend(const PointerFormat& arg)
+{
+    if (m_built)
+		throw StringBuilder_InvalidChangeAfterBuild();
+	char tmp[16] { 0 };
+	sprintf(tmp, "%p", arg.data);
 	return prepend(tmp);
 }
 
 StringBuilder& StringBuilder::prepend(char c)
 {
 	if (m_built)
-		throw StringBuilder_InvalidAppendAfterBuild();
+		throw StringBuilder_InvalidChangeAfterBuild();
 
 	char tmp[1] { c };
 	concat(tmp, m_chars);

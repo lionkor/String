@@ -3,7 +3,7 @@
 
 #include <exception>
 
-class StringBuilder_InvalidAppendAfterBuild : public std::exception
+class StringBuilder_InvalidChangeAfterBuild : public std::exception
 {
 public:
 	virtual const char* what() const noexcept

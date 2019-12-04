@@ -11,6 +11,26 @@ struct HexFormat
 	const _T data;
 };
 
+template<typename _T>
+struct OctalFormat
+{
+	template<typename _ArgT>
+	constexpr explicit OctalFormat(const _ArgT& t) : data(t)
+	{
+	}
+	const _T data;
+};
+
+struct PointerFormat
+{
+	template<typename _ArgT>
+	constexpr explicit PointerFormat(const _ArgT* t) : data(reinterpret_cast<const void*>(t))
+	{
+	}
+	const void* data;
+};
+
+
 #include <cstdio>
 #include <cstdlib>
 #define FATAL_ERROR_IF(x, msg)                                                           \

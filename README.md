@@ -28,7 +28,6 @@ By the way, *small string optimization kicks in for strings >23 bytes*!
 * `size`: Returns the size of the String.
 * *`static`* `format`: Creates a String from an amount of arguments of different types.
 
-
 ### Roadmap
 
 The following will **definitely** need to be done:
@@ -43,6 +42,7 @@ The following will **definitely** need to be done:
 - [ ] Document the public interface (*Doxygen?*).
 - [x] Add Iterator(s), `begin`, `end`.
 - [x] ~~Use `std::unique_ptr` for `char[]`.~~ (replaced by SSO)
+- [ ] Ensure only valid (printable) types to be passed to HexFormat, OctalFormat, etc.
 
 The following I'm **not so sure** about:
 
@@ -69,11 +69,19 @@ String s(my_begin_iterator, my_end_iterator);
 This is useful for creating Strings from pieces of other Strings (this is as close to mutability as it gets in here).
 
 #### `String::format`
+
+There are a few helper templates that can be used to get a lot of the formatting sugar that you're used to from `printf` and the like:
+
+* `HexFormat<>(x)`: Produces Hex formatted output of `x`, comparable to `%x`.
+* `OctalFormat<>(x)`: Produces Octal formatted output of `x`, comparable to `%o`.
+* `PointerFormat(x)`: Produces Pointer formatted output of `x`, comparable to `%p`. Note that this only supports pointer types to be passed, and thus is not templated. This ensures that intention is clear and being followed.
+
 ```cpp
 String s = String::format("Hello, ", name, '!');
 String s2 = String::format("Hex of 14: ", HexFormat<int>(14));
 ```
-This currently only supports primitive types. (More will be added soon!)
+
+Templates like `HexFormat` aren't functions and serve no purpose outside of `String::format`, as they do not produce any output. They merely serve as a hint to the formatter.
 
 #### `StringBuilder`
 ```cpp

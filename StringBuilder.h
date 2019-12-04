@@ -5,6 +5,7 @@
 #include <cstring>
 #include <memory>
 
+#include "Exceptions.h"
 #include "Core.h"
 
 class StringBuilder
@@ -19,21 +20,9 @@ public:
 
 	StringBuilder(const StringBuilder&) = delete;
 
-	/// Appends a c-string (Inserts at the end).
 	StringBuilder& append(const char*);
-	/// Appends a String (Inserts at the end).
 	StringBuilder& append(const class String&);
-
-	/// Prepends a c-string (Inserts in the beginning).
-	StringBuilder& prepend(const char*);
-	/// Prepends a String (Inserts in the beginning).
-	StringBuilder& prepend(const class String&);
-
-	/// Appends a char (Inserts at the end).
 	StringBuilder& append(char);
-	/// Prepends a char (Inserts in the beginning).
-	StringBuilder& prepend(char);
-
 	StringBuilder& append(int);
 	StringBuilder& append(short);
 	StringBuilder& append(unsigned short);
@@ -45,7 +34,11 @@ public:
 	StringBuilder& append(float);
 	StringBuilder& append(double);
 	StringBuilder& append(long double);
+	StringBuilder& append(const PointerFormat& arg);
 
+	StringBuilder& prepend(const char*);
+	StringBuilder& prepend(const class String&);
+	StringBuilder& prepend(char);
 	StringBuilder& prepend(int);
 	StringBuilder& prepend(short);
 	StringBuilder& prepend(unsigned short);
@@ -57,13 +50,19 @@ public:
 	StringBuilder& prepend(float);
 	StringBuilder& prepend(double);
 	StringBuilder& prepend(long double);
+	StringBuilder& prepend(const PointerFormat& arg);
 
-    template<typename _T>
-    StringBuilder& append(const HexFormat<_T>& arg);
-    
-    template<typename _T>
-    StringBuilder& prepend(const HexFormat<_T>& arg);
-    
+	template<typename _T>
+	StringBuilder& append(const HexFormat<_T>& arg);
+	template<typename _T>
+	StringBuilder& prepend(const HexFormat<_T>& arg);
+
+	template<typename _T>
+	StringBuilder& append(const OctalFormat<_T>& arg);
+	template<typename _T>
+	StringBuilder& prepend(const OctalFormat<_T>& arg);
+
+
 	/// Builds the String and returns it.
 	[[nodiscard]] class String build();
 
@@ -137,22 +136,45 @@ private:
 	bool		m_built { false };
 };
 
+
 template<typename _T>
 StringBuilder& StringBuilder::append(const HexFormat<_T>& arg)
 {
-    // FIXME: Check for is_built
-    char tmp[16] { 0 };
-    sprintf(tmp, "%x", arg.data);
-    return append(tmp);
+	if (m_built)
+		throw StringBuilder_InvalidChangeAfterBuild();
+	char tmp[16] { 0 };
+	sprintf(tmp, "%x", arg.data);
+	return append(tmp);
 }
 
 template<typename _T>
 StringBuilder& StringBuilder::prepend(const HexFormat<_T>& arg)
 {
-    // FIXME: Check for is_built
-    char tmp[16] { 0 };
-    sprintf(tmp, "%x", arg.data);
-    return prepend(tmp);
+	if (m_built)
+		throw StringBuilder_InvalidChangeAfterBuild();
+	char tmp[16] { 0 };
+	sprintf(tmp, "%x", arg.data);
+	return prepend(tmp);
+}
+
+template<typename _T>
+StringBuilder& StringBuilder::append(const OctalFormat<_T>& arg)
+{
+	if (m_built)
+		throw StringBuilder_InvalidChangeAfterBuild();
+	char tmp[16] { 0 };
+	sprintf(tmp, "%o", arg.data);
+	return append(tmp);
+}
+
+template<typename _T>
+StringBuilder& StringBuilder::prepend(const OctalFormat<_T>& arg)
+{
+	if (m_built)
+		throw StringBuilder_InvalidChangeAfterBuild();
+	char tmp[16] { 0 };
+	sprintf(tmp, "%o", arg.data);
+	return prepend(tmp);
 }
 
 #endif // STRINGBUILDER_H
