@@ -160,6 +160,9 @@ protected:
 			set_size(csize);
 		}
 
+        // Forcefully null-terminate
+        chars()[size()] = 0;
+        
 		if (chars() != cstr && cstr != nullptr && chars() != nullptr)
 			strcpy(chars(), cstr);
 	}

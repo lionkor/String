@@ -4,31 +4,59 @@
 template<typename _T>
 struct HexFormat
 {
+	constexpr explicit HexFormat(const _T& t) : data(t) {}
+
 	template<typename _ArgT>
 	constexpr explicit HexFormat(const _ArgT& t) : data(t)
 	{
 	}
+
 	const _T data;
 };
+template<class _T>
+explicit HexFormat(const _T& t)->HexFormat<_T>;
 
 template<typename _T>
 struct OctalFormat
 {
+	constexpr explicit OctalFormat(const _T& t) : data(t) {}
+
 	template<typename _ArgT>
 	constexpr explicit OctalFormat(const _ArgT& t) : data(t)
 	{
 	}
 	const _T data;
 };
+template<class _T>
+explicit OctalFormat(const _T& t)->OctalFormat<_T>;
 
 struct PointerFormat
 {
 	template<typename _ArgT>
-	constexpr explicit PointerFormat(const _ArgT* t) : data(reinterpret_cast<const void*>(t))
+	constexpr explicit PointerFormat(const _ArgT* t)
+		: data(reinterpret_cast<const void*>(t))
 	{
 	}
 	const void* data;
 };
+
+template<typename _T>
+struct PrecisionFormat
+{
+	constexpr explicit PrecisionFormat(const _T& t, unsigned size) : data(t), size(size)
+	{
+	}
+
+	template<typename _ArgT>
+	constexpr explicit PrecisionFormat(const _ArgT& t, unsigned size)
+		: data(t), size(size)
+	{
+	}
+	const _T	   data;
+	const unsigned size;
+};
+template<class _T>
+explicit PrecisionFormat(const _T& t, unsigned s)->PrecisionFormat<_T>;
 
 
 #include <cstdio>

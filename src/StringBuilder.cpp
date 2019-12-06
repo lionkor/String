@@ -130,7 +130,7 @@ StringBuilder& StringBuilder::append(float arg)
 
 	char tmp[16] { 0 };
 	sprintf(tmp, "%f", double(arg)); // FIXME: double!?
-	return append(tmp);
+    return append(tmp);
 }
 
 StringBuilder& StringBuilder::append(double arg)

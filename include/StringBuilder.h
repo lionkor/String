@@ -32,6 +32,7 @@ public:
 	StringBuilder& append(unsigned long long);
 	StringBuilder& append(unsigned char);
 	StringBuilder& append(float);
+	StringBuilder& append(float, unsigned precision);
 	StringBuilder& append(double);
 	StringBuilder& append(long double);
 	StringBuilder& append(const PointerFormat& arg);
@@ -61,7 +62,6 @@ public:
 	StringBuilder& append(const OctalFormat<_T>& arg);
 	template<typename _T>
 	StringBuilder& prepend(const OctalFormat<_T>& arg);
-
 
 	/// Builds the String and returns it.
 	[[nodiscard]] class String build();
@@ -135,7 +135,6 @@ private:
 	char*		m_chars { nullptr };
 	bool		m_built { false };
 };
-
 
 template<typename _T>
 StringBuilder& StringBuilder::append(const HexFormat<_T>& arg)
