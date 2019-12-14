@@ -61,14 +61,18 @@ explicit PrecisionFormat(const _T& t, unsigned s)->PrecisionFormat<_T>;
 
 #include <cstdio>
 #include <cstdlib>
+#ifndef FATAL_ERROR_IF
 #define FATAL_ERROR_IF(x, msg)                                                           \
     if (x)                                                                               \
     {                                                                                    \
         fprintf(stderr, "FATAL ERROR: %s: %s\n", __PRETTY_FUNCTION__, msg);              \
         abort();                                                                         \
     }
+#endif // FATAL_ERROR_IF
 
+#ifndef LOG
 #define LOG(x) _log(__FILE__, __LINE__, __PRETTY_FUNCTION__, x, #x)
+#endif // LOG
 
 #include <iostream>
 template<typename _T>
@@ -79,9 +83,15 @@ inline void _log(const char* file, unsigned long line, const char* function,
     std::cout << arg << std::endl;
 }
 
+#ifndef DEBUGMODE
 #define DEBUGMODE 1
+#endif // DEBUGMODE
+
 #if DEBUGMODE
+
+#ifndef ASSERT
 #define ASSERT(cond) _assert((cond), __FILE__, __PRETTY_FUNCTION__, __LINE__, #cond)
+#endif // ASSERT
 
 inline void _assert(bool result, const char* file, const char* function, unsigned line,
                     const char* condition_str)
@@ -169,12 +179,14 @@ inline void _print_memory(_Ptr from_arg, _Ptr to_arg, const char* what = "no inf
 
 #else
 
+#ifndef ASSERT
 #define ASSERT(x)
+#endif // ASSERT
 
 template<typename... _Args>
 inline constexpr void _print_memory(_Args&&...)
 {
 }
-#endif
+#endif // FIXME what's this
 
 #endif // CORE_H
