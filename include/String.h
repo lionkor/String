@@ -221,6 +221,23 @@ protected:
     } m_chars;
 };
 
+namespace std
+{
+template<>
+struct hash<String>
+{
+    std::size_t operator()(const String& s) const noexcept
+    {
+        std::size_t h = 0;
+        for (std::size_t i = 0; i < s.size(); ++i)
+        {
+            // FIXME: What the...?
+            h += s[i] * (i + 3 * 100);
+        }
+        return h;
+    }
+};
+} // namespace std
 
 #include "StringFormatting.h"
 
