@@ -109,6 +109,15 @@ public:
         return os << str.chars();
     }
 
+    friend std::istream& operator>>(std::istream& is, String& str)
+    {
+        // FIXME: This is ugly!
+        std::string tmp;
+        is >> tmp;
+        str = tmp.c_str();
+        return is;
+    }
+
 
     inline std::size_t size() const
     {
