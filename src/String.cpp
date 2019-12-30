@@ -319,3 +319,14 @@ bool String::contains(char c) const
 {
     return find(c) != end();
 }
+
+String String::trimmed(String trim) const
+{
+    Iterator begin = chars();
+    Iterator end   = chars() + size();
+    while (trim.contains(*begin))
+        ++begin;
+    while (trim.contains(*(end - 1)) && end > begin)
+        --end;
+    return substring(begin, end);
+}

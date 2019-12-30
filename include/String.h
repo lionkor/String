@@ -74,7 +74,9 @@ public:
 
     String substring(std::size_t position, std::size_t n) const;
     String substring(const Iterator begin, const Iterator end) const;
-    String trimmed(char trimmed = ' ') const;
+    String trimmed(char trimmed) const;
+    /// Trims with every character in the given collection
+    String trimmed(String trim = " \n\t\r") const;
     String hexified() const;
     String capitalized() const;
     String replaced(const StringView& to_replace, const StringView& replace_with) const;
