@@ -11,23 +11,20 @@
 #include "StringBuilder.h"
 #include "StringView.h"
 
-static constexpr unsigned char MAX_ALLOC = 3 * sizeof(void*) - 1;
+static constexpr unsigned char MAX_ALLOC = 1; // 3 * sizeof(void*) - 1;
 
-static constexpr char to_lower_internal(const char c)
-{
+static constexpr char to_lower_internal(const char c) {
     return (c >= 'A' && c <= 'Z') ? c + ('a' - 'A') : c;
 }
 
-static constexpr bool char_equals_case_insensitive(char lhs, char rhs)
-{
+static constexpr bool char_equals_case_insensitive(char lhs, char rhs) {
     return to_lower_internal(lhs) == to_lower_internal(rhs);
 }
 
 class String
 {
 public:
-    static inline std::string to_std_string(const String& str)
-    {
+    static inline std::string to_std_string(const String& str) {
         return std::string(str.chars());
     }
 
@@ -47,27 +44,23 @@ public:
 
     bool               operator==(const String&) const;
     bool               operator==(const char*) const;
-    friend inline bool operator==(const char* cstr, const String& str)
-    {
+    friend inline bool operator==(const char* cstr, const String& str) {
         return str == cstr;
     }
 
     inline bool        operator!=(const String& other) const { return !(*this == other); }
     inline bool        operator!=(const char* other) const { return !(*this == other); }
-    friend inline bool operator!=(const char* cstr, const String& str)
-    {
+    friend inline bool operator!=(const char* cstr, const String& str) {
         return str != cstr;
     }
 
     inline char operator[](const std::size_t index) const { return chars()[index]; }
 
-    constexpr Iterator begin() const
-    {
+    constexpr Iterator begin() const {
         return m_chars.all.dynamic ? &m_chars.heap.data[0] : &m_chars.stack.data[0];
     }
 
-    constexpr Iterator end() const
-    {
+    constexpr Iterator end() const {
         return m_chars.all.dynamic ? &m_chars.heap.data[m_chars.heap.size]
                                    : &m_chars.stack.data[m_chars.stack.size];
     }
@@ -76,14 +69,14 @@ public:
     String substring(const Iterator begin, const Iterator end) const;
     String trimmed(char trimmed) const;
     /// Trims with every character in the given collection
-    String trimmed(String trim = " \n\t\r") const;
-    String hexified() const;
-    String capitalized() const;
-    String replaced(const StringView& to_replace, const StringView& replace_with) const;
-    String replaced(char to_replace, char replace_with) const;
-    String to_upper() const;
-    String to_lower() const;
-    String to_printable_only() const;
+    String     trimmed(String trim = " \n\t\r") const;
+    String     hexified() const;
+    String     capitalized() const;
+    String     replaced(const StringView& to_replace, const StringView& replace_with) const;
+    String     replaced(char to_replace, char replace_with) const;
+    String     to_upper() const;
+    String     to_lower() const;
+    String     to_printable_only() const;
     StringView substring_view(const std::size_t position, const std::size_t n) const;
 
     Iterator            find(const char c) const;
@@ -101,18 +94,16 @@ public:
     const char* c_str() const;
 
     [[deprecated("use substring instead")]] String substr(std::size_t pos,
-                                                          std::size_t n) const;
+        std::size_t                                                   n) const;
 
     [[deprecated("use substring instead")]] String substr(const Iterator begin,
-                                                          const Iterator end) const;
+        const Iterator                                                   end) const;
 
-    friend std::ostream& operator<<(std::ostream& os, const String& str)
-    {
+    friend std::ostream& operator<<(std::ostream& os, const String& str) {
         return os << str.chars();
     }
 
-    friend std::istream& operator>>(std::istream& is, String& str)
-    {
+    friend std::istream& operator>>(std::istream& is, String& str) {
         // FIXME: This is ugly!
         std::string tmp;
         is >> tmp;
@@ -121,8 +112,7 @@ public:
     }
 
 
-    inline std::size_t size() const
-    {
+    inline std::size_t size() const {
         return m_chars.all.dynamic ? m_chars.heap.size : m_chars.stack.size;
     }
 
@@ -140,34 +130,27 @@ public:
     static String format(_Args&&... args);
 
 protected:
-    inline void set_size(std::size_t size)
-    {
+    inline void set_size(std::size_t size) {
         if (m_chars.all.dynamic)
             m_chars.heap.size = size;
         else
             m_chars.stack.size = size;
     }
 
-    inline const char* chars() const
-    {
+    inline const char* chars() const {
         return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data;
     }
 
-    inline char* chars()
-    {
+    inline char* chars() {
         return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data;
     }
 
-    inline void store(const char* cstr, const std::size_t csize)
-    {
-        if (csize > MAX_ALLOC)
-        {
+    inline void store(const char* cstr, const std::size_t csize) {
+        if (csize > MAX_ALLOC) {
             m_chars.all.dynamic = true;
             set_size(csize);
             m_chars.heap.data = new char[size() + 1];
-        }
-        else
-        {
+        } else {
             m_chars.all.dynamic = false;
             set_size(csize);
         }
@@ -181,19 +164,15 @@ protected:
 
     inline void store(const char* cstr) { store(cstr, strlen(cstr)); }
 
-    inline void resize(int delta)
-    {
+    inline void resize(int delta) {
         // FIXME: This is very inefficient. We should implement capacity in m_chars.heap
-        if (m_chars.all.dynamic)
-        {
+        if (m_chars.all.dynamic) {
             char* new_chars = new char[m_chars.heap.size + 1];
             std::memcpy(new_chars, m_chars.heap.data, m_chars.heap.size);
             delete[] m_chars.heap.data;
             m_chars.heap.data = new_chars;
             m_chars.heap.size += delta;
-        }
-        else
-        {
+        } else {
             std::memset(m_chars.stack.data + m_chars.stack.size, 0, delta);
             m_chars.stack.size += delta;
         }
@@ -223,16 +202,12 @@ protected:
     } m_chars;
 };
 
-namespace std
-{
+namespace std {
 template<>
-struct hash<String>
-{
-    std::size_t operator()(const String& s) const noexcept
-    {
+struct hash<String> {
+    std::size_t operator()(const String& s) const noexcept {
         std::size_t h = 0;
-        for (std::size_t i = 0; i < s.size(); ++i)
-        {
+        for (std::size_t i = 0; i < s.size(); ++i) {
             // FIXME: What the...?
             h += s[i] * (i + 3 * 100);
         }
