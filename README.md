@@ -1,6 +1,8 @@
 # String
 A simple modern String class. `String`, which is **only 24 bytes on x64**, has **small string optimization (SSO)**, uses **variadic templates** for formatting (`String::format`), includes a very lightweight (fully constexpr) **StringView** friend class, and has some methods `std::string` is desperately missing!
 
+**ATTENTION: Before using please view issue #10**
+
 **Visit the [Wiki](https://github.com/lionkor/String/wiki) for the full documentation.**
 
 `String` is immutable, but it offers plenty of ways to be constructed, so don't worry!
