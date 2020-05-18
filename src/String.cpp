@@ -67,6 +67,8 @@ void String::clear() {
 }
 
 void String::insert(String::ConstIterator iter, const String& s) {
+    if (iter > end())
+        throw std::runtime_error("iterator out of range");
     const auto offset = iter - m_chars.data();
     if (offset < 0)
         throw std::runtime_error("invalid iterator, out of range: " + std::to_string(offset));
@@ -74,6 +76,8 @@ void String::insert(String::ConstIterator iter, const String& s) {
 }
 
 void String::insert(String::ConstIterator iter, String::ConstIterator begin, String::ConstIterator end) {
+    if (iter >= this->end())
+        throw std::runtime_error("iterator out of range");
     const auto offset = iter - m_chars.data();
     if (offset < 0)
         throw std::runtime_error("invalid iterator, out of range: " + std::to_string(offset));
@@ -81,6 +85,8 @@ void String::insert(String::ConstIterator iter, String::ConstIterator begin, Str
 }
 
 void String::insert(String::ConstIterator iter, char c) {
+    if (iter > end())
+        throw std::runtime_error("iterator out of range");
     const auto offset = iter - m_chars.data();
     if (offset < 0)
         throw std::runtime_error("invalid iterator, out of range: " + std::to_string(offset));
