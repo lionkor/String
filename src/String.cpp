@@ -36,7 +36,7 @@ char& String::at(std::size_t i) {
 }
 
 bool String::empty() const {
-    return m_chars[0] == '\0';
+    return m_chars.empty();
 }
 
 std::size_t String::size() const {
@@ -56,6 +56,10 @@ std::unique_ptr<char> String::as_c_string() const {
     std::copy_n(m_chars.data(), m_chars.size(), ptr.get());
     ptr.get()[m_chars.size()] = '\0';
     return ptr;
+}
+
+std::string String::as_std_string() const {
+    return std::string(m_chars.begin(), m_chars.end());
 }
 
 void String::clear() {

@@ -35,11 +35,16 @@ public:
     std::size_t   length() const;
 
     std::unique_ptr<char> as_c_string() const;
+    std::string           as_std_string() const;
 
     void clear();
     void insert(ConstIterator iter, char c);
     void insert(ConstIterator iter, const String& s);
     void insert(ConstIterator iter, ConstIterator begin, ConstIterator end);
+
+    void erase(ConstIterator iter);
+    void erase_from_to(ConstIterator from, ConstIterator to);
+    void erase_n(ConstIterator iter, std::size_t n);
 };
 
 #endif // STRING_H
