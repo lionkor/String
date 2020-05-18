@@ -16,19 +16,19 @@ String::String(const char* cstr) {
 }
 
 String::Iterator String::begin() {
-    return &*m_chars.begin();
+    return m_chars.begin();
 }
 
 String::Iterator String::end() {
-    return &*m_chars.end();
+    return m_chars.end();
 }
 
 String::ConstIterator String::begin() const {
-    return &*m_chars.begin();
+    return m_chars.begin();
 }
 
 String::ConstIterator String::end() const {
-    return &*m_chars.end();
+    return m_chars.end();
 }
 
 char& String::at(std::size_t i) {
@@ -69,43 +69,34 @@ void String::clear() {
 void String::insert(String::ConstIterator iter, const String& s) {
     if (iter > end())
         throw std::runtime_error("iterator out of range");
-    const auto offset = iter - m_chars.data();
-    if (offset < 0)
-        throw std::runtime_error("invalid iterator, out of range: " + std::to_string(offset));
-    m_chars.insert(m_chars.begin() + offset, s.begin(), s.end());
+    m_chars.insert(iter, s.begin(), s.end());
 }
 
 void String::insert(String::ConstIterator iter, String::ConstIterator begin, String::ConstIterator end) {
     if (iter > this->end())
         throw std::runtime_error("iterator out of range");
-    const auto offset = iter - m_chars.data();
-    if (offset < 0)
-        throw std::runtime_error("invalid iterator, out of range: " + std::to_string(offset));
-    m_chars.insert(m_chars.begin() + offset, begin, end);
+    m_chars.insert(iter, begin, end);
 }
 
 void String::insert(String::ConstIterator iter, char c) {
     if (iter > end())
         throw std::runtime_error("iterator out of range");
-    const auto offset = iter - m_chars.data();
-    if (offset < 0)
-        throw std::runtime_error("invalid iterator, out of range: " + std::to_string(offset));
-    m_chars.insert(m_chars.begin() + offset, c);
+    m_chars.insert(iter, c);
 }
 
 void String::erase(String::ConstIterator iter) {
     if (iter < begin() || iter > end() || empty() || iter == end())
         throw std::runtime_error("iterator out of range");
-    const auto offset = iter - m_chars.data();
-    m_chars.erase(m_chars.begin() + offset);
+    m_chars.erase(iter);
 }
 
 void String::erase_from_to(String::ConstIterator from, String::ConstIterator to) {
     if (from < begin() || from > end() || empty() || from == end() || to < begin() || to > end() || to < from)
         throw std::runtime_error("iterator out of range");
-    m_chars.erase(m_chars.begin() + (from - m_chars.data()), m_chars.begin() + (to - m_chars.data()));
+    m_chars.erase(from, to);
 }
 
 void String::erase_n(String::ConstIterator iter, std::size_t n) {
     erase_from_to(iter, iter + n);
 }
+

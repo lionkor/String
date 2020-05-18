@@ -12,6 +12,7 @@ private:
     std::vector<char> m_chars;
 
 public:
+
     /// New empty string, equivalent to String("")(
     String();
     /// New string with cstr as content
@@ -21,8 +22,8 @@ public:
     String(String&&)      = default;
     String& operator=(const String&) = default;
 
-    using Iterator      = char*;
-    using ConstIterator = const char*;
+    using Iterator      = std::vector<char>::iterator;
+    using ConstIterator = std::vector<char>::const_iterator;
 
     Iterator      begin();
     ConstIterator begin() const;
