@@ -7,108 +7,128 @@
 #include <vector>
 
 /// \brief The String class represents a not-null-terminated string.
+/// \author `@lionkor` (Lion Kortlepel)
 ///
-/// Implemented as a wrapper around a std::vector<char> for safety, simplicity and speed.
-/// It is *not* null-terminated. If a null-terminated string is needed, it's very simple
-/// to convert to a std::string or c-string.
+/// A String class without many of the inconsistencies that `std::string` brings, and many helper
+/// functions, making it more alike Python or .NET strings. 
+/// 
+/// Implemented as a wrapper around a `std::vector<char>` for safety, simplicity and speed.
+/// This means that any `<algorithm>` calls should work as expected.
+/// 
+/// \attention String is \b not null-terminated. If a null-terminated string is needed, it's very simple
+/// to convert to a `std::string` or c-string via `String::as_c_string` and `String::as_std_string`.
 class String
 {
 private:
     std::vector<char> m_chars;
 
 public:
-    // CAUTION: Do *not* rely on the iterators being aliases for
-    // std::vector iterators. This might change at any point.
+    /// \brief Iterators used to iterate over the String.
+    /// \attention Do *not* rely on these iterators being aliases for
+    /// std::vector iterators. This might change at any point. Treat them as
+    /// their own types.
     using Iterator             = std::vector<char>::iterator;
     using ConstIterator        = std::vector<char>::const_iterator;
     using ReverseIterator      = std::vector<char>::reverse_iterator;
     using ConstReverseIterator = std::vector<char>::const_reverse_iterator;
 
-    /// New empty string, equivalent to String("")(
+    /// \brief New empty string, equivalent to `""`
     String();
-    /// New string with cstr as content
+    /// \brief New string with cstr as content
     String(const char* cstr);
-    /// New string from another string's iterators.
+    /// \brief New string from another string's iterators.
     String(ConstIterator from, ConstIterator to);
 
     String(const String&) = default;
     String(String&&)      = default;
     String& operator=(const String&) = default;
 
-    /// Begin iterator. Points to the first char in the string.
+    /// \brief Begin iterator. Points to the first char in the string.
     Iterator begin();
-    /// Const begin iterator. Points to the first char in the string.
+    /// \brief Const begin iterator. Points to the first char in the string.
     ConstIterator begin() const;
-    /// End iterator. points at the position past the end of the string.
+    /// \brief End iterator. points at the position past the end of the string.
     Iterator end();
-    /// Const end iterator. points at the position past the end of the string.
+    /// \brief Const end iterator. points at the position past the end of the string.
     ConstIterator end() const;
-    /// Accesses the char at position i in the string.
+    /// \brief Accesses the character at position `i` in the string.
+    /// \throw std::out_of_range if `i` is an invalid index
     char& at(std::size_t i);
-    /// Accesses the char at position i in the string.
+    /// \brief Accesses the character at position i in the string.
+    /// \throw std::out_of_range if `i` is an invalid index
     char at(std::size_t i) const;
-    /// True if the string is empty, i.e. has length 0
-    bool empty() const;
-    /// Size or length of the string.
-    std::size_t size() const;
-    /// Length or size of the string.
-    std::size_t length() const;
+    /// \brief True if the string is empty, i.e. has length 0
+    bool empty() const noexcept;
+    /// \brief Size or length of the string.
+    std::size_t size() const noexcept;
+    /// \brief Length or size of the string.
+    std::size_t length() const noexcept;
 
-    /// A unique_ptr managed char[] containing a copy of the data of the string,
+    /// \brief A unique_ptr managed char[] containing a copy of the data of the string,
     /// guaranteed to be null-terminated.
     std::unique_ptr<char> as_c_string() const;
-    /// A copy of this string represented as a std::string.
+    /// \brief A copy of this string represented as a std::string.
     std::string as_std_string() const;
 
-    /// Clears the contents of the string, resulting string will be the empty string.
+    /// \brief Clears the contents of the string, resulting string will be the empty string.
     void clear();
 
-    /// Inserts a char before the position pointed to by the iterator. May invalidate
+    /// \brief Inserts a char before the position pointed to by the iterator. May invalidate
     /// iterators.
     void insert(ConstIterator iter, char c);
-    /// Inserts the string before the position pointed to by the iterator. May invalidate
+    /// \brief Inserts the string before the position pointed to by the iterator. May invalidate
     /// iterators.
     void insert(ConstIterator iter, const String& s);
-    /// Inserts the part of the string specified by the begin and end iterators
+    /// \brief Inserts the part of the string specified by the begin and end iterators
     /// before the position pointed to by the "iter" iterator. May invalidate iterators.
     void insert(ConstIterator iter, ConstIterator begin, ConstIterator end);
 
-    /// Removes the element pointed to by the iterator. Invalidates iterators.
+    /// \brief Removes the element pointed to by the iterator. Invalidates iterators.
     void erase(ConstIterator iter);
-    /// Removes elements between from and to. Invalidates iterators.
+    /// \brief Removes elements between from and to. Invalidates iterators.
     void erase_from_to(ConstIterator from, ConstIterator to);
-    /// Removes n elements starting at the iterator position. Invalidates iterators.
+    /// \brief Removes n elements starting at the iterator position. Invalidates iterators.
     void erase_n(ConstIterator iter, std::size_t n);
 
-    /// A copy of the chars between from and to, as a new string.
+    /// \brief A copy of the chars between from and to, as a new string.
     String substring(ConstIterator from, ConstIterator to) const;
-    /// A copy of the first n chars from start, as a new string.
+    /// \brief A copy of the first n chars from start, as a new string.
     String substring(ConstIterator start, std::size_t n) const;
 
-    /// Finds the first occurance of char c in the string. Returns end() if nothing was
+    /// \brief Finds the first occurance of char c in the string. Returns end() if nothing was
     /// found.
+    /// \arg `c` character to find, case-sensitive.
+    /// \return String::Iterator pointing to the found character, or end() if nothing was found.
     Iterator find(char c);
-    /// Finds the first occurance of char c in the string. Returns end() if nothing was
+    /// \brief Finds the first occurance of char c in the string. Returns end() if nothing was
     /// found.
+    /// \arg `c` character to find, case-sensitive.
+    /// \return String::ConstIterator pointing to the found character, or end() if nothing was found.
     ConstIterator find(char c) const;
-    /// Finds the first occurance of char c in the string, ignoring case. Returns end() if
+    /// \brief Finds the first occurance of char c in the string, ignoring case. Returns end() if
     /// nothing was found. Default locale is "C".
+    /// \arg `c` character to find
+    /// \arg `locale` locale to use when considering and converting case
+    /// \return String::Iterator pointing to the found character, or end() if nothing was found
     Iterator find_caseless(char c, const std::locale& locale = std::locale::classic());
-    /// Finds the first occurance of char c in the string, ignoring case. Returns end() if
+    /// \brief Finds the first occurance of char c in the string, ignoring case. Returns end() if
     /// nothing was found. Default locale is "C".
+    /// \arg `c` character to find
+    /// \arg `locale` locale to use when considering and converting case
+    /// \return String::ConstIterator pointing to the found character, or end() if nothing was found
     ConstIterator find_caseless(char c, const std::locale& locale = std::locale::classic()) const;
 
-    /// Does a lexicographical case-sensitive comparison between the chars of both strings.
+    /// \brief Does a lexicographical case-sensitive comparison between the chars of both strings.
     bool equals(const String&) const;
-    /// Does a lexicographical case-sensitive comparison between the chars of both strings.
+    /// \brief Does a lexicographical case-sensitive comparison between the chars of both strings.
     bool operator==(const String&) const;
-    /// Does a lexicographical case-sensitive comparison between the chars of both strings.
+    /// \brief Does a lexicographical case-sensitive comparison between the chars of both strings.
     bool operator!=(const String&) const;
 
-    /// Appends the given string to this string.
+    /// \brief Appends the given string to this string.
     String& operator+=(const String&);
-    /// Creates a new string by appending a string to this string.
-    String  operator+(const String&) const;
+    /// \brief Creates a new string by appending a string to this string.
+    String operator+(const String&) const;
 };
 
 #endif // STRING_H

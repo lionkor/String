@@ -39,15 +39,15 @@ char& String::at(std::size_t i) {
     return m_chars.at(i);
 }
 
-bool String::empty() const {
+bool String::empty() const noexcept {
     return m_chars.empty();
 }
 
-std::size_t String::size() const {
+std::size_t String::size() const noexcept {
     return m_chars.size();
 }
 
-std::size_t String::length() const {
+std::size_t String::length() const noexcept {
     return m_chars.size();
 }
 
