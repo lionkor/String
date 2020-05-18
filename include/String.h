@@ -17,6 +17,8 @@ private:
     std::vector<char> m_chars;
 
 public:
+    // CAUTION: Do *not* rely on the iterators being aliases for
+    // std::vector iterators. This might change at any point. 
     using Iterator             = std::vector<char>::iterator;
     using ConstIterator        = std::vector<char>::const_iterator;
     using ReverseIterator      = std::vector<char>::reverse_iterator;
@@ -26,6 +28,8 @@ public:
     String();
     /// New string with cstr as content
     String(const char* cstr);
+    /// New string from another string's iterators.
+    String(ConstIterator from, ConstIterator to);
 
     String(const String&) = default;
     String(String&&)      = default;
@@ -54,18 +58,18 @@ public:
     /// guaranteed to be null-terminated.
     std::unique_ptr<char> as_c_string() const;
     /// A copy of this string represented as a std::string.
-    std::string           as_std_string() const;
+    std::string as_std_string() const;
 
     /// Clears the contents of the string, resulting string will be the empty string.
     void clear();
-    
-    /// Inserts a char before the position pointed to by the iterator. May invalidate 
+
+    /// Inserts a char before the position pointed to by the iterator. May invalidate
     /// iterators.
     void insert(ConstIterator iter, char c);
-    /// Inserts the string before the position pointed to by the iterator. May invalidate 
+    /// Inserts the string before the position pointed to by the iterator. May invalidate
     /// iterators.
     void insert(ConstIterator iter, const String& s);
-    /// Inserts the part of the string specified by the begin and end iterators 
+    /// Inserts the part of the string specified by the begin and end iterators
     /// before the position pointed to by the "iter" iterator. May invalidate iterators.
     void insert(ConstIterator iter, ConstIterator begin, ConstIterator end);
 
@@ -75,6 +79,9 @@ public:
     void erase_from_to(ConstIterator from, ConstIterator to);
     /// Removes n elements starting at the iterator position. Invalidates iterators.
     void erase_n(ConstIterator iter, std::size_t n);
+
+    /// A copy of the chars between from and to, as a string.
+    String substring(ConstIterator from, ConstIterator to) const;
 };
 
 #endif // STRING_H

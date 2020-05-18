@@ -15,6 +15,10 @@ String::String(const char* cstr) {
     }
 }
 
+String::String(String::ConstIterator from, String::ConstIterator to)
+    : m_chars(from, to) {
+}
+
 String::Iterator String::begin() {
     return m_chars.begin();
 }
@@ -98,4 +102,8 @@ void String::erase_from_to(String::ConstIterator from, String::ConstIterator to)
 
 void String::erase_n(String::ConstIterator iter, std::size_t n) {
     erase_from_to(iter, iter + n);
+}
+
+String String::substring(String::ConstIterator from, String::ConstIterator to) const {
+    return String(from, to);
 }

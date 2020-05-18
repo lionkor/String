@@ -19,6 +19,10 @@ TEST_CASE("String::String") {
     String s2("Hello");
     REQUIRE(s2.size() == s2.length());
     REQUIRE(s2.size() == 5);
+    
+    String s3("What a wonderful world");
+    String s4(s3.begin() + 7, s3.end() - 6);
+    REQUIRE(s4.as_std_string() == "wonderful");
 }
 
 TEST_CASE("String::begin and String::end") {
@@ -214,4 +218,7 @@ TEST_CASE("String::erase_n") {
     REQUIRE(s3.as_std_string() == "Hello");
 }
 
-
+TEST_CASE("String::substring") {
+    String s1("Hello, World!");
+    REQUIRE(s1.substring(s1.begin() + 1, s1.end() - 1).as_std_string() == "ello, World");
+}
