@@ -92,3 +92,20 @@ void String::insert(String::ConstIterator iter, char c) {
         throw std::runtime_error("invalid iterator, out of range: " + std::to_string(offset));
     m_chars.insert(m_chars.begin() + offset, c);
 }
+
+void String::erase(String::ConstIterator iter) {
+    if (iter < begin() || iter > end() || empty() || iter == end())
+        throw std::runtime_error("iterator out of range");
+    const auto offset = iter - m_chars.data();
+    m_chars.erase(m_chars.begin() + offset);
+}
+
+void String::erase_from_to(String::ConstIterator from, String::ConstIterator to) {
+    if (from < begin() || from > end() || empty() || from == end() || to < begin() || to > end() || to < from)
+        throw std::runtime_error("iterator out of range");
+    m_chars.erase(m_chars.begin() + (from - m_chars.data()), m_chars.begin() + (to - m_chars.data()));
+}
+
+void String::erase_n(String::ConstIterator iter, std::size_t n) {
+    erase_from_to(iter, iter + n);
+}
