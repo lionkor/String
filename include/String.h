@@ -45,20 +45,32 @@ public:
     char at(std::size_t i) const;
     /// True if the string is empty, i.e. has length 0
     bool empty() const;
-    /// Size / length of the string.
+    /// Size or length of the string.
     std::size_t size() const;
+    /// Length or size of the string.
     std::size_t length() const;
 
+    /// A unique_ptr managed char[] containing a copy of the data of the string,
+    /// guaranteed to be null-terminated.
     std::unique_ptr<char> as_c_string() const;
+    /// A copy of this string represented as a std::string.
     std::string           as_std_string() const;
 
+    /// Clears the contents of the string, resulting string will be the empty string.
     void clear();
+    /// Inserts a char before the position pointed to by the iterator. May invalidate iterators.
     void insert(ConstIterator iter, char c);
+    /// Inserts the string before the position pointed to by the iterator. May invalidate iterators.
     void insert(ConstIterator iter, const String& s);
+    /// Inserts the part of the string specified by the begin and end iterators 
+    /// before the position pointed to by the "iter" iterator. May invalidate iterators.
     void insert(ConstIterator iter, ConstIterator begin, ConstIterator end);
 
+    /// Removes the element pointed to by the iterator. Invalidates iterators.
     void erase(ConstIterator iter);
+    /// Removes elements between from and to. Invalidates iterators.
     void erase_from_to(ConstIterator from, ConstIterator to);
+    /// Removes n elements starting at the iterator position. Invalidates iterators.
     void erase_n(ConstIterator iter, std::size_t n);
 };
 
