@@ -58,9 +58,12 @@ public:
 
     /// Clears the contents of the string, resulting string will be the empty string.
     void clear();
-    /// Inserts a char before the position pointed to by the iterator. May invalidate iterators.
+    
+    /// Inserts a char before the position pointed to by the iterator. May invalidate 
+    /// iterators.
     void insert(ConstIterator iter, char c);
-    /// Inserts the string before the position pointed to by the iterator. May invalidate iterators.
+    /// Inserts the string before the position pointed to by the iterator. May invalidate 
+    /// iterators.
     void insert(ConstIterator iter, const String& s);
     /// Inserts the part of the string specified by the begin and end iterators 
     /// before the position pointed to by the "iter" iterator. May invalidate iterators.

@@ -99,4 +99,3 @@ void String::erase_from_to(String::ConstIterator from, String::ConstIterator to)
 void String::erase_n(String::ConstIterator iter, std::size_t n) {
     erase_from_to(iter, iter + n);
 }
-
