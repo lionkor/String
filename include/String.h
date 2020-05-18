@@ -80,8 +80,10 @@ public:
     /// Removes n elements starting at the iterator position. Invalidates iterators.
     void erase_n(ConstIterator iter, std::size_t n);
 
-    /// A copy of the chars between from and to, as a string.
+    /// A copy of the chars between from and to, as a new string.
     String substring(ConstIterator from, ConstIterator to) const;
+    /// A copy of the first n chars from start, as a new string.
+    String substring(ConstIterator start, std::size_t n) const;
 };
 
 #endif // STRING_H

@@ -221,4 +221,7 @@ TEST_CASE("String::erase_n") {
 TEST_CASE("String::substring") {
     String s1("Hello, World!");
     REQUIRE(s1.substring(s1.begin() + 1, s1.end() - 1).as_std_string() == "ello, World");
+    
+    String s2("Hello, World!");
+    REQUIRE(s2.substring(s2.begin() + 1, 4).as_std_string() == "ello");
 }

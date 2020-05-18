@@ -107,3 +107,7 @@ void String::erase_n(String::ConstIterator iter, std::size_t n) {
 String String::substring(String::ConstIterator from, String::ConstIterator to) const {
     return String(from, to);
 }
+
+String String::substring(String::ConstIterator start, std::size_t n) const {
+    return String(start, start + n);
+}
