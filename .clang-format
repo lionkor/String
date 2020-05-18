@@ -1,0 +1,41 @@
+﻿BasedOnStyle: WebKit
+SpaceBeforeCpp11BracedList: 'true'
+AlignEscapedNewlinesLeft: 'true'
+AllowShortBlocksOnASingleLine: 'false'
+AlwaysBreakBeforeMultilineStrings: 'true'
+AlwaysBreakTemplateDeclarations: 'true'
+BinPackParameters: 'true'
+BreakConstructorInitializersBeforeComma: 'false'
+ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
+ConstructorInitializerIndentWidth: '4'
+ContinuationIndentWidth: '4'
+Cpp11BracedListStyle: 'false'
+IndentWidth: '4'
+Language: Cpp
+MaxEmptyLinesToKeep: '2'
+NamespaceIndentation: None
+PointerAlignment: Left
+Standard: Auto
+TabWidth: '4'
+UseTab: Never
+SpaceBeforeCtorInitializerColon: 'true'
+SpaceBeforeInheritanceColon: 'true'
+AlignConsecutiveAssignments: 'true'
+AlignConsecutiveDeclarations: 'true'
+AlignEscapedNewlines: Right
+AlignOperands: 'true'
+AlignTrailingComments: 'true'
+AllowAllConstructorInitializersOnNextLine: 'true'
+AllowShortCaseLabelsOnASingleLine: 'false'
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: 'false'
+AllowShortLoopsOnASingleLine: 'false'
+SortIncludes: 'false'
+AccessModifierOffset: -4
+SpaceAfterTemplateKeyword: 'false'
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterFunction: false
+    AfterClass: true
+    AfterEnum: true
+
