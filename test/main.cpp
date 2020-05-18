@@ -46,7 +46,6 @@ TEST_CASE("String::at") {
     String s1("A String");
     REQUIRE(s1.at(0) == 'A');
     REQUIRE(s1.at(s1.size() - 1) == 'g');
-    REQUIRE_THROWS(s1.at(-1));
     REQUIRE_THROWS(s1.at(100));
     REQUIRE_THROWS(s1.at(s1.size()));
 }
@@ -225,3 +224,36 @@ TEST_CASE("String::substring") {
     String s2("Hello, World!");
     REQUIRE(s2.substring(s2.begin() + 1, 4).as_std_string() == "ello");
 }
+
+TEST_CASE("String::find") {
+    String s1("Hello");
+    REQUIRE(s1.find('H') == s1.begin());
+    REQUIRE(s1.find('X') == s1.end());
+    REQUIRE(s1.find('e') == s1.begin() + 1);
+    REQUIRE(s1.find('E') == s1.end());
+    REQUIRE(s1.find('o') == s1.end() - 1);
+    
+    const String s2("Hello");
+    REQUIRE(s2.find('H') == s2.begin());
+    REQUIRE(s2.find('X') == s2.end());
+    REQUIRE(s2.find('e') == s2.begin() + 1);
+    REQUIRE(s2.find('E') == s2.end());
+    REQUIRE(s2.find('o') == s2.end() - 1);
+}
+
+TEST_CASE("String::find_caseless") {
+    String s1("Hello");
+    REQUIRE(s1.find_caseless('H') == s1.begin());
+    REQUIRE(s1.find_caseless('X') == s1.end());
+    REQUIRE(s1.find_caseless('e') == s1.begin() + 1);
+    REQUIRE(s1.find_caseless('E') == s1.begin() + 1);
+    REQUIRE(s1.find_caseless('O') == s1.end() - 1);
+    
+    const String s2("Hello");
+    REQUIRE(s2.find_caseless('H') == s2.begin());
+    REQUIRE(s2.find_caseless('X') == s2.end());
+    REQUIRE(s2.find_caseless('e') == s2.begin() + 1);
+    REQUIRE(s2.find_caseless('E') == s2.begin() + 1);
+    REQUIRE(s2.find_caseless('O') == s2.end() - 1);
+}
+

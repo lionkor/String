@@ -18,7 +18,7 @@ private:
 
 public:
     // CAUTION: Do *not* rely on the iterators being aliases for
-    // std::vector iterators. This might change at any point. 
+    // std::vector iterators. This might change at any point.
     using Iterator             = std::vector<char>::iterator;
     using ConstIterator        = std::vector<char>::const_iterator;
     using ReverseIterator      = std::vector<char>::reverse_iterator;
@@ -84,6 +84,19 @@ public:
     String substring(ConstIterator from, ConstIterator to) const;
     /// A copy of the first n chars from start, as a new string.
     String substring(ConstIterator start, std::size_t n) const;
+
+    /// Finds the first occurance of char c in the string. Returns end() if nothing was
+    /// found.
+    Iterator find(char c);
+    /// Finds the first occurance of char c in the string. Returns end() if nothing was
+    /// found.
+    ConstIterator find(char c) const;
+    /// Finds the first occurance of char c in the string, ignoring case. Returns end() if
+    /// nothing was found. Default locale is "C".
+    Iterator find_caseless(char c, const std::locale& locale = std::locale::classic());
+    /// Finds the first occurance of char c in the string, ignoring case. Returns end() if
+    /// nothing was found. Default locale is "C".
+    ConstIterator find_caseless(char c, const std::locale& locale = std::locale::classic()) const;
 };
 
 #endif // STRING_H

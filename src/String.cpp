@@ -111,3 +111,23 @@ String String::substring(String::ConstIterator from, String::ConstIterator to) c
 String String::substring(String::ConstIterator start, std::size_t n) const {
     return String(start, start + n);
 }
+
+String::Iterator String::find(char c) {
+    return std::find(m_chars.begin(), m_chars.end(), c);
+}
+
+String::ConstIterator String::find(char c) const {
+    return std::find(m_chars.begin(), m_chars.end(), c);
+}
+
+String::Iterator String::find_caseless(char c, const std::locale& locale) {
+    return std::find_if(m_chars.begin(), m_chars.end(), [c, locale](const auto& a) -> bool {
+        return std::tolower(a, locale) == std::tolower(c, locale);
+    });
+}
+
+String::ConstIterator String::find_caseless(char c, const std::locale& locale) const {
+    return std::find_if(m_chars.begin(), m_chars.end(), [c, locale](const auto& a) -> bool {
+        return std::tolower(a, locale) == std::tolower(c, locale);
+    });
+}
