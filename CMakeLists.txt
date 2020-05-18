@@ -1,22 +1,15 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(String)
-set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_COMPILER g++)
-set(CMAKE_CXX_EXTENSIONS 2a)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -fPIC -s")
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_STANDARD 17)
 
-add_library(String STATIC
+project(StringTest)
+
+add_executable(StringTest
+    test/main.cpp
     src/String.cpp
-    src/StringView.cpp
-    src/StringBuilder.cpp
-    include/Core.h
-    include/Exceptions.h
     include/String.h
-    include/StringBuilder.h
-    include/StringView.h
 )
 
-include_directories(String "./src" "./include")
-
+include_directories(StringTest "./src" "./include")
