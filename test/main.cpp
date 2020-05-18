@@ -19,7 +19,7 @@ TEST_CASE("String::String") {
     String s2("Hello");
     REQUIRE(s2.size() == s2.length());
     REQUIRE(s2.size() == 5);
-    
+
     String s3("What a wonderful world");
     String s4(s3.begin() + 7, s3.end() - 6);
     REQUIRE(s4.as_std_string() == "wonderful");
@@ -220,7 +220,7 @@ TEST_CASE("String::erase_n") {
 TEST_CASE("String::substring") {
     String s1("Hello, World!");
     REQUIRE(s1.substring(s1.begin() + 1, s1.end() - 1).as_std_string() == "ello, World");
-    
+
     String s2("Hello, World!");
     REQUIRE(s2.substring(s2.begin() + 1, 4).as_std_string() == "ello");
 }
@@ -232,7 +232,7 @@ TEST_CASE("String::find") {
     REQUIRE(s1.find('e') == s1.begin() + 1);
     REQUIRE(s1.find('E') == s1.end());
     REQUIRE(s1.find('o') == s1.end() - 1);
-    
+
     const String s2("Hello");
     REQUIRE(s2.find('H') == s2.begin());
     REQUIRE(s2.find('X') == s2.end());
@@ -248,7 +248,7 @@ TEST_CASE("String::find_caseless") {
     REQUIRE(s1.find_caseless('e') == s1.begin() + 1);
     REQUIRE(s1.find_caseless('E') == s1.begin() + 1);
     REQUIRE(s1.find_caseless('O') == s1.end() - 1);
-    
+
     const String s2("Hello");
     REQUIRE(s2.find_caseless('H') == s2.begin());
     REQUIRE(s2.find_caseless('X') == s2.end());
@@ -257,3 +257,56 @@ TEST_CASE("String::find_caseless") {
     REQUIRE(s2.find_caseless('O') == s2.end() - 1);
 }
 
+TEST_CASE("String::equals") {
+    REQUIRE(String("Hello").equals(String("Hello")));
+    REQUIRE(String("").equals(String("")));
+    REQUIRE(String().equals(String("")));
+    REQUIRE(String().equals(String()));
+    REQUIRE(String("\0\0").equals(String("")));
+    REQUIRE_FALSE(String("HELL").equals(String("hell")));
+    REQUIRE_FALSE(String("").equals(String(" ")));
+}
+
+/*
+  /// Does a lexicographical case-sensitive comparison between the chars of both strings.
+    bool operator==(const String&) const;
+    /// Does a lexicographical case-sensitive comparison between the chars of both strings.
+    bool operator!=(const String&) const;
+
+    String& operator+=(const String&);
+    String  operator+(const String&) const;
+    */
+
+TEST_CASE("String::operator==") {
+    REQUIRE(String("Hello") == String("Hello"));
+    REQUIRE(String("") == String(""));
+    REQUIRE(String() == String(""));
+    REQUIRE(String() == String());
+    REQUIRE(String("\0\0") == String(""));
+    
+    REQUIRE(String("HELL") != String("hell"));
+    REQUIRE(String("") != String(" "));
+    REQUIRE(String(".") != String(".."));
+    REQUIRE(String("Aa") != String("A"));
+    
+    REQUIRE(String("Hello") == "Hello");
+    REQUIRE(String() == "");
+}
+
+TEST_CASE("String::operator+=") {
+    String s;
+    s += "Hello ";
+    s += "World!";
+    REQUIRE(s == "Hello World!");
+
+    String s2("such is ");
+    REQUIRE((s2 += "life") == "such is life");
+}
+
+TEST_CASE("String::operator+") {
+    String s1("Hello there");
+    String s2("my friend!");
+    String s3 = s1 + ", " + s2;
+    REQUIRE(s3 == "Hello there, my friend!");
+    REQUIRE(s1 + String() == s1);
+}

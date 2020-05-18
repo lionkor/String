@@ -131,3 +131,28 @@ String::ConstIterator String::find_caseless(char c, const std::locale& locale) c
         return std::tolower(a, locale) == std::tolower(c, locale);
     });
 }
+
+bool String::equals(const String& str) const {
+    if (size() != str.size())
+        return false;
+    return std::memcmp(m_chars.data(), str.m_chars.data(), m_chars.size()) == 0;
+}
+
+bool String::operator==(const String& s) const {
+    return equals(s);
+}
+
+bool String::operator!=(const String& s) const {
+    return !equals(s);
+}
+
+String& String::operator+=(const String& s) {
+    insert(end(), s);
+    return *this;
+}
+
+String String::operator+(const String& s) const {
+    String result = *this;
+    result.insert(result.end(), s);
+    return result;
+}

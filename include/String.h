@@ -97,6 +97,18 @@ public:
     /// Finds the first occurance of char c in the string, ignoring case. Returns end() if
     /// nothing was found. Default locale is "C".
     ConstIterator find_caseless(char c, const std::locale& locale = std::locale::classic()) const;
+
+    /// Does a lexicographical case-sensitive comparison between the chars of both strings.
+    bool equals(const String&) const;
+    /// Does a lexicographical case-sensitive comparison between the chars of both strings.
+    bool operator==(const String&) const;
+    /// Does a lexicographical case-sensitive comparison between the chars of both strings.
+    bool operator!=(const String&) const;
+
+    /// Appends the given string to this string.
+    String& operator+=(const String&);
+    /// Creates a new string by appending a string to this string.
+    String  operator+(const String&) const;
 };
 
 #endif // STRING_H
