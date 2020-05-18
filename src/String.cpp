@@ -76,7 +76,7 @@ void String::insert(String::ConstIterator iter, const String& s) {
 }
 
 void String::insert(String::ConstIterator iter, String::ConstIterator begin, String::ConstIterator end) {
-    if (iter >= this->end())
+    if (iter > this->end())
         throw std::runtime_error("iterator out of range");
     const auto offset = iter - m_chars.data();
     if (offset < 0)
