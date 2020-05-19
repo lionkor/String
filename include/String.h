@@ -141,6 +141,8 @@ public:
     bool contains(const String&) const;
     /// \brief Whether this string starts with the substring.
     bool startswith(const String&) const;
+    /// \brief Whether this string ends with the substring.
+    bool endswith(const String&) const;
 
     /// \brief Does a case-sensitive comparison between the chars of both strings.
     /// Same as String::operator==(const String&).

@@ -418,3 +418,14 @@ TEST_CASE("String::startswith") {
     REQUIRE_FALSE(String("Hello").startswith("e"));
     REQUIRE_FALSE(String("Hello").startswith("h"));
 }
+
+TEST_CASE("String::endswith") {
+    REQUIRE(String("Hello").endswith("Hello"));
+    REQUIRE(String("Hello").endswith("ello"));
+    REQUIRE(String("Hello").endswith("llo"));
+    REQUIRE(String("Hello").endswith("lo"));
+    REQUIRE(String("Hello").endswith("o"));
+    REQUIRE_FALSE(String("Hello").endswith("Hell"));
+    REQUIRE_FALSE(String("Hello").endswith("Hel"));
+    REQUIRE_FALSE(String("Hello").endswith("l"));
+}

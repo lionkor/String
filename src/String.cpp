@@ -164,6 +164,12 @@ bool String::startswith(const String& str) const {
     return std::equal(begin(), begin() + str.size(), str.begin(), str.end());
 }
 
+bool String::endswith(const String& str) const {
+    if (str.size() > size())
+        return false;
+    return std::equal(end() - str.size(), end(), str.begin(), str.end());
+}
+
 bool String::equals(const String& str) const {
     if (size() != str.size())
         return false;
