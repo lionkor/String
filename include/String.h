@@ -7,14 +7,14 @@
 #include <vector>
 
 /// \brief The String class represents a not-null-terminated string.
-/// \author `@lionkor` (Lion Kortlepel)
+/// \author `lionkor` (Lion Kortlepel)
 ///
 /// A String class without many of the inconsistencies that `std::string` brings, and many helper
-/// functions, making it more alike Python or .NET strings. 
-/// 
+/// functions, making it more alike Python or .NET strings.
+///
 /// Implemented as a wrapper around a `std::vector<char>` for safety, simplicity and speed.
 /// This means that any `<algorithm>` calls should work as expected.
-/// 
+///
 /// \attention String is \b not null-terminated. If a null-terminated string is needed, it's very simple
 /// to convert to a `std::string` or c-string via `String::as_c_string` and `String::as_std_string`.
 class String
@@ -34,6 +34,8 @@ public:
 
     /// \brief New empty string, equivalent to `""`
     String();
+    /// \brief New string with only the char `c`.
+    explicit String(char c);
     /// \brief New string with cstr as content
     String(const char* cstr);
     /// \brief New string from another string's iterators.
@@ -86,9 +88,9 @@ public:
     /// \brief Removes the element pointed to by the iterator. Invalidates iterators.
     void erase(ConstIterator iter);
     /// \brief Removes elements between from and to. Invalidates iterators.
-    void erase_from_to(ConstIterator from, ConstIterator to);
+    void erase(ConstIterator from, ConstIterator to);
     /// \brief Removes n elements starting at the iterator position. Invalidates iterators.
-    void erase_n(ConstIterator iter, std::size_t n);
+    void erase(ConstIterator iter, std::size_t n);
 
     /// \brief A copy of the chars between from and to, as a new string.
     String substring(ConstIterator from, ConstIterator to) const;
@@ -118,7 +120,25 @@ public:
     /// \return String::ConstIterator pointing to the found character, or end() if nothing was found
     ConstIterator find_caseless(char c, const std::locale& locale = std::locale::classic()) const;
 
+    /// \brief Finds the first occurance of the string inside this string.
+    /// \return String::Iterator pointing to the beginning of the found substring, or end() if
+    /// nothing was found
+    Iterator find(const String&);
+    /// \brief Finds the first occurance of the string inside this string.
+    /// \return String::ConstIterator pointing to the beginning of the found substring, or end() if
+    /// nothing was found
+    ConstIterator find(const String&) const;
+    /// \brief Finds the first occurance of the string after `start` inside this string.
+    /// \return String::Iterator pointing to the beginning of the found substring, or end() if
+    /// nothing was found
+    Iterator find(const String&, Iterator start);
+    /// \brief Finds the first occurance of the string after `start` inside this string.
+    /// \return String::ConstIterator pointing to the beginning of the found substring, or end() if
+    /// nothing was found
+    ConstIterator find(const String&, ConstIterator start) const;
+
     /// \brief Does a lexicographical case-sensitive comparison between the chars of both strings.
+    /// Same as String::operator==(const String&).
     bool equals(const String&) const;
     /// \brief Does a lexicographical case-sensitive comparison between the chars of both strings.
     bool operator==(const String&) const;
@@ -129,6 +149,15 @@ public:
     String& operator+=(const String&);
     /// \brief Creates a new string by appending a string to this string.
     String operator+(const String&) const;
+
+    /// \brief Replaces \b all instances of `to_replace` with `replace_with` in the string.
+    void replace(char to_replace, char replace_with);
+    /// \brief Replaces \b all instances of `to_replace` with `replace_with` in the string.
+    void replace(const String& to_replace, const String& replace_with);
+    /// \brief Replaces `n` instances of `to_replace` with `replace_with` in the string.
+    void replace(const String& to_replace, const String& replace_with, std::size_t n);
+
+    friend std::ostream& operator<<(std::ostream&, const String&);
 };
 
 #endif // STRING_H

@@ -8,6 +8,10 @@
 String::String()
     : m_chars(0) { }
 
+String::String(char c) {
+    m_chars.push_back(c);
+}
+
 String::String(const char* cstr) {
     if (cstr) {
         m_chars.resize(std::strlen(cstr));
@@ -94,14 +98,14 @@ void String::erase(String::ConstIterator iter) {
     m_chars.erase(iter);
 }
 
-void String::erase_from_to(String::ConstIterator from, String::ConstIterator to) {
+void String::erase(String::ConstIterator from, String::ConstIterator to) {
     if (from < begin() || from > end() || empty() || from == end() || to < begin() || to > end() || to < from)
         throw std::runtime_error("iterator out of range");
     m_chars.erase(from, to);
 }
 
-void String::erase_n(String::ConstIterator iter, std::size_t n) {
-    erase_from_to(iter, iter + n);
+void String::erase(String::ConstIterator iter, std::size_t n) {
+    erase(iter, iter + n);
 }
 
 String String::substring(String::ConstIterator from, String::ConstIterator to) const {
@@ -132,6 +136,22 @@ String::ConstIterator String::find_caseless(char c, const std::locale& locale) c
     });
 }
 
+String::Iterator String::find(const String& str) {
+    return std::search(begin(), end(), str.begin(), str.end());
+}
+
+String::ConstIterator String::find(const String& str) const {
+    return std::search(begin(), end(), str.begin(), str.end());
+}
+
+String::Iterator String::find(const String& str, Iterator start) {
+    return std::search(start, end(), str.begin(), str.end());
+}
+
+String::ConstIterator String::find(const String& str, String::ConstIterator start) const {
+    return std::search(start, end(), str.begin(), str.end());
+}
+
 bool String::equals(const String& str) const {
     if (size() != str.size())
         return false;
@@ -155,4 +175,44 @@ String String::operator+(const String& s) const {
     String result = *this;
     result.insert(result.end(), s);
     return result;
+}
+
+void String::replace(char to_replace, char replace_with) {
+    for (auto& c : m_chars)
+        if (c == to_replace)
+            c = replace_with;
+}
+
+void String::replace(const String& to_replace, const String& replace_with) {
+    if (!to_replace.empty() && replace_with.find(to_replace) != replace_with.end())
+        throw std::invalid_argument("replace_with shall not contain to_replace");
+    Iterator iter;
+    do {
+        iter = std::search(begin(), end(), to_replace.begin(), to_replace.end());
+        if (iter != end()) {
+            erase(iter, to_replace.size());
+            insert(iter, replace_with);
+        }
+    } while (iter != end());
+}
+
+void String::replace(const String& to_replace, const String& replace_with, std::size_t n) {
+    if (!to_replace.empty() && replace_with.find(to_replace) != replace_with.end())
+        throw std::invalid_argument("replace_with shall not contain to_replace");
+    Iterator    iter;
+    std::size_t i = 0;
+    do {
+        if (i >= n)
+            break;
+        ++i;
+        iter = std::search(begin(), end(), to_replace.begin(), to_replace.end());
+        if (iter != end()) {
+            erase(iter, to_replace.size());
+            insert(iter, replace_with);
+        }
+    } while (iter != end());
+}
+
+std::ostream& operator<<(std::ostream& os, const String& s) {
+    return os << s.as_std_string();
 }

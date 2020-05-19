@@ -22,7 +22,10 @@ TEST_CASE("String::String") {
 
     String s3("What a wonderful world");
     String s4(s3.begin() + 7, s3.end() - 6);
-    REQUIRE(s4.as_std_string() == "wonderful");
+    REQUIRE(s4 == "wonderful");
+
+    String s5('v');
+    REQUIRE(s5 == "v");
 }
 
 TEST_CASE("String::begin and String::end") {
@@ -181,39 +184,39 @@ TEST_CASE("String::erase iter") {
     REQUIRE(s1.as_std_string() == "elo");
 }
 
-TEST_CASE("String::erase_from_to") {
+TEST_CASE("String::erase from to") {
     String s_empty;
-    REQUIRE_THROWS(s_empty.erase_from_to(s_empty.begin(), s_empty.end()));
+    REQUIRE_THROWS(s_empty.erase(s_empty.begin(), s_empty.end()));
 
     String s1("Hello");
-    s1.erase_from_to(s1.begin(), s1.end());
+    s1.erase(s1.begin(), s1.end());
     REQUIRE(s1.empty());
 
     String s2("Hello");
-    s2.erase_from_to(s2.begin() + 1, s2.end() - 1);
+    s2.erase(s2.begin() + 1, s2.end() - 1);
     REQUIRE(s2.as_std_string() == "Ho");
 
     String s3("Hello");
-    s3.erase_from_to(s3.begin() + 1, s3.begin() + 1);
+    s3.erase(s3.begin() + 1, s3.begin() + 1);
     REQUIRE(s3.as_std_string() == "Hello");
 
-    REQUIRE_THROWS(s3.erase_from_to(s3.begin() + 3, s3.begin() + 2));
+    REQUIRE_THROWS(s3.erase(s3.begin() + 3, s3.begin() + 2));
 }
 
-TEST_CASE("String::erase_n") {
+TEST_CASE("String::erase n") {
     String s_empty;
-    REQUIRE_THROWS(s_empty.erase_n(s_empty.begin(), 1));
+    REQUIRE_THROWS(s_empty.erase(s_empty.begin(), 1));
 
     String s1("Hello");
-    s1.erase_n(s1.begin(), s1.size());
+    s1.erase(s1.begin(), s1.size());
     REQUIRE(s1.empty());
 
     String s2("Hello");
-    s2.erase_n(s2.begin() + 1, s2.size() - 2);
+    s2.erase(s2.begin() + 1, s2.size() - 2);
     REQUIRE(s2.as_std_string() == "Ho");
 
     String s3("Hello");
-    s3.erase_n(s3.begin() + 1, 0);
+    s3.erase(s3.begin() + 1, 0);
     REQUIRE(s3.as_std_string() == "Hello");
 }
 
@@ -283,12 +286,12 @@ TEST_CASE("String::operator==") {
     REQUIRE(String() == String(""));
     REQUIRE(String() == String());
     REQUIRE(String("\0\0") == String(""));
-    
+
     REQUIRE(String("HELL") != String("hell"));
     REQUIRE(String("") != String(" "));
     REQUIRE(String(".") != String(".."));
     REQUIRE(String("Aa") != String("A"));
-    
+
     REQUIRE(String("Hello") == "Hello");
     REQUIRE(String() == "");
 }
@@ -309,4 +312,84 @@ TEST_CASE("String::operator+") {
     String s3 = s1 + ", " + s2;
     REQUIRE(s3 == "Hello there, my friend!");
     REQUIRE(s1 + String() == s1);
+}
+
+TEST_CASE("String::replace String") {
+    String s("abcdabcdabcdabcd");
+    s.replace("ab", "XX");
+    REQUIRE(s == "XXcdXXcdXXcdXXcd");
+
+    String s2;
+    s2.replace("", "Hello");
+    REQUIRE(s2 == "");
+    
+    String s3("hello hello");
+    REQUIRE_THROWS(s3.replace("hello", "hello hello"));
+}
+
+TEST_CASE("String::replace char") {
+    String s("abcdabcdabcdabcd");
+    s.replace('a', 'X');
+    REQUIRE(s == "XbcdXbcdXbcdXbcd");
+}
+
+TEST_CASE("String::replace n Strings") {
+    String s("hello world hello world hello world");
+    s.replace("hello world", "bye bye", 2);
+    REQUIRE(s == "bye bye bye bye hello world");
+
+    String s2("a b a b a b");
+    s2.replace("a b", "XXX", 0);
+    REQUIRE(s2 == "a b a b a b");
+
+    String s3("abcabcabc");
+    s3.replace("abc", "ABC", 100);
+    REQUIRE(s3 == "ABCABCABC");
+}
+
+TEST_CASE("String::find String") {
+    {
+        // normal
+        String s("Hello, World!");
+        REQUIRE(s.find("nope") == s.end());
+        REQUIRE(s.find("Hello") == s.begin());
+        REQUIRE(s.find("!") == s.end() - 1);
+        REQUIRE(s.find("Hello, World!") == s.begin());
+        REQUIRE(s.find("llo") == s.begin() + 2);
+        REQUIRE_FALSE(s.find("") == s.end());
+    }
+    {
+        // const
+        const String s("Hello, World!");
+        REQUIRE(s.find("nope") == s.end());
+        REQUIRE(s.find("Hello") == s.begin());
+        REQUIRE(s.find("!") == s.end() - 1);
+        REQUIRE(s.find("Hello, World!") == s.begin());
+        REQUIRE(s.find("llo") == s.begin() + 2);
+        REQUIRE_FALSE(s.find("") == s.end());
+    }
+    {
+        // normal with start
+        String s("Hello, World!");
+        REQUIRE(s.find("nope", s.begin()) == s.end());
+        REQUIRE(s.find("Hello", s.begin()) == s.begin());
+        REQUIRE(s.find("!", s.begin()) == s.end() - 1);
+        REQUIRE(s.find("Hello, World!", s.begin()) == s.begin());
+        REQUIRE(s.find("llo", s.begin()) == s.begin() + 2);
+        REQUIRE_FALSE(s.find("", s.begin()) == s.end());
+        REQUIRE(s.find("Hello", s.begin() + 6) == s.end());
+        REQUIRE(s.find("World", s.begin() + 5) == s.begin() + 7);
+    }
+    {
+        // const with start
+        const String s("Hello, World!");
+        REQUIRE(s.find("nope", s.begin()) == s.end());
+        REQUIRE(s.find("Hello", s.begin()) == s.begin());
+        REQUIRE(s.find("!", s.begin()) == s.end() - 1);
+        REQUIRE(s.find("Hello, World!", s.begin()) == s.begin());
+        REQUIRE(s.find("llo", s.begin()) == s.begin() + 2);
+        REQUIRE_FALSE(s.find("", s.begin()) == s.end());
+        REQUIRE(s.find("Hello", s.begin() + 6) == s.end());
+        REQUIRE(s.find("World", s.begin() + 5) == s.begin() + 7);
+    }
 }
