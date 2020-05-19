@@ -429,3 +429,13 @@ TEST_CASE("String::endswith") {
     REQUIRE_FALSE(String("Hello").endswith("Hel"));
     REQUIRE_FALSE(String("Hello").endswith("l"));
 }
+
+TEST_CASE("String::reserve and String::capacity") {
+    REQUIRE(String().capacity() == 0);
+    String s("Hello, World");
+    REQUIRE(s.capacity() == s.size());
+    s.reserve(100);
+    REQUIRE(s.capacity() == 100);
+    s += " WOOOO! Adding bytes!";
+    REQUIRE(s.capacity() == 100);
+}

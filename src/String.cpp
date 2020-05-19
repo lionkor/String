@@ -231,6 +231,14 @@ void String::replace(const String& to_replace, const String& replace_with, std::
     } while (iter != end());
 }
 
+void String::reserve(std::size_t size) {
+    m_chars.reserve(size);
+}
+
+std::size_t String::capacity() const {
+    return m_chars.capacity();
+}
+
 std::ostream& operator<<(std::ostream& os, const String& s) {
     return os << s.as_std_string();
 }

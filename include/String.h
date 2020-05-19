@@ -163,6 +163,19 @@ public:
     void replace(const String& to_replace, const String& replace_with);
     /// \brief Replaces `n` instances of `to_replace` with `replace_with` in the string.
     void replace(const String& to_replace, const String& replace_with, std::size_t n);
+    
+    /// \brief Grows the capacity to fit `size` many characters. Does not change the size of the string.
+    /// 
+    /// Increases the capacity of the currently allocated memory to be able to hold `size` many
+    /// characters before having to reallocate. Calling this before doing a lot of appending up to a known 
+    /// max length can increase performance significantly, as multiple allocations are avoided.
+    /// Does not impact length.
+    void reserve(std::size_t size);
+    
+    /// \brief Capacity of the string's underlying allocated memory.
+    /// 
+    /// The String's size may grow up to this capacity without any reallocation taking place.
+    std::size_t capacity() const;
 
     friend std::ostream& operator<<(std::ostream&, const String&);
 };
