@@ -70,7 +70,7 @@ std::string String::as_std_string() const {
     return std::string(m_chars.begin(), m_chars.end());
 }
 
-void String::clear() {
+void String::clear() noexcept {
     m_chars.clear();
 }
 
@@ -237,6 +237,10 @@ void String::reserve(std::size_t size) {
 
 std::size_t String::capacity() const {
     return m_chars.capacity();
+}
+
+void String::shrink_to_fit() noexcept {
+    m_chars.shrink_to_fit();
 }
 
 std::ostream& operator<<(std::ostream& os, const String& s) {

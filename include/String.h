@@ -73,7 +73,7 @@ public:
     std::string as_std_string() const;
 
     /// \brief Clears the contents of the string, resulting string will be the empty string.
-    void clear();
+    void clear() noexcept;
 
     /// \brief Inserts a char before the position pointed to by the iterator. May invalidate
     /// iterators.
@@ -136,7 +136,7 @@ public:
     /// \return String::ConstIterator pointing to the beginning of the found substring, or end() if
     /// nothing was found
     ConstIterator find(const String&, ConstIterator start) const;
-    
+
     /// \brief Whether this string contains the substring.
     bool contains(const String&) const;
     /// \brief Whether this string starts with the substring.
@@ -163,19 +163,23 @@ public:
     void replace(const String& to_replace, const String& replace_with);
     /// \brief Replaces `n` instances of `to_replace` with `replace_with` in the string.
     void replace(const String& to_replace, const String& replace_with, std::size_t n);
-    
+
     /// \brief Grows the capacity to fit `size` many characters. Does not change the size of the string.
-    /// 
+    ///
     /// Increases the capacity of the currently allocated memory to be able to hold `size` many
-    /// characters before having to reallocate. Calling this before doing a lot of appending up to a known 
+    /// characters before having to reallocate. Calling this before doing a lot of appending up to a known
     /// max length can increase performance significantly, as multiple allocations are avoided.
     /// Does not impact length.
     void reserve(std::size_t size);
-    
+
     /// \brief Capacity of the string's underlying allocated memory.
-    /// 
+    ///
     /// The String's size may grow up to this capacity without any reallocation taking place.
     std::size_t capacity() const;
+
+    /// \brief Shrinks capacity to be equal to size, thus freeing memory in some cases. Not
+    /// guaranteed, as it's implementation dependent.
+    void shrink_to_fit() noexcept;
 
     friend std::ostream& operator<<(std::ostream&, const String&);
 };

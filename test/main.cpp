@@ -439,3 +439,11 @@ TEST_CASE("String::reserve and String::capacity") {
     s += " WOOOO! Adding bytes!";
     REQUIRE(s.capacity() == 100);
 }
+
+TEST_CASE("String::shrink_to_fit") {
+    // not testable, implementation defined. just make sure it doesn't crash.
+    String s("hello");
+    s.reserve(100);
+    s.shrink_to_fit();
+    REQUIRE(s == "hello");
+}
