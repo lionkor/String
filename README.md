@@ -30,3 +30,7 @@ TL;DR: I just want a string that gives me an iterator when I call `String::find`
 
 ### Why `std::vector`?
 I **don't** like `std::string`, I **do** like `std::vector`. 
+
+### Where did open issues go?
+
+Closed, since the code that was responsible for them was nuked. 
