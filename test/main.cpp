@@ -393,3 +393,28 @@ TEST_CASE("String::find String") {
         REQUIRE(s.find("World", s.begin() + 5) == s.begin() + 7);
     }
 }
+
+TEST_CASE("String::contains") {
+    REQUIRE(String("Hello").contains("Hello"));
+    REQUIRE(String("Hello").contains("ello"));
+    REQUIRE(String("Hello").contains("Hell"));
+    REQUIRE(String("Hello").contains("ell"));
+    REQUIRE(String("Hello").contains("o"));
+    REQUIRE_FALSE(String("Hello").contains("hello"));
+    REQUIRE_FALSE(String("Hello").contains("HELLO"));
+    REQUIRE_FALSE(String("Hello").contains("HH"));
+    REQUIRE_FALSE(String("Hello").contains("oo"));
+}
+
+TEST_CASE("String::startswith") {
+    REQUIRE(String("Hello").startswith("Hello"));
+    REQUIRE(String("Hello").startswith("Hell"));
+    REQUIRE(String("Hello").startswith("Hel"));
+    REQUIRE(String("Hello").startswith("He"));
+    REQUIRE(String("Hello").startswith("H"));
+    REQUIRE_FALSE(String("Hello").startswith("HH"));
+    REQUIRE_FALSE(String("Hello").startswith("ello"));
+    REQUIRE_FALSE(String("Hello").startswith("o"));
+    REQUIRE_FALSE(String("Hello").startswith("e"));
+    REQUIRE_FALSE(String("Hello").startswith("h"));
+}

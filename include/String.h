@@ -136,13 +136,18 @@ public:
     /// \return String::ConstIterator pointing to the beginning of the found substring, or end() if
     /// nothing was found
     ConstIterator find(const String&, ConstIterator start) const;
+    
+    /// \brief Whether this string contains the substring.
+    bool contains(const String&) const;
+    /// \brief Whether this string starts with the substring.
+    bool startswith(const String&) const;
 
-    /// \brief Does a lexicographical case-sensitive comparison between the chars of both strings.
+    /// \brief Does a case-sensitive comparison between the chars of both strings.
     /// Same as String::operator==(const String&).
     bool equals(const String&) const;
-    /// \brief Does a lexicographical case-sensitive comparison between the chars of both strings.
+    /// \brief Does a case-sensitive comparison between the chars of both strings.
     bool operator==(const String&) const;
-    /// \brief Does a lexicographical case-sensitive comparison between the chars of both strings.
+    /// \brief Does a case-sensitive comparison between the chars of both strings.
     bool operator!=(const String&) const;
 
     /// \brief Appends the given string to this string.

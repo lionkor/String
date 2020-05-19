@@ -152,10 +152,22 @@ String::ConstIterator String::find(const String& str, String::ConstIterator star
     return std::search(start, end(), str.begin(), str.end());
 }
 
+bool String::contains(const String& str) const {
+    if (str.size() > size())
+        return false;
+    return find(str) != end();
+}
+
+bool String::startswith(const String& str) const {
+    if (str.size() > size())
+        return false;
+    return std::equal(begin(), begin() + str.size(), str.begin(), str.end());
+}
+
 bool String::equals(const String& str) const {
     if (size() != str.size())
         return false;
-    return std::memcmp(m_chars.data(), str.m_chars.data(), m_chars.size()) == 0;
+    return std::equal(begin(), end(), str.begin(), str.end());
 }
 
 bool String::operator==(const String& s) const {
