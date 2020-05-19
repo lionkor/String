@@ -1,8 +1,54 @@
 #include <iostream>
+#include <iomanip>
 #include "../include/String.h"
+//*
+int main() {
+    String::Format fmt;
+    fmt.precision    = 3;
+    fmt.width        = 10;
+    fmt.alignment    = String::Format::Align::Right;
+    String my_string = String::format(fmt, 3.53214, "|", fmt, 5.2436, "|");
+    std::cout << my_string << std::endl;
+}
+//*/
+
+/*
 
 #define CATCH_CONFIG_MAIN
 #include "Catch2/single_include/catch2/catch.hpp"
+
+TEST_CASE("String::format") {
+    REQUIRE(String::format("Hello") == "Hello");
+    REQUIRE(String::format("Hello ", "World") == "Hello World");
+    REQUIRE(String::format(1, 2, 3) == "123");
+    REQUIRE(String::format(1.0) == "1");
+    
+    String::Format fmt;
+    fmt.precision = 1;
+    REQUIRE(String::format(fmt, 1.0/3.0) == "0.3");
+    fmt.precision = 2;
+    REQUIRE(String::format(fmt, 1.0/3.0) == "0.33");
+    fmt.base = String::Format::Base::Hex;
+    REQUIRE(String::format(fmt, 0xf) == "f");
+    fmt.base = String::Format::Base::Oct;
+    REQUIRE(String::format(fmt, 03562) == "3562");
+    REQUIRE(String::format(fmt, 10) == "12");
+    
+    String::Format fmt2;
+    fmt2.width = 4;
+    REQUIRE(String::format(fmt2, "12", fmt2, "5") == "12  5   ");
+    fmt2.alignment = String::Format::Alignment::Right;
+    REQUIRE(String::format(fmt2, "12", fmt2, "5") == "  12   5");
+    fmt2.fill = '-';
+    REQUIRE(String::format(fmt2, "12", fmt2, "5") == "--12---5");
+    
+    REQUIRE(String::format(String(), String()) == "");
+    std::string s("Hello");
+    REQUIRE(String::format(s, String("World")) == "HelloWorld");
+    const char* cstr = "Wonder";
+    REQUIRE(String::format(cstr, "ful day") == "Wonderful day");
+    REQUIRE(String::format("My name is ", "String", " and my age is ", 560) == "My name is String and my age is 560");
+}
 
 TEST_CASE("String::String") {
     REQUIRE_NOTHROW(String());
@@ -270,16 +316,6 @@ TEST_CASE("String::equals") {
     REQUIRE_FALSE(String("").equals(String(" ")));
 }
 
-/*
-  /// Does a lexicographical case-sensitive comparison between the chars of both strings.
-    bool operator==(const String&) const;
-    /// Does a lexicographical case-sensitive comparison between the chars of both strings.
-    bool operator!=(const String&) const;
-
-    String& operator+=(const String&);
-    String  operator+(const String&) const;
-    */
-
 TEST_CASE("String::operator==") {
     REQUIRE(String("Hello") == String("Hello"));
     REQUIRE(String("") == String(""));
@@ -447,3 +483,5 @@ TEST_CASE("String::shrink_to_fit") {
     s.shrink_to_fit();
     REQUIRE(s == "hello");
 }
+
+//*/

@@ -2,6 +2,39 @@
 
 Full rewrite branch of this simple modern String class / library. Incompatible with v1.0.
 
+## Major features
+
+### `String::format`
+A static method allowing for simple and fast formatting. Allows any type `T` with an overload to `ostream& operator(ostream&, T)` to be formatted into the String correctly.
+Because of this, it also supports all primitive types.
+
+Examples: 
+
+```cpp
+const char* name = "Dave";
+const int age = 35;
+String test = String::format("Name: ", name, ", Age: ", age);
+// -> "Name: Dave, City: New York, Age: 35"
+```
+
+If your type correctly overloads `ostream& operator(ostream&, T)`, you can pass your type to `String::format`.
+
+You can pass a `String::Format` instance to set formatting options similar to `std::ios::fmtflags`. This allows setting precision, base, width, fill, etc.
+
+Example:
+```cpp
+String::Format fmt;
+fmt.precision    = 3;
+fmt.width        = 10;
+fmt.alignment    = String::Format::Align::Right;
+String my_string = String::format(fmt, 3.53214, " |", fmt, 5.2436, " |");
+std::cout << my_string << std::endl;
+```
+will output:
+```
+        3.53 |      5.24 |
+```
+
 ## Major changes from String<sub>v1.0</sub>
 
 * Fully ABI / API **in**compatible with previous versions (basically a new library).

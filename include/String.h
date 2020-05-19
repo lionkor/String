@@ -1,10 +1,12 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include <cstdarg>
 #include <iostream>
 #include <memory>
+#include <charconv>
 #include <vector>
+#include <limits>
+#include <sstream>
 
 /// \brief The String class represents a not-null-terminated string.
 /// \author `lionkor` (Lion Kortlepel)
@@ -182,6 +184,76 @@ public:
     void shrink_to_fit() noexcept;
 
     friend std::ostream& operator<<(std::ostream&, const String&);
+    friend std::istream& operator>>(std::istream& is, String& s);
+
+    /// \brief Constructs a string from non-string arguments.
+    /// 
+    /// Accepts and correctly formats any type `T` for which an overload for
+    /// 
+    ///     std::ostream& operator<<(std::ostream&, T)
+    /// 
+    /// exists. Arguments will be appended to the String in order. 
+    /// Pass String::Format to specify floating point precision, width, fill
+    /// chars, base, etc.
+    template<class... Args>
+    static String format(Args&&... things) {
+        std::stringstream s;
+        return format(s, std::forward<Args&&>(things)...);
+    }
+
+    /// \brief Specifies the formatting of a String::format operation.
+    ///
+    /// Example
+    ///
+    ///     String::Format fmt;
+    ///     fmt.precision = 3;
+    ///     String my_string = String::format(fmt, 2.1337);
+    ///
+    /// will result in
+    ///
+    ///     my_string = "2.13"
+    ///
+    struct Format {
+        enum Align : bool
+        {
+            Left,
+            Right
+        };
+
+        enum Base
+        {
+            Oct = 8,
+            Dec = 10,
+            Hex = 16,
+        };
+
+        /// \brief The precision (i.e. how many digits are generated) of floating
+        /// point numbers output with this format. See `std::ios::precision`.
+        int precision { 6 };
+        /// \brief The base used to display integer types. See `std::ios::base`.
+        Base base { Base::Dec };
+        /// \brief Alignment used with width. See `std::ios::left` and `std::ios::right`.
+        Align alignment { Align::Left };
+        /// \brief Width used on some format operations. See `std::ios::width`.
+        int width { 0 };
+        /// \brief Filler used to fill whitespace in width formats. See `std::ios::fill`.
+        char fill { ' ' };
+
+        friend std::ostream& operator<<(std::ostream&, const Format&);
+    };
+
+private:
+    static String format(std::stringstream& is) {
+        String s;
+        is >> s;
+        return s;
+    }
+
+    template<class... Args, class T>
+    static String format(std::stringstream& is, T t, Args&&... things) {
+        is << t;
+        return format(is, std::forward<Args&&>(things)...);
+    }
 };
 
 #endif // STRING_H

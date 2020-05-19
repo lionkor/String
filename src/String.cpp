@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#include <iomanip>
 
 String::String()
     : m_chars(0) { }
@@ -245,4 +246,32 @@ void String::shrink_to_fit() noexcept {
 
 std::ostream& operator<<(std::ostream& os, const String& s) {
     return os << s.as_std_string();
+}
+
+std::istream& operator>>(std::istream& is, String& s) {
+    const auto len = is.rdbuf()->pubseekoff(0, std::ios::end);
+    is.rdbuf()->pubseekoff(0, std::ios::beg);
+    const auto offset = s.m_chars.size();
+    s.m_chars.resize(s.m_chars.size() + len);
+    auto ret = is.rdbuf()->sgetn(s.m_chars.data() + offset, len);
+    static_cast<void>(ret);
+    is.rdbuf()->pubseekoff(0, std::ios::end);
+    return is;
+}
+
+std::ostream& operator<<(std::ostream& os, const String::Format& fmt) {
+    switch (fmt.alignment) {
+    case String::Format::Align::Left:
+        os << std::left;
+        break;
+    case String::Format::Align::Right:
+        os << std::right;
+    }
+
+    os << std::setprecision(fmt.precision)
+       << std::setbase(fmt.base)
+       << std::setw(fmt.width)
+       << std::setfill(fmt.fill);
+
+    return os;
 }
