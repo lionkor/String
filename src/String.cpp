@@ -6,18 +6,16 @@
 #include <algorithm>
 #include <iomanip>
 
-String::String()
-    : m_chars(0) { }
+String::String() {}
+
+String::String(std::nullptr_t) {}
 
 String::String(char c) {
     m_chars.push_back(c);
 }
 
-String::String(const char* cstr) {
-    if (cstr) {
-        m_chars.resize(std::strlen(cstr));
-        std::copy_n(cstr, m_chars.size(), m_chars.begin());
-    }
+String::String(const char* cstr)
+    : m_chars(cstr, cstr + std::strlen(cstr)) {
 }
 
 String::String(String::ConstIterator from, String::ConstIterator to)

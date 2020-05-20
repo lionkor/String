@@ -34,8 +34,10 @@ public:
     using ReverseIterator      = std::vector<char>::reverse_iterator;
     using ConstReverseIterator = std::vector<char>::const_reverse_iterator;
 
-    /// \brief New empty string, equivalent to `""`
+    /// \brief New empty string, equivalent to `""`.
     String();
+    /// \brief New string from nullptr -> empty string.
+    String(std::nullptr_t);
     /// \brief New string with only the char `c`.
     explicit String(char c);
     /// \brief New string with cstr as content
@@ -46,8 +48,8 @@ public:
     String(const String&) = default;
     String(String&&)      = default;
     String& operator=(const String&) = default;
-    
-    /// \brief Implicit conversion to std::string allowed
+
+    /// \brief Implicit conversion to std::string allowed.
     operator std::string() const;
 
     /// \brief Begin iterator. Points to the first char in the string.
@@ -190,12 +192,12 @@ public:
     friend std::istream& operator>>(std::istream& is, String& s);
 
     /// \brief Constructs a string from non-string arguments.
-    /// 
+    ///
     /// Accepts and correctly formats any type `T` for which an overload for
-    /// 
+    ///
     ///     std::ostream& operator<<(std::ostream&, T)
-    /// 
-    /// exists. Arguments will be appended to the String in order. 
+    ///
+    /// exists. Arguments will be appended to the String in order.
     /// Pass String::Format to specify floating point precision, width, fill
     /// chars, base, etc.
     template<class... Args>

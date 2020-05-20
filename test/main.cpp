@@ -1,18 +1,13 @@
 #include <iostream>
 #include <iomanip>
 #include "../include/String.h"
-//*
+/*
 int main() {
-    String::Format fmt;
-    fmt.precision    = 3;
-    fmt.width        = 10;
-    fmt.alignment    = String::Format::Align::Right;
-    String my_string = String::format(fmt, 3.53214, "|", fmt, 5.2436, "|");
-    std::cout << my_string << std::endl;
+    String s("Hello, World");
 }
 //*/
 
-/*
+//*
 
 #define CATCH_CONFIG_MAIN
 #include "Catch2/single_include/catch2/catch.hpp"
@@ -37,7 +32,7 @@ TEST_CASE("String::format") {
     String::Format fmt2;
     fmt2.width = 4;
     REQUIRE(String::format(fmt2, "12", fmt2, "5") == "12  5   ");
-    fmt2.alignment = String::Format::Alignment::Right;
+    fmt2.alignment = String::Format::Align::Right;
     REQUIRE(String::format(fmt2, "12", fmt2, "5") == "  12   5");
     fmt2.fill = '-';
     REQUIRE(String::format(fmt2, "12", fmt2, "5") == "--12---5");
