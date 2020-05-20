@@ -201,7 +201,7 @@ public:
     template<class... Args>
     static String format(Args&&... things) {
         std::stringstream s;
-        return format(s, std::forward<Args&&>(things)...);
+        return format(s, std::forward<Args>(things)...);
     }
 
     /// \brief Specifies the formatting of a String::format operation.
@@ -253,9 +253,9 @@ private:
     }
 
     template<class... Args, class T>
-    static String format(std::stringstream& is, T t, Args&&... things) {
+    static String format(std::stringstream& is, T&& t, Args&&... things) {
         is << t;
-        return format(is, std::forward<Args&&>(things)...);
+        return format(is, std::forward<Args>(things)...);
     }
 };
 
