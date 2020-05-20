@@ -6,9 +6,9 @@
 #include <algorithm>
 #include <iomanip>
 
-String::String() {}
+String::String() { }
 
-String::String(std::nullptr_t) {}
+String::String(std::nullptr_t) { }
 
 String::String(char c) {
     m_chars.push_back(c);
@@ -244,6 +244,14 @@ std::size_t String::capacity() const {
 
 void String::shrink_to_fit() noexcept {
     m_chars.shrink_to_fit();
+}
+
+char* String::data() noexcept {
+    return m_chars.data();
+}
+
+const char* String::data() const noexcept {
+    return m_chars.data();
 }
 
 std::ostream& operator<<(std::ostream& os, const String& s) {

@@ -1,13 +1,15 @@
 #include <iostream>
 #include <iomanip>
+#include <iostream>
 #include "../include/String.h"
-/*
+//*
 int main() {
-    String s("Hello, World");
+    ConstString s("Hello, World");
+    std::cout << (s == "Hello, World") << std::endl;
 }
 //*/
 
-//*
+/*
 
 #define CATCH_CONFIG_MAIN
 #include "Catch2/single_include/catch2/catch.hpp"

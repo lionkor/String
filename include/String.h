@@ -6,6 +6,7 @@
 #include <charconv>
 #include <vector>
 #include <limits>
+#include <cstring>
 #include <sstream>
 
 /// \brief The String class represents a not-null-terminated string.
@@ -188,6 +189,11 @@ public:
     /// guaranteed, as it's implementation dependent.
     void shrink_to_fit() noexcept;
 
+    /// \brief Raw pointer to the data of this String.
+    char* data() noexcept;
+    /// \brief Raw const pointer to the data of this String.
+    const char* data() const noexcept;
+
     friend std::ostream& operator<<(std::ostream&, const String&);
     friend std::istream& operator>>(std::istream& is, String& s);
 
@@ -258,6 +264,52 @@ private:
     static String format(std::stringstream& is, T&& t, Args&&... things) {
         is << t;
         return format(is, std::forward<Args>(things)...);
+    }
+};
+
+
+/// \brief Fully constexpr string that will almost completely disappear with compiler
+/// optimizations turned on.
+///
+/// To be used for string constants, as it's as fast as declaring a `const char*`
+/// but knows its own size and can be compared with operator==, which is optimized
+/// into constants at compile-time.
+class ConstString
+{
+private:
+    const char*       m_buffer;
+    const std::size_t m_size;
+
+    static constexpr std::size_t length(const char* str) {
+        return *str ? 1 + length(str + 1) : 0;
+    }
+
+public:
+    /// \brief Initialization with nullptr is not allowed.
+    constexpr ConstString(std::nullptr_t) = delete;
+    /// \brief New ConstString from a string literal.
+    constexpr ConstString(const char*&& buffer)
+        : m_buffer(buffer)
+        , m_size(length(buffer)) {
+    }
+
+    /// \brief Size, aka length, of the string.
+    constexpr auto size() const { return m_size; }
+    /// \brief Length, aka size, of the string.
+    constexpr auto length() const { return m_size; }
+
+    /// \brief Allows implicit conversion to `const char*`.
+    constexpr operator const char*() const { return m_buffer; }
+
+    /// \brief Comparison with other `char*`-like types.
+    template<class T>
+    constexpr bool operator==(const T str) const {
+        return std::strcmp(m_buffer, str) == 0;
+    }
+
+    /// \brief Comparison with the String type.
+    constexpr bool operator==(const String& str) const {
+        return m_size != str.size() || std::strncmp(m_buffer, str.data(), m_size) == 0;
     }
 };
 
