@@ -190,8 +190,10 @@ public:
     void shrink_to_fit() noexcept;
 
     /// \brief Raw pointer to the data of this String.
+    /// Keep in mind that this is NOT null-terminated.
     char* data() noexcept;
     /// \brief Raw const pointer to the data of this String.
+    /// Keep in mind that this is NOT null-terminated.
     const char* data() const noexcept;
 
     friend std::ostream& operator<<(std::ostream&, const String&);
@@ -268,8 +270,8 @@ private:
 };
 
 
-/// \brief Fully constexpr string that will almost completely disappear with compiler
-/// optimizations turned on.
+/// \brief Null-terminated, fully constexpr string that will almost completely disappear with 
+/// compiler optimizations turned on.
 ///
 /// To be used for string constants, as it's as fast as declaring a `const char*`
 /// but knows its own size and can be compared with operator==, which is optimized
