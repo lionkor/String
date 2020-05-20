@@ -24,6 +24,10 @@ String::String(String::ConstIterator from, String::ConstIterator to)
     : m_chars(from, to) {
 }
 
+String::operator std::string() const {
+    return as_std_string();
+}
+
 String::Iterator String::begin() {
     return m_chars.begin();
 }

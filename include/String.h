@@ -46,6 +46,9 @@ public:
     String(const String&) = default;
     String(String&&)      = default;
     String& operator=(const String&) = default;
+    
+    /// \brief Implicit conversion to std::string allowed
+    operator std::string() const;
 
     /// \brief Begin iterator. Points to the first char in the string.
     Iterator begin();
