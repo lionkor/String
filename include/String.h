@@ -310,7 +310,7 @@ public:
     }
 
     /// \brief Comparison with the String type.
-    constexpr bool operator==(const String& str) const {
+    bool operator==(const String& str) const {
         return m_size != str.size() || std::strncmp(m_buffer, str.data(), m_size) == 0;
     }
 };
