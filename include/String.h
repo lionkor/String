@@ -5,7 +5,6 @@
 #include <memory>
 #include <charconv>
 #include <vector>
-#include <limits>
 #include <cstring>
 #include <sstream>
 
@@ -270,7 +269,7 @@ private:
 };
 
 
-/// \brief Null-terminated, fully constexpr string that will almost completely disappear with 
+/// \brief Null-terminated, fully constexpr string that will almost completely disappear with
 /// compiler optimizations turned on.
 ///
 /// To be used for string constants, as it's as fast as declaring a `const char*`
