@@ -29,7 +29,7 @@ There are **2** ways to use this library:
   
    Example with gcc, assuming `String` was cloned into the same directory that main.cpp is in and libString.a has been built: 
    ```bash
-   g++ main.cpp -o myprogram -lString -I./String/ -L./String -I./String/include
+   g++ main.cpp -o myprogram -lString -L./String -I./String/include
    ```
 
 ## Major features
