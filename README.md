@@ -1,4 +1,4 @@
-# String<sub>v2.0</sub>
+# String v2.0
 
 Full rewrite of this simple modern String class / library. Incompatible with v1.0 which can be found [here](https://github.com/lionkor/legacy-1.0).
 
@@ -6,7 +6,7 @@ Full rewrite of this simple modern String class / library. Incompatible with v1.
 
 ## Major features
 
-### `String::format`
+### String::format
 A static method allowing for simple and fast formatting. Allows any type `T` with an overload to `ostream& operator(ostream&, T)` to be formatted into the String correctly.
 Because of this, it also supports all primitive types.
 
@@ -29,12 +29,12 @@ String::Format fmt;
 fmt.precision    = 3;
 fmt.width        = 10;
 fmt.alignment    = String::Format::Align::Right;
-String my_string = String::format(fmt, 3.53214, " |", fmt, 5.2436, " |");
+String my_string = String::format(".", fmt, 3.53214, " |", fmt, 5.2436, " |");
 std::cout << my_string << std::endl;
 ```
 will output:
 ```
-        3.53 |      5.24 |
+.        3.53 |      5.24 |
 ```
 
 ## How to use
