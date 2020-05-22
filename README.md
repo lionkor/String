@@ -1,6 +1,6 @@
 # String
 
-### [This library is currently undergoing a complete rewrite. Check out the rewrite branch to learn more!](https://github.com/lionkor/String/tree/rewrite)
+### [This library was rewritten and the rewrite (**not** compatible with this version) can be found here](https://github.com/lionkor/String/tree/master)
 
 A simple modern String class. `String`, which is **only 24 bytes on x64**, has **small string optimization (SSO)**, uses **variadic templates** for formatting (`String::format`), includes a very lightweight (fully constexpr) **StringView** friend class, and has some methods `std::string` is desperately missing!
 
