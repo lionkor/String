@@ -80,18 +80,18 @@ will output:
 
 After cloning the repo, head into the cloned String directory and run `cmake` and then `make StringTest`. You can then execute `./StringTest`.
 
-### Is `std::string` not good?
+### Is std::string not good?
 
 `std::string` is very good. Still, I always thought its interface was very inconsistent, using iterators here and indices there, and following very few std library conventions.
 `String` is supposed to allow for more Python- or C#-like string interactions, making it feel more like a primitive type than a complicated container, yet also supporting it being treated just like a normal `std::vector`.
 
 TL;DR: I just want a string that gives me an iterator when I call `String::find` and has intuitive methods like `.replace` and `.split`.
 
-### Is it faster / slower than `std::string`?
+### Is it faster / slower than std::string?
 
 Generally, it's *probably* slower, as is to be expected at this point in development. Construction is just as fast as `std::string`, for any string long enough so that SSO doesn't kick in for `std::string`. This is not a performance library, it's a convenience library. If you think `std::vector` is fast enough, then this library is probably fast enough.
 
-### How do you convert to `std::string` or `char*`?
+### How do you convert to std::string or char\*?
 
 Since `String` is not null-terminated, conversion is rather slow.
 Options for conversion are, from fastest to slowest:
@@ -107,7 +107,7 @@ Options for conversion are, from fastest to slowest:
 
 For more information on those functions read the [documentation](https://lionkor.github.io/String-docs).
 
-### Why `std::vector`?
+### Why std::vector?
 I **don't** like `std::string`, I **do** like `std::vector`. 
 
 ### Where did open issues go?
