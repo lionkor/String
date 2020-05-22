@@ -78,6 +78,14 @@ After cloning the repo, head into the cloned String directory and run `cmake` an
 
 TL;DR: I just want a string that gives me an iterator when I call `String::find` and has intuitive methods like `.replace` and `.split`.
 
+### Is it faster / slower than `std::string`?
+
+Generally, it's *probably* slower, as is to be expected at this point in development. Construction is just as fast as `std::string`, for any string long enough so that SSO doesn't kick in for `std::string`. This is not a performance library, it's a convenience library. If you think `std::vector` is fast enough, then this library is probably fast enough.
+
+### How do you convert to `std::string` or `char*`?
+
+Since `String` is not null-terminated, conversion is rather slow.
+
 ### Why `std::vector`?
 I **don't** like `std::string`, I **do** like `std::vector`. 
 
