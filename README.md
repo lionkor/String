@@ -43,9 +43,27 @@ will output:
 
 ## How to use
 
-1. clone this repository (recursively)
-2. switch to the `rewrite` branch
-3. include `String.h` and add `String.cpp` to your source files (for an example look at `CMakeLists.txt`)
+There are **2** ways to use this library:
+
+### 1 Compile with your project
+
+1. clone this repository (recursively).
+2. add `String/include` to your include directories.
+3. include `String.h` and add `String/src/String.cpp` to your source files (for an example look at `CMakeLists.txt`).
+4. compile with at least `-std=c++17`.
+
+### 2 Compile as library, link (linux/unix)
+
+1. clone this repository (recursively).
+2. go into the cloned repository directory.
+3. run `cmake && make String`. This will create `libString.a`.
+4. add `String/include` to your include directories
+5. link against `libString.a`. 
+  
+   Example with gcc, assuming `String` was cloned into the same directory that main.cpp is in and libString.a has been built: 
+   ```bash
+   g++ main.cpp -o myprogram -lString -I./String/ -L./String -I./String/include
+   ```
 
 ## FAQ
 
