@@ -4,6 +4,8 @@ Full rewrite of this simple modern String class / library. Incompatible with v1.
 
 **The v2.0 is not fully done yet**
 
+Unit tests are in `test/`.
+
 ## Documentation
 
 Full documentation can be found here: [**Full documentation**](https://lionkor.github.io/String-docs).
