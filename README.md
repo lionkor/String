@@ -1,121 +1,60 @@
-# String
+# String<sub>v2.0</sub>
 
-### [This library was rewritten and the rewrite (**not** compatible with this version) can be found here](https://github.com/lionkor/String/tree/master)
+Full rewrite of this simple modern String class / library. Incompatible with v1.0 which can be found [here](https://github.com/lionkor/legacy-1.0).
 
-A simple modern String class. `String`, which is **only 24 bytes on x64**, has **small string optimization (SSO)**, uses **variadic templates** for formatting (`String::format`), includes a very lightweight (fully constexpr) **StringView** friend class, and has some methods `std::string` is desperately missing!
+**The v2.0 is not fully done yet**
 
-`String` is immutable, but it offers plenty of ways to be constructed, so don't worry!
+## Major features
 
-The idea is that it has a more practical and straightforward interface and enforces some stricter rules, while at the same time giving more method-functionality (as opposed to external functionality enabled through `<algorithm>`). I personally like interfaces that are easy to read while offering high complexity, and that's ultimately the goal. `String` does, of course, include (constant) iterators for all your non-mutating `<algorithm>` needs, as well as a fitting constructor!
+### `String::format`
+A static method allowing for simple and fast formatting. Allows any type `T` with an overload to `ostream& operator(ostream&, T)` to be formatted into the String correctly.
+Because of this, it also supports all primitive types.
 
-By the way, *small string optimization kicks in for strings >23 bytes on 64bit (something like 12 bytes on 32bit)*!
-
-### Features
-
-* `substring`: Returns a sub-string of the current String. 
-* `split`: Splits the string at delimiters and returns a vector of Strings.
-* `trimmed`: Returns a copy with all occurances of a char at the start and end of the String removed.
-* `startswith`: Returns whether the String starts with a given String.
-* `endswith`: Returns whether the String ends with a given String.
-* `find`: Returns an iterator to the first occurance of a given character.
-* `hexified`: Returns a copy of the string in hex. Example: `abc` gives `616263`.
-* `capitalized`: Returns a copy of the String with the first letter capitalized.
-* `replaced`: Finds a given substring and returns the String with thta substring replaced with another given substring.
-* `to_upper`: Returns a copy of the String in ALL UPPERCASE.
-* `to_lower`: Returns a copy of the String in all lowercase.
-* `to_printable_only`: Returns a copy of the String which only has the printable characters of the original String.
-* `substring_view`: Like `substring`, but is `constexpr` and returns a `StringView`.
-* `empty`: Returns whether the String is empty (`""`).
-* `equals`: The same as `==`.
-* `equals_case_insensitive`: Returns whether the two Strings are equal, while ignoring case sensitiviy.
-* `size`: Returns the size of the String.
-* *`static`* `format`: Creates a String from an amount of arguments of different types.
-
-### Roadmap
-
-The following will **definitely** need to be done:
-
-- [x] Replace varargs with variadic templates.
-- [x] Implement `String::split`.
-  - [x] Implement `String::substr` (use `String::substring`).
-- [x] Implement `String::trim`.
-- [x] Implement small-string-optimization.
-- [x] Optimize `StringBuilder::build`.
-- [x] Optimize `StringBuilder::append` and `StringBuilder::prepend`.
-- [ ] Document the public interface (*Doxygen?*).
-- [x] Add Iterator(s), `begin`, `end`.
-- [x] ~~Use `std::unique_ptr` for `char[]`.~~ (replaced by SSO)
-- [ ] Ensure only valid (printable) types to be passed to HexFormat, OctalFormat, etc.
-
-The following I'm **not so sure** about:
-
-- [ ] `StringBuilder` operators `+=`, `+`, etc.
-- [ ] Conversion between `String` and `std::string`.
-- [ ] Make `String` use more move semantics in some situations (?).
-
-### How to use
-
-A `String` can be constructed with:
-
-**There are more ctors, but these are the important ones!**
-
-#### `String::String(const char*)`
-```cpp
-String s("My String!");
-```
-This method is the easiest for simple strings. For formatting support one of the next options is needed.
-
-#### `String::String(iter, iter)`
-```cpp
-String s(my_begin_iterator, my_end_iterator);
-```
-This is useful for creating Strings from pieces of other Strings (this is as close to mutability as it gets in here).
-
-#### `String::format`
-
-There are a few helper templates that can be used to get a lot of the formatting sugar that you're used to from `printf` and the like:
-
-* `HexFormat<>(x)`: Produces Hex formatted output of `x`, comparable to `%x`.
-* `OctalFormat<>(x)`: Produces Octal formatted output of `x`, comparable to `%o`.
-* `PointerFormat(x)`: Produces Pointer formatted output of `x`, comparable to `%p`. Note that this only supports pointer types to be passed, and thus is not templated. This ensures that intention is clear and being followed.
+Examples: 
 
 ```cpp
-String s = String::format("Hello, ", name, '!');
-String s2 = String::format("Hex of 14: ", HexFormat<int>(14));
+const char* name = "Dave";
+const int age = 35;
+String test = String::format("Name: ", name, ", Age: ", age);
+// -> "Name: Dave, City: New York, Age: 35"
 ```
 
-Templates like `HexFormat` aren't functions and serve no purpose outside of `String::format`, as they do not produce any output. They merely serve as a hint to the formatter.
+If your type correctly overloads `ostream& operator(ostream&, T)`, you can pass your type to `String::format`.
 
-#### `StringBuilder`
+You can pass a `String::Format` instance to set formatting options similar to `std::ios::fmtflags`. This allows setting precision, base, width, fill, etc.
+
+Example:
 ```cpp
-StringBuilder builder;
-builder.append("Version v");
-builder.append(MAJOR);
-builder.append('.');
-builder.append(MINOR);
-builder.append('.');
-builder.append(PATCH);
-String s(std::move(builder.build()));
+String::Format fmt;
+fmt.precision    = 3;
+fmt.width        = 10;
+fmt.alignment    = String::Format::Align::Right;
+String my_string = String::format(fmt, 3.53214, " |", fmt, 5.2436, " |");
+std::cout << my_string << std::endl;
 ```
-This could of course all be done in one call to `String::format`, but the point is that it allows an iterative approach.
-
-It's also possible to chain together `append` (and `prepend`):
-```cpp
-StringBuilder sb()
-  .append("Hello,")
-  .append(' ')
-  .append("World!")
-  .append(1.0 / 3.0)
-.build();
+will output:
+```
+        3.53 |      5.24 |
 ```
 
-### Notes
+## How to use
 
-`StringBuilder::appendf` and `StringBuilder::prependf` were removed for now.
+1. clone this repository (recursively)
+2. switch to the `rewrite` branch
+3. include `String.h` and add `String.cpp` to your source files (for an example look at `CMakeLists.txt`)
 
-### Why?
+## FAQ
 
-For learning purposes and as part of my own personal library of code that I use in my projects. This is not supposed to be faster or better in an objective sense than `std::string`. The idea is to develop a String class with an interface that fits my personal coding style. This is not to say that it won't be fast; I just know that it's pretty difficult to ever reach the speed of, say, `std::string`.
-Do, however, feel free to suggest any optimizations :)
+### Is `std::string` not good?
 
-Thanks to @JoaoBaptMG the size of String varies depending on architecture, using less space on 32bit.
+`std::string` is very good. Still, I always thought its interface was very inconsistent, using iterators here and indices there, and following very few std library conventions.
+`String` is supposed to allow for more Python- or C#-like string interactions, making it feel more like a primitive type than a complicated container, yet also supporting it being treated just like a normal `std::vector`.
+
+TL;DR: I just want a string that gives me an iterator when I call `String::find` and has intuitive methods like `.replace` and `.split`.
+
+### Why `std::vector`?
+I **don't** like `std::string`, I **do** like `std::vector`. 
+
+### Where did open issues go?
+
+Closed, since the code that was responsible for them was nuked. 

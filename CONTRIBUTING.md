@@ -10,18 +10,15 @@
 
 * Choose clear and descritive names with as little abbreviation as possible. 
 
-* `String` is immutable, and this is by design. Any changes going against this idea won't be merged.
-
 ## What can I contribute / where can I help?
 
-In general, anything that's on the roadmap in the [readme](https://github.com/lionkor/String/blob/master/README.md). 
+In general, contribute anything that would be useful to you. Keep in mind that feature-rich != bloated.
 
 In more detail: 
 
 * Any optimization is welcome (as long as it doesn't break something important).
 
-* Any features that operate on the string (akin to `split` and `trim`) are welcome. Keep in mind that they shall not modify the `String` and instead return a new one, or a vector of String, or whatever.
-
 * Useful overloads for existing features are welcome.
 
-* Documentation. Basically every public method needs to be documented at some point.
+* Documentation. Basically every public method needs to be documented at some point. Documentation can be very detailed, as long as it does not go into too much detail about the implementation.
+
