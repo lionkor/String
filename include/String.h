@@ -18,7 +18,7 @@
 /// This means that any `<algorithm>` calls should work as expected.
 ///
 /// \attention String is \b not null-terminated. If a null-terminated string is needed, it's very simple
-/// to convert to a `std::string` or c-string via `String::as_c_string` and `String::as_std_string`.
+/// to convert to a `std::string` or c-string via `String::to_c_string` and `String::to_std_string`.
 class String
 {
 private:
@@ -75,9 +75,9 @@ public:
 
     /// \brief A unique_ptr managed char[] containing a copy of the data of the string,
     /// guaranteed to be null-terminated.
-    std::unique_ptr<char> as_c_string() const;
+    std::unique_ptr<char> to_c_string() const;
     /// \brief A copy of this string represented as a std::string.
-    std::string as_std_string() const;
+    std::string to_std_string() const;
 
     /// \brief Clears the contents of the string, resulting string will be the empty string.
     void clear() noexcept;

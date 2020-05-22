@@ -127,27 +127,27 @@ TEST_CASE("String::at") {
     REQUIRE_THROWS(s1.at(s1.size()));
 }
 
-TEST_CASE("String::as_c_string, empty") {
+TEST_CASE("String::to_c_string, empty") {
     String s1;
-    auto   cstr = s1.as_c_string();
+    auto   cstr = s1.to_c_string();
     REQUIRE(std::strcmp(cstr.get(), "") == 0);
 }
 
-TEST_CASE("String::as_c_string, not empty") {
+TEST_CASE("String::to_c_string, not empty") {
     String s1("Hello!");
-    auto   cstr = s1.as_c_string();
+    auto   cstr = s1.to_c_string();
     REQUIRE(std::strcmp(cstr.get(), "Hello!") == 0);
 }
 
-TEST_CASE("String::as_std_string, empty") {
+TEST_CASE("String::to_std_string, empty") {
     String      s1;
-    std::string str = s1.as_std_string();
+    std::string str = s1.to_std_string();
     REQUIRE(str.empty());
 }
 
-TEST_CASE("String::as_std_string, not empty") {
+TEST_CASE("String::to_std_string, not empty") {
     String      s1("std string sucks!");
-    std::string str = s1.as_std_string();
+    std::string str = s1.to_std_string();
     REQUIRE(str == "std string sucks!");
 }
 
@@ -164,13 +164,13 @@ TEST_CASE("String::insert char, not empty") {
     s1.insert(s1.begin() + 4, 'X');
     REQUIRE_NOTHROW(s1.at(4));
     REQUIRE(s1.at(4) == 'X');
-    REQUIRE(s1.as_std_string() == "lifeX is pain");
+    REQUIRE(s1.to_std_string() == "lifeX is pain");
     // insert end
     s1.insert(s1.end(), 'L');
-    REQUIRE(s1.as_std_string() == "lifeX is painL");
+    REQUIRE(s1.to_std_string() == "lifeX is painL");
     // insert begin
     s1.insert(s1.begin(), 'e');
-    REQUIRE(s1.as_std_string() == "elifeX is painL");
+    REQUIRE(s1.to_std_string() == "elifeX is painL");
     // errors
     REQUIRE_THROWS(s1.insert(s1.end() + 1, 'X'));
 }
@@ -183,20 +183,20 @@ TEST_CASE("String::insert String, empty") {
     REQUIRE(s1.at(0) == 'X');
     REQUIRE(s1.at(1) == 'Y');
     REQUIRE(s1.at(2) == 'Z');
-    REQUIRE(s1.as_std_string() == "XYZ");
+    REQUIRE(s1.to_std_string() == "XYZ");
 }
 
 TEST_CASE("String::insert String, not empty") {
     String s1("life is pain");
     // insert middle
     s1.insert(s1.begin() + 4, "XYZ");
-    REQUIRE(s1.as_std_string() == "lifeXYZ is pain");
+    REQUIRE(s1.to_std_string() == "lifeXYZ is pain");
     // insert end
     s1.insert(s1.end(), "lmnop");
-    REQUIRE(s1.as_std_string() == "lifeXYZ is painlmnop");
+    REQUIRE(s1.to_std_string() == "lifeXYZ is painlmnop");
     // insert begin
     s1.insert(s1.begin(), "okok");
-    REQUIRE(s1.as_std_string() == "okoklifeXYZ is painlmnop");
+    REQUIRE(s1.to_std_string() == "okoklifeXYZ is painlmnop");
     // errors
     REQUIRE_THROWS(s1.insert(s1.end() + 1, "nice"));
 }
@@ -209,7 +209,7 @@ TEST_CASE("String::insert iters, empty") {
     REQUIRE(s1.size() == 2);
     REQUIRE(s1.at(0) == 'h');
     REQUIRE(s1.at(1) == 'i');
-    REQUIRE(s1.as_std_string() == "hi");
+    REQUIRE(s1.to_std_string() == "hi");
 }
 
 TEST_CASE("String::insert iters, not empty") {
@@ -217,15 +217,15 @@ TEST_CASE("String::insert iters, not empty") {
     // insert middle
     String s2("XYZ");
     s1.insert(s1.begin() + 4, s2.begin(), s2.end());
-    REQUIRE(s1.as_std_string() == "lifeXYZ is pain");
+    REQUIRE(s1.to_std_string() == "lifeXYZ is pain");
     // insert end
     String s3("lmnop");
     s1.insert(s1.end(), s3.begin(), s3.end());
-    REQUIRE(s1.as_std_string() == "lifeXYZ is painlmnop");
+    REQUIRE(s1.to_std_string() == "lifeXYZ is painlmnop");
     // insert begin
     String s4("okok");
     s1.insert(s1.begin(), s4.begin(), s4.end());
-    REQUIRE(s1.as_std_string() == "okoklifeXYZ is painlmnop");
+    REQUIRE(s1.to_std_string() == "okoklifeXYZ is painlmnop");
     // errors
     REQUIRE_THROWS(s1.insert(s1.end() + 1, s4.begin(), s4.end()));
 }
@@ -252,10 +252,10 @@ TEST_CASE("String::erase iter") {
     REQUIRE_THROWS(s1.erase(s1.end()));
 
     s1.erase(s1.begin());
-    REQUIRE(s1.as_std_string() == "ello");
+    REQUIRE(s1.to_std_string() == "ello");
 
     s1.erase(s1.begin() + 1);
-    REQUIRE(s1.as_std_string() == "elo");
+    REQUIRE(s1.to_std_string() == "elo");
 }
 
 TEST_CASE("String::erase from to") {
@@ -268,11 +268,11 @@ TEST_CASE("String::erase from to") {
 
     String s2("Hello");
     s2.erase(s2.begin() + 1, s2.end() - 1);
-    REQUIRE(s2.as_std_string() == "Ho");
+    REQUIRE(s2.to_std_string() == "Ho");
 
     String s3("Hello");
     s3.erase(s3.begin() + 1, s3.begin() + 1);
-    REQUIRE(s3.as_std_string() == "Hello");
+    REQUIRE(s3.to_std_string() == "Hello");
 
     REQUIRE_THROWS(s3.erase(s3.begin() + 3, s3.begin() + 2));
 }
@@ -287,19 +287,19 @@ TEST_CASE("String::erase n") {
 
     String s2("Hello");
     s2.erase(s2.begin() + 1, s2.size() - 2);
-    REQUIRE(s2.as_std_string() == "Ho");
+    REQUIRE(s2.to_std_string() == "Ho");
 
     String s3("Hello");
     s3.erase(s3.begin() + 1, 0);
-    REQUIRE(s3.as_std_string() == "Hello");
+    REQUIRE(s3.to_std_string() == "Hello");
 }
 
 TEST_CASE("String::substring") {
     String s1("Hello, World!");
-    REQUIRE(s1.substring(s1.begin() + 1, s1.end() - 1).as_std_string() == "ello, World");
+    REQUIRE(s1.substring(s1.begin() + 1, s1.end() - 1).to_std_string() == "ello, World");
 
     String s2("Hello, World!");
-    REQUIRE(s2.substring(s2.begin() + 1, 4).as_std_string() == "ello");
+    REQUIRE(s2.substring(s2.begin() + 1, 4).to_std_string() == "ello");
 }
 
 TEST_CASE("String::find") {
