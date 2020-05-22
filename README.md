@@ -8,6 +8,30 @@ Full rewrite of this simple modern String class / library. Incompatible with v1.
 
 Full documentation can be found here: [**Full documentation**](https://lionkor.github.io/String-docs).
 
+## How to use
+
+There are **2** ways to use this library:
+
+### 1 Compile with your project
+
+1. clone this repository (recursively).
+2. add `String/include` to your include directories.
+3. include `String.h` and add `String/src/String.cpp` to your source files (for an example look at `CMakeLists.txt`).
+4. compile with at least `-std=c++17`.
+
+### 2 Compile as library, link (linux/unix)
+
+1. clone this repository (recursively).
+2. go into the cloned repository directory.
+3. run `cmake && make String`. This will create `libString.a`.
+4. add `String/include` to your include directories
+5. link against `libString.a`. 
+  
+   Example with gcc, assuming `String` was cloned into the same directory that main.cpp is in and libString.a has been built: 
+   ```bash
+   g++ main.cpp -o myprogram -lString -I./String/ -L./String -I./String/include
+   ```
+
 ## Major features
 
 ### String::format
@@ -41,31 +65,11 @@ will output:
 .        3.53 |      5.24 |
 ```
 
-## How to use
-
-There are **2** ways to use this library:
-
-### 1 Compile with your project
-
-1. clone this repository (recursively).
-2. add `String/include` to your include directories.
-3. include `String.h` and add `String/src/String.cpp` to your source files (for an example look at `CMakeLists.txt`).
-4. compile with at least `-std=c++17`.
-
-### 2 Compile as library, link (linux/unix)
-
-1. clone this repository (recursively).
-2. go into the cloned repository directory.
-3. run `cmake && make String`. This will create `libString.a`.
-4. add `String/include` to your include directories
-5. link against `libString.a`. 
-  
-   Example with gcc, assuming `String` was cloned into the same directory that main.cpp is in and libString.a has been built: 
-   ```bash
-   g++ main.cpp -o myprogram -lString -I./String/ -L./String -I./String/include
-   ```
-
 ## FAQ
+
+### How do you run the tests?
+
+After cloning the repo, head into the cloned String directory and run `cmake` and then `make StringTest`. You can then execute `./StringTest`.
 
 ### Is `std::string` not good?
 
