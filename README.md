@@ -34,6 +34,13 @@ There are **2** ways to use this library:
 
 ## Major features
 
+* `String::format` - Described below.
+* `String::split` - Splits the String into parts, using a char or String as delimiter.
+* `String::replace` - Replaces all instances of a char or String with another char or String.
+* `String::startswith` - Tests whether the String starts with another substring.
+* `String::endswith` - Tests whether the String ends with another substring.
+* `String::insert` and `String::erase` - Inserts or erases chars or Strings into or from the String.
+
 ### String::format
 A static method allowing for simple and fast formatting. Allows any type `T` with an overload to `ostream& operator(ostream&, T)` to be formatted into the String correctly.
 Because of this, it also supports all primitive types.
