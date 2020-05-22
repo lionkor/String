@@ -1,6 +1,6 @@
 # String v2.0
 
-Full rewrite of this simple modern String class / library. Incompatible with v1.0 which can be found [here](https://github.com/lionkor/legacy-1.0).
+Full rewrite of this simple modern String class / library. Incompatible with v1.0 which can be found [here](https://github.com/lionkor/String/tree/legacy-1.0).
 
 **The v2.0 is not fully done yet**
 
