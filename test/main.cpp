@@ -2,14 +2,14 @@
 #include <iomanip>
 #include <iostream>
 #include "../include/String.h"
-//*
+/*
 int main() {
     ConstString s("Hello, World");
     std::cout << (s == "Hello, World") << std::endl;
 }
 //*/
 
-/*
+//*
 
 #define CATCH_CONFIG_MAIN
 #include "Catch2/single_include/catch2/catch.hpp"
@@ -19,18 +19,18 @@ TEST_CASE("String::format") {
     REQUIRE(String::format("Hello ", "World") == "Hello World");
     REQUIRE(String::format(1, 2, 3) == "123");
     REQUIRE(String::format(1.0) == "1");
-    
+
     String::Format fmt;
     fmt.precision = 1;
-    REQUIRE(String::format(fmt, 1.0/3.0) == "0.3");
+    REQUIRE(String::format(fmt, 1.0 / 3.0) == "0.3");
     fmt.precision = 2;
-    REQUIRE(String::format(fmt, 1.0/3.0) == "0.33");
+    REQUIRE(String::format(fmt, 1.0 / 3.0) == "0.33");
     fmt.base = String::Format::Base::Hex;
     REQUIRE(String::format(fmt, 0xf) == "f");
     fmt.base = String::Format::Base::Oct;
     REQUIRE(String::format(fmt, 03562) == "3562");
     REQUIRE(String::format(fmt, 10) == "12");
-    
+
     String::Format fmt2;
     fmt2.width = 4;
     REQUIRE(String::format(fmt2, "12", fmt2, "5") == "12  5   ");
@@ -38,7 +38,7 @@ TEST_CASE("String::format") {
     REQUIRE(String::format(fmt2, "12", fmt2, "5") == "  12   5");
     fmt2.fill = '-';
     REQUIRE(String::format(fmt2, "12", fmt2, "5") == "--12---5");
-    
+
     REQUIRE(String::format(String(), String()) == "");
     std::string s("Hello");
     REQUIRE(String::format(s, String("World")) == "HelloWorld");
@@ -355,7 +355,7 @@ TEST_CASE("String::replace String") {
     String s2;
     s2.replace("", "Hello");
     REQUIRE(s2 == "");
-    
+
     String s3("hello hello");
     REQUIRE_THROWS(s3.replace("hello", "hello hello"));
 }
