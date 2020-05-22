@@ -1,6 +1,8 @@
 # String<sub>v2.0</sub>
 
-Full rewrite branch of this simple modern String class / library. Incompatible with v1.0 which can be found [here](https://github.com/lionkor/legacy-1.0).
+Full rewrite of this simple modern String class / library. Incompatible with v1.0 which can be found [here](https://github.com/lionkor/legacy-1.0).
+
+**The v2.0 is not fully done yet**
 
 ## Major features
 
@@ -35,20 +37,9 @@ will output:
         3.53 |      5.24 |
 ```
 
-## Major changes from String<sub>v1.0</sub>
-
-* Fully ABI / API **in**compatible with previous versions (basically a new library).
-* No more small string optimization, for now.
-* More standard-similar behaviour, with proper iterators doing most of the work.
-* Well tested.
-* No longer null-terminated.
-* `<algorithm>` used for most operations, and thus also fully compatible with algorithms from the std library.
-* no longer a buildable library. 
-* not a single line of code reused, everything from scratch.
-
 ## How to use
 
-1. clone this repository
+1. clone this repository (recursively)
 2. switch to the `rewrite` branch
 3. include `String.h` and add `String.cpp` to your source files (for an example look at `CMakeLists.txt`)
 
