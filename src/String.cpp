@@ -1,272 +1,287 @@
 #include "String.h"
-#include "Exceptions.h"
-#include "StringBuilder.h" // FIXME: Remove.
 #include <cassert>
 #include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <algorithm>
+#include <iomanip>
 
-// "the empty string"
-String::String() {
-    m_chars.all.dynamic = false;
-    set_size(0);
-    chars()[0] = '\0';
+String::String() { }
+
+String::String(std::nullptr_t) { }
+
+String::String(char c) {
+    m_chars.push_back(c);
 }
 
-
-String::String(const char* cs) {
-    store(cs);
+String::String(const char* cstr)
+    : m_chars(cstr, cstr + std::strlen(cstr)) {
 }
 
-template<typename _T>
-static constexpr std::size_t abs_size_t(_T i) {
-    return std::size_t(i < 0 ? i * -1 : i);
+String::String(String::ConstIterator from, String::ConstIterator to)
+    : m_chars(from, to) {
 }
 
-String::String(const String::Iterator start, const String::Iterator end) {
-    store(start, abs_size_t(end - start));
-    // FIXME: Doesn't work if start>end.
+String::operator std::string() const {
+    return as_std_string();
 }
 
-String::String(const String& str) {
-    store(str.chars(), str.size());
+String::Iterator String::begin() {
+    return m_chars.begin();
 }
 
-String::String(const StringView& sv) {
-    store(sv.chars(), sv.size());
+String::Iterator String::end() {
+    return m_chars.end();
 }
 
-String& String::operator=(const String& str) {
-    const auto tmp_size = str.size();
-    if (str.m_chars.all.dynamic) {
-        m_chars.all.dynamic = true;
-        set_size(tmp_size);
-        m_chars.heap.data = new char[size() + 1];
-        set_size(str.size());
-    } else {
-        m_chars.all.dynamic = false;
-        set_size(str.size());
-    }
-    std::strcpy(chars(), str.chars());
-    return *this;
+String::ConstIterator String::begin() const {
+    return m_chars.begin();
 }
 
-String& String::operator=(const char* cs) {
-    const auto tmp_size = std::strlen(cs);
-    if (size() > MAX_ALLOC) {
-        m_chars.all.dynamic = true;
-        set_size(tmp_size);
-        m_chars.heap.data = new char[size() + 1];
-    } else {
-        m_chars.all.dynamic = false;
-        set_size(tmp_size);
-    }
-    std::strcpy(chars(), cs);
-    return *this;
+String::ConstIterator String::end() const {
+    return m_chars.end();
 }
 
-bool String::operator==(const String& other) const {
-    return std::strcmp(chars(), other.chars()) == 0;
+char& String::at(std::size_t i) {
+    return m_chars.at(i);
 }
 
-bool String::operator==(const char* other) const {
-    return std::strcmp(chars(), other) == 0;
+bool String::empty() const noexcept {
+    return m_chars.empty();
 }
 
-String::~String() {
-    if (m_chars.all.dynamic)
-        delete[] chars();
+std::size_t String::size() const noexcept {
+    return m_chars.size();
 }
 
-std::vector<String> String::split(char delim) const {
-    // TODO/FIXME: if (str.find(delim) == std::string::npos) return
-    // std::vector<std::string>();
-    std::vector<String> splits {};
-    std::size_t         pos { 0 };
-    for (const char* c = chars(); true; ++c) {
-        if (*c == delim || *c == '\0') {
-            splits.push_back(substring(pos, (c - chars()) - pos));
-            if (*c == '\0')
-                break;
-            pos = ++c - chars();
-        }
-    }
-    return splits;
+std::size_t String::length() const noexcept {
+    return m_chars.size();
 }
 
-bool String::equals(const String& str) const {
-    return *this == str;
+char String::at(std::size_t i) const {
+    return m_chars.at(i);
 }
 
-
-String String::substring(std::size_t pos, std::size_t n) const {
-    String s;
-    if (n > MAX_ALLOC) {
-        s.m_chars.all.dynamic = true;
-        s.m_chars.heap.data   = new char[n + 1];
-        s.chars()[n]          = '\0';
-    } else {
-        s.m_chars.all.dynamic = false;
-        s.chars()[n]          = '\0';
-    }
-    s.set_size(n);
-    std::strncpy(s.chars(), chars() + pos, n);
-    return s;
+std::unique_ptr<char> String::as_c_string() const {
+    auto ptr = std::unique_ptr<char>(new char[m_chars.size() + 1]);
+    std::copy_n(m_chars.data(), m_chars.size(), ptr.get());
+    ptr.get()[m_chars.size()] = '\0';
+    return ptr;
 }
 
-
-String String::substring(const Iterator begin, const Iterator end) const {
-    String     s;
-    const auto tmp_size = end - begin;
-    if (tmp_size > MAX_ALLOC) {
-        s.m_chars.all.dynamic = true;
-        s.set_size(tmp_size);
-        s.m_chars.heap.data = new char[s.size() + 1];
-        s.chars()[s.size()] = '\0';
-    } else {
-        s.m_chars.all.dynamic = false;
-        s.set_size(tmp_size);
-        s.chars()[s.size()] = '\0';
-    }
-    std::strncpy(s.chars(), begin, s.size());
-    return s;
+std::string String::as_std_string() const {
+    return std::string(m_chars.begin(), m_chars.end());
 }
 
-
-String String::substr(std::size_t pos, std::size_t n) const {
-    return substring(pos, n);
-}
-String String::substr(const Iterator begin, const Iterator end) const {
-    return substring(begin, end);
+void String::clear() noexcept {
+    m_chars.clear();
 }
 
-String String::trimmed(char trim) const {
-    Iterator begin = chars();
-    Iterator end   = chars() + size();
-    while (*begin == trim)
-        ++begin;
-    while (*(end - 1) == trim && end > begin)
-        --end;
-    return substring(begin, end);
+void String::insert(String::ConstIterator iter, const String& s) {
+    if (iter > end())
+        throw std::runtime_error("iterator out of range");
+    m_chars.insert(iter, s.begin(), s.end());
 }
 
-String String::hexified() const {
-    StringBuilder sb;
-    for (const char& c : *this) {
-        sb.append(HexFormat<unsigned>(c));
-    }
-    return sb.build();
+void String::insert(String::ConstIterator iter, String::ConstIterator begin, String::ConstIterator end) {
+    if (iter > this->end())
+        throw std::runtime_error("iterator out of range");
+    m_chars.insert(iter, begin, end);
 }
 
-String String::capitalized() const {
-    return String::format(char(toupper(chars()[0])), substring(begin() + 1, end()));
+void String::insert(String::ConstIterator iter, char c) {
+    if (iter > end())
+        throw std::runtime_error("iterator out of range");
+    m_chars.insert(iter, c);
 }
 
-String String::replaced(const StringView& to_replace,
-    const StringView&                     replace_with) const {
-    if (to_replace == replace_with)
-        return String(*this);
-    StringBuilder sb;
-    for (std::size_t i = 0; i < size(); ++i) {
-        if (chars()[i] == to_replace[0]) {
-            if (substring(i, to_replace.size()) == to_replace) {
-                sb.append(replace_with);
-                i += to_replace.size() - 1;
-                continue;
-            }
-        } else {
-            sb.append(chars()[i]);
-        }
-    }
-    return sb.build();
+void String::erase(String::ConstIterator iter) {
+    if (iter < begin() || iter > end() || empty() || iter == end())
+        throw std::runtime_error("iterator out of range");
+    m_chars.erase(iter);
 }
 
-String String::replaced(char to_replace, char replace_with) const {
-    if (to_replace == replace_with)
-        return String(*this);
-    StringBuilder sb;
-    for (const char& c : *this) {
-        if (c == to_replace)
-            sb.append(replace_with);
-        else
-            sb.append(c);
-    }
-    return sb.build();
+void String::erase(String::ConstIterator from, String::ConstIterator to) {
+    if (from < begin() || from > end() || empty() || from == end() || to < begin() || to > end() || to < from)
+        throw std::runtime_error("iterator out of range");
+    m_chars.erase(from, to);
 }
 
-String String::to_upper() const {
-    StringBuilder sb;
-    for (const char& c : *this) {
-        sb.append(char(toupper(c)));
-    }
-    return sb.build();
+void String::erase(String::ConstIterator iter, std::size_t n) {
+    erase(iter, iter + n);
 }
 
-String String::to_lower() const {
-    StringBuilder sb;
-    for (const char& c : *this) {
-        sb.append(char(to_lower_internal(c)));
-    }
-    return sb.build();
+String String::substring(String::ConstIterator from, String::ConstIterator to) const {
+    return String(from, to);
 }
 
-String String::to_printable_only() const {
-    StringBuilder sb;
-    for (const char& c : *this) {
-        if (isprint(c)) {
-            sb.append(c);
-        }
-    }
-    return sb.build();
+String String::substring(String::ConstIterator start, std::size_t n) const {
+    return String(start, start + n);
 }
 
-String::Iterator String::find(const char c) const {
-    Iterator current = begin();
-    for (; *current != c && current != end(); ++current)
-        ;
-    return current;
+String::Iterator String::find(char c) {
+    return std::find(m_chars.begin(), m_chars.end(), c);
 }
 
-const char* String::c_str() const {
-    return m_chars.all.dynamic ? m_chars.heap.data : m_chars.stack.data;
+String::ConstIterator String::find(char c) const {
+    return std::find(m_chars.begin(), m_chars.end(), c);
 }
 
-bool String::equals_case_insensitive(const String& str) const {
-    if (size() != str.size())
+String::Iterator String::find_caseless(char c, const std::locale& locale) {
+    return std::find_if(m_chars.begin(), m_chars.end(), [c, locale](const auto& a) -> bool {
+        return std::tolower(a, locale) == std::tolower(c, locale);
+    });
+}
+
+String::ConstIterator String::find_caseless(char c, const std::locale& locale) const {
+    return std::find_if(m_chars.begin(), m_chars.end(), [c, locale](const auto& a) -> bool {
+        return std::tolower(a, locale) == std::tolower(c, locale);
+    });
+}
+
+String::Iterator String::find(const String& str) {
+    return std::search(begin(), end(), str.begin(), str.end());
+}
+
+String::ConstIterator String::find(const String& str) const {
+    return std::search(begin(), end(), str.begin(), str.end());
+}
+
+String::Iterator String::find(const String& str, Iterator start) {
+    return std::search(start, end(), str.begin(), str.end());
+}
+
+String::ConstIterator String::find(const String& str, String::ConstIterator start) const {
+    return std::search(start, end(), str.begin(), str.end());
+}
+
+bool String::contains(const String& str) const {
+    if (str.size() > size())
         return false;
-    for (std::size_t i = 0; i < str.size(); ++i) {
-        if (!char_equals_case_insensitive(chars()[i], str[i]))
-            return false;
-    }
-    return true;
-}
-
-bool String::endswith(const String& str) const {
-    for (std::size_t i = 0; i < str.size(); ++i) {
-        if (chars()[size() - 1 - i] != str[str.size() - 1 - i])
-            return false;
-    }
-    return true;
+    return find(str) != end();
 }
 
 bool String::startswith(const String& str) const {
-    return substring_view(0, str.size()) == str;
+    if (str.size() > size())
+        return false;
+    return std::equal(begin(), begin() + str.size(), str.begin(), str.end());
 }
 
-StringView String::substring_view(const std::size_t position, const std::size_t n) const {
-    const Iterator start(m_chars.all.dynamic ? m_chars.heap.data + position
-                                             : m_chars.stack.data + position);
-    return StringView(start, start + n);
+bool String::endswith(const String& str) const {
+    if (str.size() > size())
+        return false;
+    return std::equal(end() - str.size(), end(), str.begin(), str.end());
 }
 
-bool String::contains(char c) const {
-    return find(c) != end();
+bool String::equals(const String& str) const {
+    if (size() != str.size())
+        return false;
+    return std::equal(begin(), end(), str.begin(), str.end());
 }
 
-String String::trimmed(String trim) const {
-    Iterator begin = chars();
-    Iterator end   = chars() + size();
-    while (trim.contains(*begin))
-        ++begin;
-    while (trim.contains(*(end - 1)) && end > begin)
-        --end;
-    return substring(begin, end);
+bool String::operator==(const String& s) const {
+    return equals(s);
+}
+
+bool String::operator!=(const String& s) const {
+    return !equals(s);
+}
+
+String& String::operator+=(const String& s) {
+    insert(end(), s);
+    return *this;
+}
+
+String String::operator+(const String& s) const {
+    String result = *this;
+    result.insert(result.end(), s);
+    return result;
+}
+
+void String::replace(char to_replace, char replace_with) {
+    for (auto& c : m_chars)
+        if (c == to_replace)
+            c = replace_with;
+}
+
+void String::replace(const String& to_replace, const String& replace_with) {
+    if (!to_replace.empty() && replace_with.find(to_replace) != replace_with.end())
+        throw std::invalid_argument("replace_with shall not contain to_replace");
+    Iterator iter;
+    do {
+        iter = std::search(begin(), end(), to_replace.begin(), to_replace.end());
+        if (iter != end()) {
+            erase(iter, to_replace.size());
+            insert(iter, replace_with);
+        }
+    } while (iter != end());
+}
+
+void String::replace(const String& to_replace, const String& replace_with, std::size_t n) {
+    if (!to_replace.empty() && replace_with.find(to_replace) != replace_with.end())
+        throw std::invalid_argument("replace_with shall not contain to_replace");
+    Iterator    iter;
+    std::size_t i = 0;
+    do {
+        if (i >= n)
+            break;
+        ++i;
+        iter = std::search(begin(), end(), to_replace.begin(), to_replace.end());
+        if (iter != end()) {
+            erase(iter, to_replace.size());
+            insert(iter, replace_with);
+        }
+    } while (iter != end());
+}
+
+void String::reserve(std::size_t size) {
+    m_chars.reserve(size);
+}
+
+std::size_t String::capacity() const {
+    return m_chars.capacity();
+}
+
+void String::shrink_to_fit() noexcept {
+    m_chars.shrink_to_fit();
+}
+
+char* String::data() noexcept {
+    return m_chars.data();
+}
+
+const char* String::data() const noexcept {
+    return m_chars.data();
+}
+
+std::ostream& operator<<(std::ostream& os, const String& s) {
+    return os << s.as_std_string();
+}
+
+std::istream& operator>>(std::istream& is, String& s) {
+    const auto len = is.rdbuf()->pubseekoff(0, std::ios::end);
+    is.rdbuf()->pubseekoff(0, std::ios::beg);
+    const auto offset = s.m_chars.size();
+    s.m_chars.resize(s.m_chars.size() + len);
+    auto ret = is.rdbuf()->sgetn(s.m_chars.data() + offset, len);
+    static_cast<void>(ret);
+    is.rdbuf()->pubseekoff(0, std::ios::end);
+    return is;
+}
+
+std::ostream& operator<<(std::ostream& os, const String::Format& fmt) {
+    switch (fmt.alignment) {
+    case String::Format::Align::Left:
+        os << std::left;
+        break;
+    case String::Format::Align::Right:
+        os << std::right;
+    }
+
+    os << std::setprecision(fmt.precision)
+       << std::setbase(fmt.base)
+       << std::setw(fmt.width)
+       << std::setfill(fmt.fill);
+
+    return os;
 }
