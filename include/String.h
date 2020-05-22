@@ -189,6 +189,12 @@ public:
     /// \arg `expected_splits` how many parts are expected. Setting this to a reasonable
     /// amount will speed up the split operation as memory can be reserved beforehand.
     std::vector<String> split(char delim, std::size_t expected_splits = 2) const;
+    /// \brief Splits the String into substrings delimited by the String `delim`.
+    ///
+    /// \arg `delim` delimiter string to be used
+    /// \arg `expected_splits` how many parts are expected. Setting this to a reasonable
+    /// amount will speed up the split operation as memory can be reserved beforehand.
+    std::vector<String> split(const String& delim, std::size_t expected_splits = 2) const;
 
     /// \brief Grows the capacity to fit `size` many characters. Does not change the size of the string.
     ///

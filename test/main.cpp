@@ -8,7 +8,7 @@
 #define CATCH_CONFIG_MAIN
 #include "Catch2/single_include/catch2/catch.hpp"
 
-TEST_CASE("String::split") {
+TEST_CASE("String::split char") {
     String s0(";1;2;3;4;");
     std::vector<String> result = s0.split(';', 4);
     REQUIRE(result.size() == 6);
@@ -30,6 +30,19 @@ TEST_CASE("String::split") {
     
     String s3(";;g;;");
     REQUIRE(s3.split(';').at(2) == "g");
+}
+
+TEST_CASE("String::split String") {
+    String s0(";1;2;3;4;");
+    std::vector<String> result = s0.split(";", 4);
+    
+    String s1("Hello, World");
+    std::vector<String> splits = s1.split(", ");
+    REQUIRE(splits.at(0) == "Hello");
+    REQUIRE(splits.at(1) == "World");
+    
+    String s2("Hello, World");
+    REQUIRE_THROWS(splits = s2.split(""));
 }
 
 TEST_CASE("String::format") {

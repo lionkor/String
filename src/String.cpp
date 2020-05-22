@@ -252,7 +252,24 @@ std::vector<String> String::split(char delim, std::size_t expected_splits) const
         // +1 skips the delimiter itself
         result.push_back(String(last_iter + 1, iter));
         last_iter = iter;
-        iter = find(delim, iter + 1);
+        iter      = find(delim, iter + 1);
+    }
+    return result;
+}
+
+std::vector<String> String::split(const String& delim, std::size_t expected_splits) const {
+    if (delim.empty())
+        throw std::runtime_error("empty delimiter");
+    std::vector<String> result;
+    result.reserve(expected_splits);
+    // FIXME: is this undefined?
+    auto last_iter = begin() - delim.size();
+    auto iter      = find(delim);
+    while (last_iter != end()) {
+        // + delim.size() skips the delimiter itself
+        result.push_back(String(last_iter + delim.size(), iter));
+        last_iter = iter;
+        iter      = find(delim, iter + delim.size());
     }
     return result;
 }
