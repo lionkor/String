@@ -1,6 +1,6 @@
 # String<sub>v2.0</sub>
 
-Full rewrite branch of this simple modern String class / library. Incompatible with v1.0.
+Full rewrite branch of this simple modern String class / library. Incompatible with v1.0 which can be found [here](https://github.com/lionkor/legacy-1.0).
 
 ## Major features
 
