@@ -92,6 +92,16 @@ Generally, it's *probably* slower, as is to be expected at this point in develop
 ### How do you convert to `std::string` or `char*`?
 
 Since `String` is not null-terminated, conversion is rather slow.
+Options for conversion are, from fastest to slowest:
+
+1. Append `'\0'`, access `String::data()`, do stuff, then `String::erase` the `'\0'`. This is super fast, won't copy any data, and you can just use it like a regular `const char*`. 
+  This is only useful if the String is only used by one thread and is not `const`. 
+  **Attention:** This will cause huge troubles if you attempt to use the String after adding a `'\0'` *without erasing it again*, as the size will have increased by one (since we treat `'\0'` as a normal character). 
+  This is the fastest, but also the most error-prone way. Not recommended.
+  
+2. Use `String::to_std_string`. This copies the data into a `std::string`, which might be faster than method nr. 3, as this might use SSO. The returned `std::string` is a copy.
+
+3. Use `String::to_c_string`. This allocates a buffer with `new[]`, wraps it in a `std::unique_ptr`, copies the chars into it and returns that `std::unique_ptr`. You can then access the `char*` with `.get()`. This is probably the slowest way, but it will give you back a self-memory-managing buffer, so it's pretty neat. I was thinking about a raw pointer return, but that just *wants* to leak memory. 
 
 ### Why `std::vector`?
 I **don't** like `std::string`, I **do** like `std::vector`. 
