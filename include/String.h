@@ -75,7 +75,7 @@ public:
 
     /// \brief A unique_ptr managed char[] containing a copy of the data of the string,
     /// guaranteed to be null-terminated.
-    std::unique_ptr<char> to_c_string() const;
+    std::unique_ptr<char[]> to_c_string() const;
     /// \brief A copy of this string represented as a std::string.
     std::string to_std_string() const;
 

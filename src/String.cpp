@@ -62,8 +62,8 @@ char String::at(std::size_t i) const {
     return m_chars.at(i);
 }
 
-std::unique_ptr<char> String::to_c_string() const {
-    auto ptr = std::unique_ptr<char>(new char[m_chars.size() + 1]);
+std::unique_ptr<char[]> String::to_c_string() const {
+    auto ptr = std::unique_ptr<char[]>(new char[m_chars.size() + 1]);
     std::copy_n(m_chars.data(), m_chars.size(), ptr.get());
     ptr.get()[m_chars.size()] = '\0';
     return ptr;
