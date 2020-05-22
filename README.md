@@ -41,6 +41,8 @@ There are **2** ways to use this library:
 * `String::endswith` - Tests whether the String ends with another substring.
 * `String::insert` and `String::erase` - Inserts or erases chars or Strings into or from the String.
 
+For the full list of functions and features, check out the [documentation](https://lionkor.github.io/String-docs).
+
 ### String::format
 A static method allowing for simple and fast formatting. Allows any type `T` with an overload to `ostream& operator(ostream&, T)` to be formatted into the String correctly.
 Because of this, it also supports all primitive types.
@@ -102,6 +104,8 @@ Options for conversion are, from fastest to slowest:
 2. Use `String::to_std_string`. This copies the data into a `std::string`, which might be faster than method nr. 3, as this might use SSO. The returned `std::string` is a copy.
 
 3. Use `String::to_c_string`. This allocates a buffer with `new[]`, wraps it in a `std::unique_ptr`, copies the chars into it and returns that `std::unique_ptr`. You can then access the `char*` with `.get()`. This is probably the slowest way, but it will give you back a self-memory-managing buffer, so it's pretty neat. I was thinking about a raw pointer return, but that just *wants* to leak memory. 
+
+For more information on those functions read the [documentation](https://lionkor.github.io/String-docs).
 
 ### Why `std::vector`?
 I **don't** like `std::string`, I **do** like `std::vector`. 
