@@ -114,6 +114,18 @@ public:
     /// \arg `c` character to find, case-sensitive.
     /// \return String::ConstIterator pointing to the found character, or end() if nothing was found.
     ConstIterator find(char c) const;
+    /// \brief Finds the first occurance of char c in the string after `start`. Returns end() if nothing was
+    /// found.
+    /// \arg `c` character to find, case-sensitive.
+    /// \arg `start` position from which to search from.
+    /// \return String::Iterator pointing to the found character, or end() if nothing was found.
+    Iterator find(char c, Iterator start);
+    /// \brief Finds the first occurance of char c in the string after `start`. Returns end() if nothing was
+    /// found.
+    /// \arg `c` character to find, case-sensitive.
+    /// \arg `start` position from which to search from.
+    /// \return String::ConstIterator pointing to the found character, or end() if nothing was found.
+    ConstIterator find(char c, ConstIterator start) const;
     /// \brief Finds the first occurance of char c in the string, ignoring case. Returns end() if
     /// nothing was found. Default locale is "C".
     /// \arg `c` character to find
@@ -170,6 +182,13 @@ public:
     void replace(const String& to_replace, const String& replace_with);
     /// \brief Replaces `n` instances of `to_replace` with `replace_with` in the string.
     void replace(const String& to_replace, const String& replace_with, std::size_t n);
+
+    /// \brief Splits the String into substrings delimited by `delim`.
+    ///
+    /// \arg `delim` delimiter to be used
+    /// \arg `expected_splits` how many parts are expected. Setting this to a reasonable
+    /// amount will speed up the split operation as memory can be reserved beforehand.
+    std::vector<String> split(char delim, std::size_t expected_splits = 2) const;
 
     /// \brief Grows the capacity to fit `size` many characters. Does not change the size of the string.
     ///

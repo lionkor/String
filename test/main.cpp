@@ -2,17 +2,35 @@
 #include <iomanip>
 #include <iostream>
 #include "../include/String.h"
-/*
-int main() {
-    ConstString s("Hello, World");
-    std::cout << (s == "Hello, World") << std::endl;
-}
-//*/
 
 //*
 
 #define CATCH_CONFIG_MAIN
 #include "Catch2/single_include/catch2/catch.hpp"
+
+TEST_CASE("String::split") {
+    String s0(";1;2;3;4;");
+    std::vector<String> result = s0.split(';', 4);
+    REQUIRE(result.size() == 6);
+    REQUIRE(result.at(0) == "");
+    REQUIRE(result.at(1) == "1");
+    REQUIRE(result.at(2) == "2");
+    REQUIRE(result.at(3) == "3");
+    REQUIRE(result.at(4) == "4");
+    REQUIRE(result.at(5) == "");
+    
+    
+    String s1("Hello, World");
+    REQUIRE(s1.split('X').at(0) == s1);
+    
+    String s2("name=String");
+    std::vector<String> splits = s2.split('=');
+    REQUIRE(splits.at(0) == "name");
+    REQUIRE(splits.at(1) == "String");
+    
+    String s3(";;g;;");
+    REQUIRE(s3.split(';').at(2) == "g");
+}
 
 TEST_CASE("String::format") {
     REQUIRE(String::format("Hello") == "Hello");
@@ -285,6 +303,8 @@ TEST_CASE("String::find") {
     REQUIRE(s2.find('e') == s2.begin() + 1);
     REQUIRE(s2.find('E') == s2.end());
     REQUIRE(s2.find('o') == s2.end() - 1);
+
+    REQUIRE(s2.find('e', s2.begin() + 3) == s2.end());
 }
 
 TEST_CASE("String::find_caseless") {

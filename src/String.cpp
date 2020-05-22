@@ -127,6 +127,14 @@ String::ConstIterator String::find(char c) const {
     return std::find(m_chars.begin(), m_chars.end(), c);
 }
 
+String::Iterator String::find(char c, String::Iterator start) {
+    return std::find(start, m_chars.end(), c);
+}
+
+String::ConstIterator String::find(char c, String::ConstIterator start) const {
+    return std::find(start, m_chars.end(), c);
+}
+
 String::Iterator String::find_caseless(char c, const std::locale& locale) {
     return std::find_if(m_chars.begin(), m_chars.end(), [c, locale](const auto& a) -> bool {
         return std::tolower(a, locale) == std::tolower(c, locale);
@@ -232,6 +240,21 @@ void String::replace(const String& to_replace, const String& replace_with, std::
             insert(iter, replace_with);
         }
     } while (iter != end());
+}
+
+std::vector<String> String::split(char delim, std::size_t expected_splits) const {
+    std::vector<String> result;
+    result.reserve(expected_splits);
+    // FIXME: is this undefined?
+    auto last_iter = begin() - 1;
+    auto iter      = find(delim);
+    while (last_iter != end()) {
+        // +1 skips the delimiter itself
+        result.push_back(String(last_iter + 1, iter));
+        last_iter = iter;
+        iter = find(delim, iter + 1);
+    }
+    return result;
 }
 
 void String::reserve(std::size_t size) {
