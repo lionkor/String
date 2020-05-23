@@ -126,18 +126,6 @@ public:
     /// \arg `start` position from which to search from.
     /// \return String::ConstIterator pointing to the found character, or end() if nothing was found.
     ConstIterator find(char c, ConstIterator start) const;
-    /// \brief Finds the first occurance of char c in the string, ignoring case. Returns end() if
-    /// nothing was found. Default locale is "C".
-    /// \arg `c` character to find
-    /// \arg `locale` locale to use when considering and converting case
-    /// \return String::Iterator pointing to the found character, or end() if nothing was found
-    Iterator find_caseless(char c, const std::locale& locale = std::locale::classic());
-    /// \brief Finds the first occurance of char c in the string, ignoring case. Returns end() if
-    /// nothing was found. Default locale is "C".
-    /// \arg `c` character to find
-    /// \arg `locale` locale to use when considering and converting case
-    /// \return String::ConstIterator pointing to the found character, or end() if nothing was found
-    ConstIterator find_caseless(char c, const std::locale& locale = std::locale::classic()) const;
 
     /// \brief Finds the first occurance of the string inside this string.
     /// \return String::Iterator pointing to the beginning of the found substring, or end() if

@@ -320,22 +320,6 @@ TEST_CASE("String::find") {
     REQUIRE(s2.find('e', s2.begin() + 3) == s2.end());
 }
 
-TEST_CASE("String::find_caseless") {
-    String s1("Hello");
-    REQUIRE(s1.find_caseless('H') == s1.begin());
-    REQUIRE(s1.find_caseless('X') == s1.end());
-    REQUIRE(s1.find_caseless('e') == s1.begin() + 1);
-    REQUIRE(s1.find_caseless('E') == s1.begin() + 1);
-    REQUIRE(s1.find_caseless('O') == s1.end() - 1);
-
-    const String s2("Hello");
-    REQUIRE(s2.find_caseless('H') == s2.begin());
-    REQUIRE(s2.find_caseless('X') == s2.end());
-    REQUIRE(s2.find_caseless('e') == s2.begin() + 1);
-    REQUIRE(s2.find_caseless('E') == s2.begin() + 1);
-    REQUIRE(s2.find_caseless('O') == s2.end() - 1);
-}
-
 TEST_CASE("String::equals") {
     REQUIRE(String("Hello").equals(String("Hello")));
     REQUIRE(String("").equals(String("")));

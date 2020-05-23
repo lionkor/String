@@ -135,18 +135,6 @@ String::ConstIterator String::find(char c, String::ConstIterator start) const {
     return std::find(start, m_chars.end(), c);
 }
 
-String::Iterator String::find_caseless(char c, const std::locale& locale) {
-    return std::find_if(m_chars.begin(), m_chars.end(), [c, locale](const auto& a) -> bool {
-        return std::tolower(a, locale) == std::tolower(c, locale);
-    });
-}
-
-String::ConstIterator String::find_caseless(char c, const std::locale& locale) const {
-    return std::find_if(m_chars.begin(), m_chars.end(), [c, locale](const auto& a) -> bool {
-        return std::tolower(a, locale) == std::tolower(c, locale);
-    });
-}
-
 String::Iterator String::find(const String& str) {
     return std::search(begin(), end(), str.begin(), str.end());
 }
